@@ -1,95 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Symposia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-      background: #f8f9fa;
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #1e293b;
+    }
+    .container {
+      background: white;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 700px;
+      width: 100%;
     }
     h1 {
       text-align: center;
-      color: #3a0ca3;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #4f46e5;
     }
-    textarea {
+    p.subtitle {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #64748b;
+    }
+    textarea, select, input[type="file"] {
       width: 100%;
-      height: 150px;
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 14px;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
     }
-    select, button {
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 14px;
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: #4f46e5;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: #4338ca;
+    }
+    #loading {
+      display: none;
+      margin-top: 15px;
+      text-align: center;
+      color: #4f46e5;
+      font-weight: 600;
     }
     #output {
-      margin-top: 20px;
-      padding: 15px;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      min-height: 100px;
+      margin-top: 25px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f9fafb;
       white-space: pre-wrap;
+    }
+    #imagePreview {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #imagePreview img {
+      max-width: 150px;
+      max-height: 150px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <h1>Symposia</h1>
-  <p><strong>Turn your clinical notes into publishable drafts</strong></p>
+  <div class="container">
+    <h1>Symposia</h1>
+    <p class="subtitle">Turn your clinical notes into publishable drafts</p>
 
-  <!-- Notes -->
-  <label for="notes">Enter or Dictate Your Notes</label>
-  <textarea id="notes" placeholder="Paste notes here or dictate..."></textarea>
+    <label for="notes">Enter or Dictate Your Notes</label>
+    <textarea id="notes" rows="6" placeholder="Paste notes here or dictate..."></textarea>
 
-  <!-- File upload (not active yet for docs) -->
-  <label for="files">Upload Images (optional)</label><br/>
-  <input type="file" id="files" multiple accept=".jpg,.jpeg,.png"/><br/>
+    <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
+    <input type="file" id="files" multiple accept=".png,.jpg,.jpeg,.pdf,.docx,.pptx">
+    <div id="imagePreview"></div>
 
-  <!-- Format -->
-  <label for="format">Choose Format</label><br/>
-  <select id="format">
-    <option value="Abstract">Abstract</option>
-    <option value="Case Study">Case Study</option>
-    <option value="Presentation">Presentation</option>
-  </select><br/>
+    <label for="format">Choose Format</label>
+    <select id="format">
+      <option value="Case Study">Case Study</option>
+      <option value="Abstract">Abstract</option>
+      <option value="Presentation">Presentation</option>
+    </select>
 
-  <!-- Generate button -->
-  <button id="generateBtn">Generate Draft</button>
+    <button id="generateBtn">Generate Draft</button>
+    <div id="loading">⏳ Generating draft… please wait</div>
 
-  <!-- Output -->
-  <div id="output">Your draft will appear here...</div>
+    <div id="output"></div>
+  </div>
 
   <script>
-    document.getElementById('generateBtn').addEventListener('click', async () => {
+    const generateBtn = document.getElementById('generateBtn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+    const fileInput = document.getElementById('files');
+    const imagePreview = document.getElementById('imagePreview');
+
+    // Show previews of uploaded images
+    fileInput.addEventListener('change', () => {
+      imagePreview.innerHTML = '';
+      Array.from(fileInput.files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            imagePreview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+
+    generateBtn.addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
       const format = document.getElementById('format').value;
 
+      if (!notes.trim()) {
+        alert("Please enter some notes.");
+        return;
+      }
+
+      generateBtn.disabled = true;
+      loading.style.display = 'block';
+      output.textContent = '';
+
       try {
-        const resp = await fetch('/api/generate', {
+        const response = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ format, notes })
+          body: JSON.stringify({ notes, format })
         });
 
-        const data = await resp.json();
-
-        document.getElementById('output').textContent =
-          data.draft ||
-          (data.error
-            ? `Error: ${data.error} ${
-                data.details ? JSON.stringify(data.details) : ''
-              }`
-            : 'Unknown error');
-      } catch (e) {
-        document.getElementById('output').textContent =
-          'Request failed: ' + e.message;
+        const data = await response.json();
+        if (data.error) {
+          output.textContent = "Error: " + data.error;
+        } else {
+          output.textContent = data.draft;
+        }
+      } catch (err) {
+        output.textContent = "Error generating draft.";
       }
+
+      loading.style.display = 'none';
+      generateBtn.disabled = false;
     });
   </script>
 </body>
