@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // if this fails, we’ll try another model below
+        model: 'gpt-5-mini', // if this fails, we’ll try another model below
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Target format: ${format}\n\nNotes:\n${notes}` },
