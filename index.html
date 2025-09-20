@@ -4,178 +4,169 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Symposia</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f8fafc;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      color: #333;
+      background-color: #fafafa;
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      color: #1e293b;
     }
+
     .container {
-      background: white;
+      max-width: 800px;
       margin: 40px auto;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 700px;
-      width: 100%;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
+
     h1 {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: #4f46e5;
+      color: #5a2ca0;
+      margin-bottom: 10px;
     }
-    p.subtitle {
+
+    p {
       text-align: center;
-      margin-bottom: 2rem;
-      color: #64748b;
+      margin-bottom: 20px;
+      color: #555;
     }
-    textarea, select, input[type="file"] {
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 15px;
+      line-height: 1.4;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    #micBtn {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 22px;
+      color: #666;
+    }
+
+    input[type="file"], select {
+      margin: 10px 0 20px;
+      width: 100%;
+    }
+
+    button#generate {
       width: 100%;
       padding: 12px;
-      margin-top: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 14px;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 16px;
+      background: #5a2ca0;
       color: white;
-      background: #4f46e5;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s ease;
     }
-    button:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
+
+    button#generate:hover {
+      background: #4a2290;
     }
-    button:hover:not(:disabled) {
-      background: #4338ca;
-    }
-    #loading {
-      display: none;
-      margin-top: 15px;
-      text-align: center;
-      color: #4f46e5;
-      font-weight: 600;
-    }
+
     #output {
-      margin-top: 25px;
-      padding: 20px;
-      border: 1px solid #e2e8f0;
+      font-family: "Segoe UI", Georgia, serif;
+      font-size: 15px;
+      background: #fff;
+      padding: 15px;
       border-radius: 8px;
-      background: #f9fafb;
+      border: 1px solid #eee;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-top: 20px;
       white-space: pre-wrap;
     }
-    #imagePreview {
-      margin-top: 15px;
+
+    .preview-images {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-    #imagePreview img {
+
+    .preview-images img {
       max-width: 150px;
-      max-height: 150px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Symposia</h1>
-    <p class="subtitle">Turn your clinical notes into publishable drafts</p>
+    <p>Turn your clinical notes into publishable drafts</p>
 
-    <label for="notes">Enter or Dictate Your Notes</label>
-    <textarea id="notes" rows="6" placeholder="Paste notes here or dictate..."></textarea>
+    <div class="textarea-wrapper">
+      <textarea id="notes" placeholder="Enter or dictate your notes..."></textarea>
+      <button id="micBtn">🎤</button>
+    </div>
 
     <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
     <input type="file" id="files" multiple accept=".png,.jpg,.jpeg,.pdf,.docx,.pptx">
-    <div id="imagePreview"></div>
+
+    <div class="preview-images" id="preview"></div>
 
     <label for="format">Choose Format</label>
     <select id="format">
-      <option value="Case Study">Case Study</option>
-      <option value="Abstract">Abstract</option>
-      <option value="Presentation">Presentation</option>
+      <option>Case Study</option>
+      <option>Abstract</option>
+      <option>Presentation</option>
     </select>
 
-    <button id="generateBtn">Generate Draft</button>
-    <div id="loading">⏳ Generating draft… please wait</div>
-
-    <div id="output"></div>
+    <button id="generate">Generate Draft</button>
+    <div id="output">No draft generated yet.</div>
   </div>
 
   <script>
-    const generateBtn = document.getElementById('generateBtn');
-    const loading = document.getElementById('loading');
-    const output = document.getElementById('output');
-    const fileInput = document.getElementById('files');
-    const imagePreview = document.getElementById('imagePreview');
-
-    // Show previews of uploaded images
-    fileInput.addEventListener('change', () => {
-      imagePreview.innerHTML = '';
-      Array.from(fileInput.files).forEach(file => {
+    // Preview uploaded images
+    document.getElementById('files').addEventListener('change', (event) => {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      Array.from(event.target.files).forEach(file => {
         if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            imagePreview.appendChild(img);
-          };
-          reader.readAsDataURL(file);
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(file);
+          preview.appendChild(img);
         }
       });
     });
 
-    generateBtn.addEventListener('click', async () => {
-      const notes = document.getElementById('notes').value;
-      const format = document.getElementById('format').value;
+    // Microphone dictation
+    let recognition;
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-      if (!notes.trim()) {
-        alert("Please enter some notes.");
-        return;
-      }
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById('notes').value += " " + text;
+      };
 
-      generateBtn.disabled = true;
-      loading.style.display = 'block';
-      output.textContent = '';
-
-      try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, format })
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          output.textContent = "Error: " + data.error;
-        } else {
-          output.textContent = data.draft;
-        }
-      } catch (err) {
-        output.textContent = "Error generating draft.";
-      }
-
-      loading.style.display = 'none';
-      generateBtn.disabled = false;
-    });
+      document.getElementById('micBtn').onclick = () => {
+        recognition.start();
+      };
+    } else {
+      document.getElementById('micBtn').style.display = 'none';
+    }
   </script>
 </body>
 </html>
