@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Symposia</title>
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather&display=swap" rel="stylesheet">
@@ -112,16 +112,10 @@
       border-radius: 50%;
       animation: bounce 1.4s infinite;
     }
-    .spinner .dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    .spinner .dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
-    }
+    .spinner .dot:nth-child(2) { animation-delay: 0.2s; }
+    .spinner .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
     #output {
       margin-top: 25px;
       padding: 20px;
@@ -133,20 +127,23 @@
       line-height: 1.6;
       white-space: pre-wrap;
     }
+
+    /* Single download button (hidden until draft is ready) */
     #downloadBtn {
-  display: none; /* hidden until draft is generated */
-  margin-top: 15px;
-  padding: 12px;
-  width: 100%;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  background: ##94a3b8;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: #059669; /* fixed: valid color */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    #downloadBtn:hover { background: #047857; }
   </style>
 </head>
 <body>
@@ -168,46 +165,48 @@
     <button id="generateBtn">Generate Draft</button>
     <div id="loading">
       <div class="spinner">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
       <p style="color:#2563eb; font-weight:600; margin-top:10px;">Generating draft…</p>
     </div>
 
     <div id="output"></div>
+    <!-- Single download button -->
+    <button id="downloadBtn">Download Draft</button>
   </div>
 
-<script>
-    const generateBtn = document.getElementById('generateBtn');
-    const loading = document.getElementById('loading');
-    const output = document.getElementById('output');
+  <script>
+    const generateBtn   = document.getElementById('generateBtn');
+    const loading       = document.getElementById('loading');
+    const output        = document.getElementById('output');
+    const downloadBtn   = document.getElementById('downloadBtn');
     const formatButtons = document.querySelectorAll('.format-buttons button');
-    const downloadSection = document.getElementById('download-buttons');
 
-    let selectedFormat = "Abstract"; // default
+    let selectedFormat = 'Abstract'; // default
 
-    // Handle format selection
+    // Format selection
     formatButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         formatButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        selectedFormat = btn.dataset.format;
+        selectedFormat = btn.dataset.format || 'Abstract';
       });
     });
 
+    // Generate draft
     generateBtn.addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
 
       if (!notes.trim()) {
-        alert("Please enter some notes.");
+        alert('Please enter some notes.');
         return;
       }
 
+      // reset UI
       generateBtn.disabled = true;
       loading.style.display = 'block';
       output.textContent = '';
-      downloadSection.style.display = 'none';
+      downloadBtn.style.display = 'none';
 
       try {
         const response = await fetch('/api/generate', {
@@ -217,31 +216,38 @@
         });
 
         const data = await response.json();
-        if (data.error) {
-          output.textContent = "Error: " + data.error;
+
+        if (!response.ok || data.error) {
+          output.textContent = 'Error: ' + (data?.error?.message || data?.error || JSON.stringify(data));
         } else {
-          output.textContent = data.draft;
-          downloadSection.style.display = 'flex';
+          const draftText = data.draft || data.result || '';
+          output.textContent = draftText || 'No draft returned.';
+          if (draftText.trim()) downloadBtn.style.display = 'block';
         }
       } catch (err) {
-        output.textContent = "Error generating draft.";
+        output.textContent = 'Error generating draft: ' + err.message;
+      } finally {
+        loading.style.display = 'none';
+        generateBtn.disabled = false;
       }
-
-      loading.style.display = 'none';
-      generateBtn.disabled = false;
     });
 
-    // Download Word
-    document.getElementById('download-word').addEventListener('click', () => {
-      const content = output.textContent;
+    // Download Word (.doc)
+    downloadBtn.addEventListener('click', () => {
+      const content = output.textContent || '';
+      if (!content.trim()) {
+        alert('No draft available to download.');
+        return;
+      }
       const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
       a.href = url;
       a.download = 'symposia_draft.doc';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     });
   </script>
 </body>
