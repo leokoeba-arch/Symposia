@@ -37,7 +37,7 @@
       margin-bottom: 2rem;
       color: #64748b;
     }
-    textarea, select, input[type="file"] {
+    textarea, select {
       width: 100%;
       padding: 12px;
       margin-top: 10px;
@@ -80,19 +80,6 @@
       background: #f9fafb;
       white-space: pre-wrap;
     }
-    #imagePreview {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    #imagePreview img {
-      max-width: 150px;
-      max-height: 150px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      object-fit: cover;
-    }
   </style>
 </head>
 <body>
@@ -102,10 +89,6 @@
 
     <label for="notes">Enter or Dictate Your Notes</label>
     <textarea id="notes" rows="6" placeholder="Paste notes here or dictate..."></textarea>
-
-    <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
-    <input type="file" id="files" multiple accept=".png,.jpg,.jpeg,.pdf,.docx,.pptx">
-    <div id="imagePreview"></div>
 
     <label for="format">Choose Format</label>
     <select id="format">
@@ -118,30 +101,14 @@
     <div id="loading">⏳ Generating draft… please wait</div>
 
     <div id="output"></div>
+    <button id="downloadBtn" style="display:none;">Download Word</button>
   </div>
 
   <script>
     const generateBtn = document.getElementById('generateBtn');
     const loading = document.getElementById('loading');
     const output = document.getElementById('output');
-    const fileInput = document.getElementById('files');
-    const imagePreview = document.getElementById('imagePreview');
-
-    // Show previews of uploaded images
-    fileInput.addEventListener('change', () => {
-      imagePreview.innerHTML = '';
-      Array.from(fileInput.files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            imagePreview.appendChild(img);
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    });
+    const downloadBtn = document.getElementById('downloadBtn');
 
     generateBtn.addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
@@ -155,6 +122,7 @@
       generateBtn.disabled = true;
       loading.style.display = 'block';
       output.textContent = '';
+      downloadBtn.style.display = 'none';
 
       try {
         const response = await fetch('/api/generate', {
@@ -168,6 +136,7 @@
           output.textContent = "Error: " + data.error;
         } else {
           output.textContent = data.draft;
+          downloadBtn.style.display = 'block';
         }
       } catch (err) {
         output.textContent = "Error generating draft.";
@@ -175,6 +144,22 @@
 
       loading.style.display = 'none';
       generateBtn.disabled = false;
+    });
+
+    // Word download
+    downloadBtn.addEventListener('click', () => {
+      const content = output.textContent;
+      const blob = new Blob(
+        ['\ufeff', content],
+        { type: 'application/msword' }
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'symposia_draft.doc';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     });
   </script>
 </body>
