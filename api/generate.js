@@ -4,17 +4,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { format = 'Case Study', notes = '', images = [] } = req.body || {};
+    const { format, notes, images } = req.body;
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({ error: 'Missing OPENAI_API_KEY' });
     }
 
-    const systemPrompt =
-      "You are Symposia. Turn clinical notes into a structured draft for the chosen format. " +
-      "Use professional medical tone and end with 'Recommended Additions' if key info is missing.";
+    // Build the system prompt
+    const systemPrompt = `
+      You are Symposia. Turn the provided clinical notes into a structured ${format}.
+      Use a professional medical tone. If images are provided, suggest how they might be 
+      referenced in the text (e.g., "as shown in Figure 1"). 
+      End with a "Recommended Additions" section if key information seems missing.
+    `;
 
+    // Call OpenAI
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -22,30 +27,32 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-5-mini",   // efficient for drafts
+        model: "gpt-5-mini",   // smaller, cheaper model for draft
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Target format: ${format}\n\nNotes:\n${notes}` },
+          { role: "user", content: `Notes:\n${notes}` },
         ],
-        max_completion_tokens: 800, // updated param (not max_tokens)
+        max_completion_tokens: 1000, // enough for multi-section drafts
       }),
     });
 
+    const data = await resp.json();
+
     if (!resp.ok) {
-      const err = await resp.text();
-      return res.status(500).json({ error: err });
+      console.error("OpenAI error:", data);
+      return res.status(500).json({ error: data.error?.message || "OpenAI request failed" });
     }
 
-    const data = await resp.json();
-    const draft = data.choices?.[0]?.message?.content || "⚠️ No draft generated.";
+    const draft = data.choices?.[0]?.message?.content || "⚠️ Draft could not be generated.";
 
-    // Return draft + the uploaded image URLs
+    // Always return both text and images
     res.status(200).json({
       draft,
-      images, // These are URLs created in index.html for preview
+      images: images || []
     });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("API error:", err);
+    res.status(500).json({ error: "Server error generating draft" });
   }
 }
