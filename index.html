@@ -133,26 +133,22 @@
       line-height: 1.6;
       white-space: pre-wrap;
     }
-    #download-buttons {
-      display: none;
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    #download-buttons button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    #downloadBtn {
+  display: none; /* hidden until draft is generated */
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: ##94a3b8;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
     #download-word { background: #059669; color: white; }
-    #download-pdf { background: #dc2626; color: white; }
-    #download-txt { background: #475569; color: white; }
     #download-word:hover { background: #047857; }
-    #download-pdf:hover { background: #b91c1c; }
-    #download-txt:hover { background: #334155; }
   </style>
 </head>
 <body>
