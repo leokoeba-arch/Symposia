@@ -42,9 +42,7 @@ export default async function handler(req, res) {
         .json({ error: data.error?.message || "OpenAI request failed" });
     }
 
-    // ✅ Focus only on text
-    console.log("🔎 OpenAI response:", JSON.stringify(data, null, 2));
-
+    // ✅ Correct way to read response
     const draft =
       data.choices?.[0]?.message?.content ||
       "⚠️ Draft could not be generated.";
