@@ -98,9 +98,32 @@
   <div id="draft">No draft generated yet...</div>
 
   <br>
-  <button onclick="downloadFile('word')">Download Word</button>
-  <button onclick="downloadFile('pdf')">Download PDF</button>
-  <button onclick="downloadFile('ppt')">Download PPT</button>
+  <button id="downloadBtn">Download Word</button>
+
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', async () => {
+    const notes = document.getElementById('notes').value;
+    const format = document.getElementById('format').value;
+
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes, format, images: uploadedImages }),
+    });
+
+    if (!resp.ok) {
+      alert("Error downloading document.");
+      return;
+    }
+
+    const blob = await resp.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "symposia_draft.docx";
+    a.click();
+  });
+</script>
+
 
   <script>
     let uploadedImages = [];
