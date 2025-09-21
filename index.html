@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Symposia</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
+      background: #f1f6fb;
       margin: 0;
       padding: 0;
       display: flex;
@@ -22,20 +23,21 @@
       margin: 40px auto;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
       max-width: 700px;
       width: 100%;
     }
     h1 {
       text-align: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       margin-bottom: 0.5rem;
-      color: #4f46e5;
+      color: #2563eb;
+      font-weight: 700;
     }
     p.subtitle {
       text-align: center;
       margin-bottom: 2rem;
-      color: #64748b;
+      color: #475569;
     }
     textarea, select {
       width: 100%;
@@ -44,6 +46,7 @@
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-size: 1rem;
+      font-family: 'Inter', sans-serif;
     }
     button {
       margin-top: 20px;
@@ -52,7 +55,7 @@
       font-size: 1rem;
       font-weight: 600;
       color: white;
-      background: #4f46e5;
+      background: #2563eb;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -63,14 +66,35 @@
       cursor: not-allowed;
     }
     button:hover:not(:disabled) {
-      background: #4338ca;
+      background: #1d4ed8;
     }
     #loading {
       display: none;
-      margin-top: 15px;
+      margin-top: 20px;
       text-align: center;
-      color: #4f46e5;
-      font-weight: 600;
+    }
+    .spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+    .spinner .dot {
+      width: 10px;
+      height: 10px;
+      background: #2563eb;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+    .spinner .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .spinner .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
     }
     #output {
       margin-top: 25px;
@@ -78,7 +102,18 @@
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       background: #f9fafb;
+      font-family: 'Merriweather', serif;
+      font-size: 1rem;
+      line-height: 1.6;
       white-space: pre-wrap;
+    }
+    #downloadBtn {
+      display: none;
+      margin-top: 15px;
+      background: #059669;
+    }
+    #downloadBtn:hover {
+      background: #047857;
     }
   </style>
 </head>
@@ -98,10 +133,17 @@
     </select>
 
     <button id="generateBtn">Generate Draft</button>
-    <div id="loading">⏳ Generating draft… please wait</div>
+    <div id="loading">
+      <div class="spinner">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <p style="color:#2563eb; font-weight:600; margin-top:10px;">Generating draft…</p>
+    </div>
 
     <div id="output"></div>
-    <button id="downloadBtn" style="display:none;">Download Word</button>
+    <button id="downloadBtn">Download Word</button>
   </div>
 
   <script>
