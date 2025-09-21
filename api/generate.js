@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { format, notes, images } = req.body;
+    const { format, notes } = req.body;
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
@@ -13,8 +13,7 @@ export default async function handler(req, res) {
 
     const systemPrompt = `
       You are Symposia. Turn the provided clinical notes into a structured ${format}.
-      Use professional medical tone. If images are provided, suggest how they might be
-      referenced in the text (e.g., "as shown in Figure 1").
+      Use professional medical tone.
       End with a "Recommended Additions" section if key information seems missing.
     `;
 
@@ -38,17 +37,23 @@ export default async function handler(req, res) {
 
     if (!resp.ok) {
       console.error("❌ OpenAI API error:", data);
-      return res.status(500).json({ error: data.error?.message || "OpenAI request failed" });
+      return res
+        .status(500)
+        .json({ error: data.error?.message || "OpenAI request failed" });
     }
 
-    const draft = data.choices?.[0]?.message?.content || "⚠️ Draft could not be generated.";
+    // ✅ Focus only on text
+    console.log("🔎 OpenAI response:", JSON.stringify(data, null, 2));
 
-    res.status(200).json({
-      draft,
-      images: images || []
-    });
+    const draft =
+      data.choices?.[0]?.message?.content ||
+      "⚠️ Draft could not be generated.";
+
+    res.status(200).json({ draft });
   } catch (err) {
     console.error("❌ Server error:", err);
-    res.status(500).json({ error: "Server error generating draft" });
+    res
+      .status(500)
+      .json({ error: "Server error generating draft" });
   }
 }
