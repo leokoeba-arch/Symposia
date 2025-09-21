@@ -198,12 +198,13 @@
 
         spinner.style.display = 'none';
 
-        if (!resp.ok) {
-          draftDiv.innerHTML = "<span style='color:red'>❌ Error generating draft.</span>";
-          return;
-        }
+       const data = await resp.json();
 
-        const data = await resp.json();
+if (!resp.ok) {
+  draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || 'Unknown error'}</span>`;
+  console.error("Backend error:", data);
+  return;
+}
 
         let html = `<div><p>${data.draft.replace(/\n/g, "<br>")}</p></div>`;
 
