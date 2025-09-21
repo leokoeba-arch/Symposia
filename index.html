@@ -198,29 +198,38 @@
 
         spinner.style.display = 'none';
 
-       const data = await resp.json();
+let data;
+try {
+  data = await resp.json();
+} catch (err) {
+  draftDiv.innerHTML = "<span style='color:red;'>❌ Error: Invalid JSON response</span>";
+  console.error("Response parse error:", err);
+  return;
+}
 
 if (!resp.ok) {
-  draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || 'Unknown error'}</span>`;
+  draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || resp.statusText}</span>`;
   console.error("Backend error:", data);
   return;
 }
 
-        let html = `<div><p>${data.draft.replace(/\n/g, "<br>")}</p></div>`;
+// ✅ Only here if successful
+let html = `<div><p>${(data.draft || "⚠️ No draft returned").replace(/\n/g, "<br>")}</p></div>`;
 
-        if (data.images && data.images.length > 0) {
-          html += "<h3>Figures</h3>";
-          data.images.forEach((imgUrl, idx) => {
-            html += `
-              <div class="figure">
-                <img src="${imgUrl}">
-                <p><em>Figure ${idx + 1}.</em> Uploaded clinical image.</p>
-              </div>
-            `;
-          });
-        }
+if (data.images && data.images.length > 0) {
+  html += "<h3>Figures</h3>";
+  data.images.forEach((imgUrl, idx) => {
+    html += `
+      <div class="figure">
+        <img src="${imgUrl}" style="max-width:300px;display:block;margin:10px auto;">
+        <p><em>Figure ${idx + 1}.</em> Uploaded clinical image.</p>
+      </div>
+    `;
+  });
+}
 
-        draftDiv.innerHTML = html;
+draftDiv.innerHTML = html;
+
 
       } catch (err) {
         spinner.style.display = 'none';
