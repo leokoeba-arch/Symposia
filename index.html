@@ -52,16 +52,29 @@
       font-family: 'Inter', sans-serif;
       box-sizing: border-box;
     }
-    select {
-      width: 100%;
+    .format-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    .format-buttons button {
+      flex: 1;
       padding: 10px;
-      margin-top: 10px;
+      font-size: 1rem;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    button {
+    .format-buttons button.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+    #generateBtn {
       margin-top: 20px;
       width: 100%;
       padding: 14px;
@@ -74,11 +87,11 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    button:disabled {
+    #generateBtn:disabled {
       background: #94a3b8;
       cursor: not-allowed;
     }
-    button:hover:not(:disabled) {
+    #generateBtn:hover:not(:disabled) {
       background: #1d4ed8;
     }
     #loading {
@@ -120,14 +133,26 @@
       line-height: 1.6;
       white-space: pre-wrap;
     }
-    #downloadBtn {
+    #download-buttons {
       display: none;
       margin-top: 15px;
-      background: #059669;
+      display: flex;
+      gap: 10px;
     }
-    #downloadBtn:hover {
-      background: #047857;
+    #download-buttons button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
     }
+    #download-word { background: #059669; color: white; }
+    #download-pdf { background: #dc2626; color: white; }
+    #download-txt { background: #475569; color: white; }
+    #download-word:hover { background: #047857; }
+    #download-pdf:hover { background: #b91c1c; }
+    #download-txt:hover { background: #334155; }
   </style>
 </head>
 <body>
@@ -135,15 +160,16 @@
     <h1>Symposia</h1>
     <p class="subtitle">Turn your clinical notes into publishable drafts</p>
 
-    <label for="notes">Enter or Dictate Your Notes</label>
-    <textarea id="notes" rows="6" placeholder="Paste notes here or dictate..."></textarea>
+    <label for="notes">Enter Your Notes</label>
+    <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
 
-    <label for="format">Choose Format</label>
-    <select id="format">
-      <option value="Case Study">Case Study</option>
-      <option value="Abstract">Abstract</option>
-      <option value="Presentation">Presentation</option>
-    </select>
+    <label>Choose Format</label>
+    <div class="format-buttons">
+      <button data-format="Abstract" class="active">Abstract</button>
+      <button data-format="Case Report">Case Report</button>
+      <button data-format="Presentation">Presentation</button>
+      <button data-format="Research">Research</button>
+    </div>
 
     <button id="generateBtn">Generate Draft</button>
     <div id="loading">
@@ -156,18 +182,34 @@
     </div>
 
     <div id="output"></div>
-    <button id="downloadBtn">Download Word</button>
+
+    <div id="download-buttons">
+      <button id="download-word">Download Word</button>
+      <button id="download-pdf">Download PDF</button>
+      <button id="download-txt">Download TXT</button>
+    </div>
   </div>
 
   <script>
     const generateBtn = document.getElementById('generateBtn');
     const loading = document.getElementById('loading');
     const output = document.getElementById('output');
-    const downloadBtn = document.getElementById('downloadBtn');
+    const formatButtons = document.querySelectorAll('.format-buttons button');
+    const downloadSection = document.getElementById('download-buttons');
+
+    let selectedFormat = "Abstract"; // default
+
+    // Handle format selection
+    formatButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
+      });
+    });
 
     generateBtn.addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
-      const format = document.getElementById('format').value;
 
       if (!notes.trim()) {
         alert("Please enter some notes.");
@@ -177,13 +219,13 @@
       generateBtn.disabled = true;
       loading.style.display = 'block';
       output.textContent = '';
-      downloadBtn.style.display = 'none';
+      downloadSection.style.display = 'none';
 
       try {
         const response = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, format })
+          body: JSON.stringify({ notes, format: selectedFormat })
         });
 
         const data = await response.json();
@@ -191,7 +233,7 @@
           output.textContent = "Error: " + data.error;
         } else {
           output.textContent = data.draft;
-          downloadBtn.style.display = 'block';
+          downloadSection.style.display = 'flex';
         }
       } catch (err) {
         output.textContent = "Error generating draft.";
@@ -201,13 +243,10 @@
       generateBtn.disabled = false;
     });
 
-    // Word download
-    downloadBtn.addEventListener('click', () => {
+    // Download Word
+    document.getElementById('download-word').addEventListener('click', () => {
       const content = output.textContent;
-      const blob = new Blob(
-        ['\ufeff', content],
-        { type: 'application/msword' }
-      );
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
