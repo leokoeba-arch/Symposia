@@ -2,164 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Symposia</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f9fc;
+      background: #f7faff;
       margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
       color: #333;
     }
-
-    .container {
-      width: 90%;
-      max-width: 800px;
-      background: #ffffff;
-      margin-top: 40px;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0, 50, 100, 0.1);
-    }
-
     h1 {
-      text-align: center;
-      color: #1f5ca2;
+      color: #1e3a8a;
       margin-bottom: 10px;
     }
-
-    p.subtitle {
-      text-align: center;
-      color: #4a6fa5;
-      margin-bottom: 25px;
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: left;
     }
-
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-      color: #2a4d75;
-    }
-
     textarea {
       width: 100%;
-      min-height: 150px;
+      height: 150px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       resize: vertical;
-      border: 1px solid #c3d6eb;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 15px;
-      font-family: inherit;
-      background: #fdfefe;
-      box-sizing: border-box;
+      font-size: 14px;
     }
-
-    input[type="file"], select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #c3d6eb;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: #1f5ca2;
-      color: #fff;
-      border: none;
+    select, button, input[type="file"] {
+      margin-top: 12px;
+      padding: 10px;
+      font-size: 14px;
       border-radius: 8px;
-      font-size: 16px;
+      border: 1px solid #bbb;
+    }
+    button {
+      background: #2563eb;
+      color: white;
       cursor: pointer;
-      transition: 0.3s ease;
+      border: none;
     }
-
-    .btn:hover {
-      background: #174879;
+    button:hover {
+      background: #1e40af;
     }
-
     .spinner {
       display: none;
-      text-align: center;
-      margin: 15px 0;
+      margin-top: 15px;
     }
-
-    #preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    #preview img {
-      max-width: 140px;
+    .draft {
+      margin-top: 20px;
+      padding: 15px;
       border-radius: 8px;
-      border: 1px solid #c3d6eb;
+      background: #f0f4ff;
+      white-space: pre-wrap;
     }
-
-    #draft {
-      margin-top: 25px;
-      padding: 20px;
-      background: #f0f6fb;
-      border-radius: 10px;
-      border: 1px solid #c3d6eb;
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
     .figure {
       margin: 15px 0;
       text-align: center;
     }
-
     .figure img {
-      max-width: 300px;
+      max-width: 80%;
       border-radius: 8px;
-      border: 1px solid #aac4e0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-
     .figure p {
-      margin-top: 6px;
-      font-size: 14px;
-      color: #2a4d75;
+      font-size: 13px;
+      font-style: italic;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
+  <h1>Symposia</h1>
+  <p>Turn your clinical notes into publishable drafts</p>
+
   <div class="container">
-    <h1>Symposia</h1>
-    <p class="subtitle">Turn your clinical notes into structured drafts</p>
+    <label>Enter or Dictate Your Notes</label><br>
+    <textarea id="notes" placeholder="Paste clinical notes or dictate..."></textarea>
 
-    <label for="notes">Enter or Dictate Your Notes</label>
-    <textarea id="notes" placeholder="Paste notes here or use voice input..."></textarea>
-
-    <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
+    <br>
+    <label>Upload Files (Images, PDF, Word, PPT)</label><br>
     <input type="file" id="files" multiple>
+
     <div id="preview"></div>
 
-    <label for="format">Choose Format</label>
+    <br>
+    <label>Choose Format</label><br>
     <select id="format">
       <option>Case Study</option>
       <option>Abstract</option>
-      <option>Presentation</option>
       <option>Summary</option>
     </select>
 
-    <button class="btn" id="generateBtn">Generate Draft</button>
-    <div class="spinner" id="spinner">⏳ Generating draft, please wait...</div>
+    <br><br>
+    <button id="generateBtn">Generate Draft</button>
+    <div class="spinner" id="spinner">⏳ Generating draft...</div>
 
-    <div id="draft">No draft generated yet...</div>
+    <div id="draft" class="draft">No draft generated.</div>
   </div>
 
   <script>
     let uploadedImages = [];
 
-    // Handle file preview
+    // Preview uploaded images
     document.getElementById('files').addEventListener('change', (event) => {
       const preview = document.getElementById('preview');
       preview.innerHTML = '';
@@ -169,25 +119,23 @@
         if (file.type.startsWith('image/')) {
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
+          img.style.maxWidth = '120px';
+          img.style.margin = '5px';
           preview.appendChild(img);
-          uploadedImages.push(img.src); // store for preview
-        } else {
-          const div = document.createElement('div');
-          div.textContent = `Uploaded file: ${file.name}`;
-          preview.appendChild(div);
+          uploadedImages.push(img.src); // store image URLs for preview
         }
       }
     });
 
-    // Handle draft generation
+    // Handle Generate button
     document.getElementById('generateBtn').addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
       const format = document.getElementById('format').value;
-      const draftDiv = document.getElementById('draft');
       const spinner = document.getElementById('spinner');
+      const draftDiv = document.getElementById('draft');
 
-      draftDiv.innerHTML = '';
       spinner.style.display = 'block';
+      draftDiv.innerHTML = '';
 
       try {
         const resp = await fetch('/api/generate', {
@@ -196,45 +144,33 @@
           body: JSON.stringify({ notes, format, images: uploadedImages }),
         });
 
+        const data = await resp.json();
         spinner.style.display = 'none';
 
-let data;
-try {
-  data = await resp.json();
-} catch (err) {
-  draftDiv.innerHTML = "<span style='color:red;'>❌ Error: Invalid JSON response</span>";
-  console.error("Response parse error:", err);
-  return;
-}
+        if (!resp.ok) {
+          draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || 'Unknown error'}</span>`;
+          return;
+        }
 
-if (!resp.ok) {
-  draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || resp.statusText}</span>`;
-  console.error("Backend error:", data);
-  return;
-}
+        let html = `<p>${data.draft.replace(/\n/g, "<br>")}</p>`;
 
-// ✅ Only here if successful
-let html = `<div><p>${(data.draft || "⚠️ No draft returned").replace(/\n/g, "<br>")}</p></div>`;
+        if (data.images && data.images.length > 0) {
+          html += "<h3>Figures</h3>";
+          data.images.forEach((imgUrl, idx) => {
+            html += `
+              <div class="figure">
+                <img src="${imgUrl}">
+                <p>Figure ${idx + 1}. Uploaded clinical image.</p>
+              </div>`;
+          });
+        }
 
-if (data.images && data.images.length > 0) {
-  html += "<h3>Figures</h3>";
-  data.images.forEach((imgUrl, idx) => {
-    html += `
-      <div class="figure">
-        <img src="${imgUrl}" style="max-width:300px;display:block;margin:10px auto;">
-        <p><em>Figure ${idx + 1}.</em> Uploaded clinical image.</p>
-      </div>
-    `;
-  });
-}
-
-draftDiv.innerHTML = html;
-
+        draftDiv.innerHTML = html;
 
       } catch (err) {
         spinner.style.display = 'none';
+        draftDiv.innerHTML = `<span style="color:red;">⚠️ Error: ${err.message}</span>`;
         console.error(err);
-        draftDiv.innerHTML = "<span style='color:red'>⚠️ Server error.</span>";
       }
     });
   </script>
