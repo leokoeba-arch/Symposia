@@ -179,64 +179,70 @@
   </div>
 
 <script>
-  const generateBtn = document.getElementById('generateBtn');
-  const loading = document.getElementById('loading');
-  const output = document.getElementById('output');
-  const downloadBtn = document.getElementById('downloadBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+    const formatButtons = document.querySelectorAll('.format-buttons button');
+    const downloadSection = document.getElementById('download-buttons');
 
-  generateBtn.addEventListener('click', async () => {
-    const notes = document.getElementById('notes').value;
-    const format = document.getElementById('format').value;
+    let selectedFormat = "Abstract"; // default
 
-    if (!notes.trim()) {
-      alert("Please enter some notes.");
-      return;
-    }
-
-    // reset UI
-    generateBtn.disabled = true;
-    loading.style.display = 'block';
-    output.textContent = '';
-    downloadBtn.style.display = 'none';
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes, format })
+    // Handle format selection
+    formatButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
       });
+    });
 
-      const data = await response.json();
-      if (data.error) {
-        output.textContent = "Error: " + data.error;
-      } else {
-        output.textContent = data.draft;
-        downloadBtn.style.display = 'block'; // show only after success
+    generateBtn.addEventListener('click', async () => {
+      const notes = document.getElementById('notes').value;
+
+      if (!notes.trim()) {
+        alert("Please enter some notes.");
+        return;
       }
-    } catch (err) {
-      output.textContent = "Error generating draft.";
-    }
 
-    loading.style.display = 'none';
-    generateBtn.disabled = false;
-  });
+      generateBtn.disabled = true;
+      loading.style.display = 'block';
+      output.textContent = '';
+      downloadSection.style.display = 'none';
 
-  // Word download
-  document.getElementById('downloadBtn').addEventListener('click', () => {
-    const content = output.textContent;
-    if (!content.trim()) {
-      alert("No draft available to download.");
-      return;
-    }
-    const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'symposia_draft.doc';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  });
-</script>
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes, format: selectedFormat })
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          output.textContent = "Error: " + data.error;
+        } else {
+          output.textContent = data.draft;
+          downloadSection.style.display = 'flex';
+        }
+      } catch (err) {
+        output.textContent = "Error generating draft.";
+      }
+
+      loading.style.display = 'none';
+      generateBtn.disabled = false;
+    });
+
+    // Download Word
+    document.getElementById('download-word').addEventListener('click', () => {
+      const content = output.textContent;
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'symposia_draft.doc';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  </script>
 </body>
 </html>
