@@ -1,158 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Symposia</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f7faff;
+      background-color: #f4f9ff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
       margin: 0;
       padding: 20px;
-      text-align: center;
-      color: #333;
-    }
-    h1 {
-      color: #1e3a8a;
-      margin-bottom: 10px;
     }
     .container {
-      max-width: 800px;
-      margin: auto;
       background: #fff;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: left;
+      box-shadow: 0 4px 10px rgba(0, 0, 100, 0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #1a4f8b;
+      margin-bottom: 15px;
     }
     textarea {
       width: 100%;
-      height: 150px;
+      height: 180px;
       padding: 10px;
-      border-radius: 8px;
+      margin-bottom: 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
       resize: vertical;
       font-size: 14px;
+      font-family: Arial, sans-serif;
     }
-    select, button, input[type="file"] {
-      margin-top: 12px;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid #bbb;
+    input[type="file"], select {
+      margin-bottom: 15px;
+      display: block;
     }
     button {
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
+      background-color: #1a4f8b;
+      color: #fff;
+      padding: 12px 20px;
       border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 8px;
     }
     button:hover {
-      background: #1e40af;
+      background-color: #163f6c;
+    }
+    #draft {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9fbff;
+      white-space: pre-wrap;
     }
     .spinner {
       display: none;
+      text-align: center;
       margin-top: 15px;
-    }
-    .draft {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 8px;
-      background: #f0f4ff;
-      white-space: pre-wrap;
+      font-weight: bold;
+      color: #1a4f8b;
     }
     .figure {
-      margin: 15px 0;
       text-align: center;
+      margin: 15px 0;
     }
     .figure img {
-      max-width: 80%;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 300px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     .figure p {
       font-size: 13px;
-      font-style: italic;
+      color: #444;
       margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>Symposia</h1>
-  <p>Turn your clinical notes into publishable drafts</p>
-
   <div class="container">
-    <label>Enter or Dictate Your Notes</label><br>
-    <textarea id="notes" placeholder="Paste clinical notes or dictate..."></textarea>
+    <h1>Symposia</h1>
+    <p style="text-align:center; margin-top:-10px;">Turn your clinical notes into publishable drafts</p>
 
-    <br>
-    <label>Upload Files (Images, PDF, Word, PPT)</label><br>
-    <input type="file" id="files" multiple>
-
-    <div id="preview"></div>
-
-    <br>
-    <label>Choose Format</label><br>
+    <textarea id="notes" placeholder="Paste notes here or dictate..."></textarea>
+    <input type="file" id="files" multiple accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" />
     <select id="format">
       <option>Case Study</option>
       <option>Abstract</option>
       <option>Summary</option>
     </select>
-
-    <br><br>
     <button id="generateBtn">Generate Draft</button>
     <div class="spinner" id="spinner">⏳ Generating draft...</div>
 
-    <div id="draft" class="draft">No draft generated.</div>
+    <div id="draft">No draft generated yet...</div>
   </div>
 
   <script>
-    let uploadedImages = [];
+    document.getElementById("generateBtn").addEventListener("click", async () => {
+      const notes = document.getElementById("notes").value;
+      const format = document.getElementById("format").value;
+      const draftDiv = document.getElementById("draft");
+      const spinner = document.getElementById("spinner");
 
-    // Preview uploaded images
-    document.getElementById('files').addEventListener('change', (event) => {
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-      uploadedImages = [];
+      draftDiv.innerHTML = "";
+      spinner.style.display = "block";
 
-      for (const file of event.target.files) {
-        if (file.type.startsWith('image/')) {
-          const img = document.createElement('img');
-          img.src = URL.createObjectURL(file);
-          img.style.maxWidth = '120px';
-          img.style.margin = '5px';
-          preview.appendChild(img);
-          uploadedImages.push(img.src); // store image URLs for preview
+      // handle uploaded images
+      const files = document.getElementById("files").files;
+      const images = [];
+      for (let file of files) {
+        if (file.type.startsWith("image/")) {
+          images.push(URL.createObjectURL(file));
         }
       }
-    });
-
-    // Handle Generate button
-    document.getElementById('generateBtn').addEventListener('click', async () => {
-      const notes = document.getElementById('notes').value;
-      const format = document.getElementById('format').value;
-      const spinner = document.getElementById('spinner');
-      const draftDiv = document.getElementById('draft');
-
-      spinner.style.display = 'block';
-      draftDiv.innerHTML = '';
 
       try {
-        const resp = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, format, images: uploadedImages }),
+        const resp = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes, format, images }),
         });
 
         const data = await resp.json();
-        spinner.style.display = 'none';
+        spinner.style.display = "none";
 
         if (!resp.ok) {
-          draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || 'Unknown error'}</span>`;
+          draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.error || "Unknown error"}</span>`;
+          console.error("Backend error:", data);
           return;
         }
 
-        let html = `<p>${data.draft.replace(/\n/g, "<br>")}</p>`;
+        console.log("✅ Backend response:", data);
+
+        let html = `<div>${data.draft.replace(/\n/g, "<br>")}</div>`;
 
         if (data.images && data.images.length > 0) {
           html += "<h3>Figures</h3>";
@@ -160,17 +152,16 @@
             html += `
               <div class="figure">
                 <img src="${imgUrl}">
-                <p>Figure ${idx + 1}. Uploaded clinical image.</p>
+                <p><em>Figure ${idx + 1}.</em> Uploaded clinical image.</p>
               </div>`;
           });
         }
 
         draftDiv.innerHTML = html;
-
       } catch (err) {
-        spinner.style.display = 'none';
-        draftDiv.innerHTML = `<span style="color:red;">⚠️ Error: ${err.message}</span>`;
-        console.error(err);
+        spinner.style.display = "none";
+        draftDiv.innerHTML = `<span style="color:red;">❌ Error: ${err.message}</span>`;
+        console.error("Frontend error:", err);
       }
     });
   </script>
