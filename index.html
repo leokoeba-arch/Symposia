@@ -7,131 +7,161 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #fafafa;
+      background: #f5f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
       color: #333;
     }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      background: #ffffff;
+      margin-top: 40px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 50, 100, 0.1);
+    }
+
     h1 {
       text-align: center;
-      color: #4a148c;
+      color: #1f5ca2;
+      margin-bottom: 10px;
     }
+
+    p.subtitle {
+      text-align: center;
+      color: #4a6fa5;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: #2a4d75;
+    }
+
     textarea {
       width: 100%;
-      height: 180px;
-      resize: vertical;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .preview-images img {
-      max-width: 120px;
-      max-height: 120px;
-      object-fit: cover;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin: 5px;
-    }
-    select, button {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #673ab7;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-    #draft {
-      white-space: pre-wrap;
-      background: #fff;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
       min-height: 150px;
+      resize: vertical;
+      border: 1px solid #c3d6eb;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fdfefe;
+      box-sizing: border-box;
     }
+
+    input[type="file"], select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #c3d6eb;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #1f5ca2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #174879;
+    }
+
     .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #673ab7;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
       display: none;
-      margin: 10px auto;
+      text-align: center;
+      margin: 15px 0;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    #preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #preview img {
+      max-width: 140px;
+      border-radius: 8px;
+      border: 1px solid #c3d6eb;
+    }
+
+    #draft {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f0f6fb;
+      border-radius: 10px;
+      border: 1px solid #c3d6eb;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .figure {
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .figure img {
+      max-width: 300px;
+      border-radius: 8px;
+      border: 1px solid #aac4e0;
+    }
+
+    .figure p {
+      margin-top: 6px;
+      font-size: 14px;
+      color: #2a4d75;
     }
   </style>
 </head>
 <body>
-  <h1>Symposia</h1>
-  <p style="text-align:center;">Turn your clinical notes into publishable drafts</p>
+  <div class="container">
+    <h1>Symposia</h1>
+    <p class="subtitle">Turn your clinical notes into structured drafts</p>
 
-  <textarea id="notes" placeholder="Enter or dictate your notes..."></textarea>
-  <br><br>
+    <label for="notes">Enter or Dictate Your Notes</label>
+    <textarea id="notes" placeholder="Paste notes here or use voice input..."></textarea>
 
-  <label>Upload Files (Images, PDF, Word, PPT)</label><br>
-  <input type="file" id="files" multiple><br>
-  <div class="preview-images" id="preview"></div>
+    <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
+    <input type="file" id="files" multiple>
+    <div id="preview"></div>
 
-  <br>
-  <label>Choose Format</label><br>
-  <select id="format">
-    <option>Case Study</option>
-    <option>Abstract</option>
-    <option>Summary</option>
-  </select>
-  <br><br>
+    <label for="format">Choose Format</label>
+    <select id="format">
+      <option>Case Study</option>
+      <option>Abstract</option>
+      <option>Presentation</option>
+      <option>Summary</option>
+    </select>
 
-  <button id="generateBtn">Generate Draft</button>
-  <div class="spinner" id="spinner"></div>
+    <button class="btn" id="generateBtn">Generate Draft</button>
+    <div class="spinner" id="spinner">⏳ Generating draft, please wait...</div>
 
-  <div id="draft">No draft generated yet...</div>
-
-  <br>
-  <button id="downloadBtn">Download Word</button>
-
-<script>
-  document.getElementById('downloadBtn').addEventListener('click', async () => {
-    const notes = document.getElementById('notes').value;
-    const format = document.getElementById('format').value;
-
-    const resp = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes, format, images: uploadedImages }),
-    });
-
-    if (!resp.ok) {
-      alert("Error downloading document.");
-      return;
-    }
-
-    const blob = await resp.blob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "symposia_draft.docx";
-    a.click();
-  });
-</script>
-
+    <div id="draft">No draft generated yet...</div>
+  </div>
 
   <script>
     let uploadedImages = [];
 
-    // Preview images + text extraction for docs
-    document.getElementById('files').addEventListener('change', async (event) => {
+    // Handle file preview
+    document.getElementById('files').addEventListener('change', (event) => {
       const preview = document.getElementById('preview');
-      const notes = document.getElementById('notes');
       preview.innerHTML = '';
       uploadedImages = [];
 
@@ -140,55 +170,63 @@
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
           preview.appendChild(img);
-          uploadedImages.push(file.name);
+          uploadedImages.push(img.src); // store for preview
         } else {
-          // Append placeholder text for docs
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            notes.value += `\n\n--- Extracted from ${file.name} ---\n${e.target.result}\n`;
-          };
-          reader.readAsText(file);
+          const div = document.createElement('div');
+          div.textContent = `Uploaded file: ${file.name}`;
+          preview.appendChild(div);
         }
       }
     });
 
-    // Generate draft
+    // Handle draft generation
     document.getElementById('generateBtn').addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
       const format = document.getElementById('format').value;
       const draftDiv = document.getElementById('draft');
       const spinner = document.getElementById('spinner');
 
-      draftDiv.textContent = '';
+      draftDiv.innerHTML = '';
       spinner.style.display = 'block';
-      document.getElementById('generateBtn').disabled = true;
 
-      const resp = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes, format, images: uploadedImages }),
-      });
+      try {
+        const resp = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes, format, images: uploadedImages }),
+        });
 
-      const data = await resp.json();
-      spinner.style.display = 'none';
-      document.getElementById('generateBtn').disabled = false;
+        spinner.style.display = 'none';
 
-      if (data.error) {
-        draftDiv.textContent = "Error: " + JSON.stringify(data.error);
-      } else {
-        draftDiv.textContent = data.draft;
+        if (!resp.ok) {
+          draftDiv.innerHTML = "<span style='color:red'>❌ Error generating draft.</span>";
+          return;
+        }
+
+        const data = await resp.json();
+
+        let html = `<div><p>${data.draft.replace(/\n/g, "<br>")}</p></div>`;
+
+        if (data.images && data.images.length > 0) {
+          html += "<h3>Figures</h3>";
+          data.images.forEach((imgUrl, idx) => {
+            html += `
+              <div class="figure">
+                <img src="${imgUrl}">
+                <p><em>Figure ${idx + 1}.</em> Uploaded clinical image.</p>
+              </div>
+            `;
+          });
+        }
+
+        draftDiv.innerHTML = html;
+
+      } catch (err) {
+        spinner.style.display = 'none';
+        console.error(err);
+        draftDiv.innerHTML = "<span style='color:red'>⚠️ Server error.</span>";
       }
     });
-
-    // Download draft as text (placeholder for Word/PDF/PPT)
-    function downloadFile(type) {
-      const draft = document.getElementById('draft').textContent;
-      const blob = new Blob([draft], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `draft.${type === 'word' ? 'docx' : type}`;
-      a.click();
-    }
   </script>
 </body>
 </html>
