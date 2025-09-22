@@ -236,6 +236,18 @@ const statusInterval = setInterval(() => {
 }, 5000);
       
 try {
+    // Clear any previous status text
+  let statusText = document.getElementById('statusText');
+  if (statusText) statusText.remove();
+
+  // Create a fresh status element
+  statusText = document.createElement('p');
+  statusText.id = 'statusText';
+  statusText.style.color = '#2563eb';
+  statusText.style.fontWeight = '600';
+  statusText.style.marginTop = '10px';
+  statusText.textContent = "Generating draft…";
+  loading.appendChild(statusText);
   // Rotating status messages while generating
   const statusMessages = [
     "Organizing your notes…",
