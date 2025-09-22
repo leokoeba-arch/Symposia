@@ -181,6 +181,12 @@
     const output        = document.getElementById('output');
     const downloadBtn   = document.getElementById('downloadBtn');
     const formatButtons = document.querySelectorAll('.format-buttons button');
+    const statusMessages = [
+  "Organizing your notes…",
+  "Preparing data…",
+  "Structuring the document…",
+  "Just a few more seconds…"
+      ];
 
     let selectedFormat = 'Abstract'; // default
 
@@ -207,29 +213,88 @@
       loading.style.display = 'block';
       output.textContent = '';
       downloadBtn.style.display = 'none';
+// Add rotating status messages
+const statusMessages = [
+  "Organizing your notes…",
+  "Preparing data…",
+  "Structuring the document…",
+  "Just a few more seconds…"
+];
 
-      try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, format: selectedFormat })
-        });
+let i = 0;
+const statusText = document.createElement('p');
+statusText.id = 'statusText';
+statusText.style.color = '#2563eb';
+statusText.style.fontWeight = '600';
+statusText.style.marginTop = '10px';
+loading.appendChild(statusText);
 
-        const data = await response.json();
+statusText.textContent = statusMessages[i];
+const statusInterval = setInterval(() => {
+  i = (i + 1) % statusMessages.length;
+  statusText.textContent = statusMessages[i];
+}, 5000);
+      
+try {
+  // Rotating status messages while generating
+  const statusMessages = [
+    "Organizing your notes…",
+    "Preparing data…",
+    "Structuring the document…",
+    "Just a few more seconds…"
+  ];
 
-        if (!response.ok || data.error) {
-          output.textContent = 'Error: ' + (data?.error?.message || data?.error || JSON.stringify(data));
-        } else {
-          const draftText = data.draft || data.result || '';
-          output.textContent = draftText || 'No draft returned.';
-          if (draftText.trim()) downloadBtn.style.display = 'block';
-        }
-      } catch (err) {
-        output.textContent = 'Error generating draft: ' + err.message;
-      } finally {
-        loading.style.display = 'none';
-        generateBtn.disabled = false;
-      }
+  let i = 0;
+  const statusText = document.createElement('p');
+  statusText.id = 'statusText';
+  statusText.style.color = '#2563eb';
+  statusText.style.fontWeight = '600';
+  statusText.style.marginTop = '10px';
+  loading.appendChild(statusText);
+
+  statusText.textContent = statusMessages[i];
+  const statusInterval = setInterval(() => {
+    i = (i + 1) % statusMessages.length;
+    statusText.textContent = statusMessages[i];
+  }, 5000);
+
+  // Call API
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notes, format: selectedFormat })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    output.textContent = 'Error: ' + (data?.error?.message || data.error || JSON.stringify(data));
+  } else {
+    let draftText = data.draft || data.result || '';
+
+    // Remove dangling empty "Recommended Additions"
+    draftText = draftText.replace(/Recommended Additions\s*$/i, "");
+
+    // Bold the main "Recommended Additions"
+    draftText = draftText.replace(/(Recommended Additions)/gi, "📌 **$1**");
+
+    output.textContent = draftText.trim() || 'No draft returned.';
+    if (draftText.trim()) downloadBtn.style.display = 'block';
+  }
+
+  clearInterval(statusInterval);
+  statusText.remove();
+
+} catch (err) {
+  clearInterval(statusInterval);
+  const existing = document.getElementById('statusText');
+  if (existing) existing.remove();
+
+  output.textContent = 'Error generating draft: ' + err.message;
+} finally {
+  loading.style.display = 'none';
+  generateBtn.disabled = false;
+}
     });
 
     // Download Word (.doc)
