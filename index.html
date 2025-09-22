@@ -236,7 +236,7 @@ const statusInterval = setInterval(() => {
 }, 5000);
       
 try {
-    // Clear any previous status text
+  // Clear any previous status text
   let statusText = document.getElementById('statusText');
   if (statusText) statusText.remove();
 
@@ -248,32 +248,22 @@ try {
   statusText.style.marginTop = '10px';
   statusText.textContent = "Generating draft…";
   loading.appendChild(statusText);
-  // Rotating status messages while generating
+
+  // Rotating messages
   const statusMessages = [
+    "Generating draft…",
     "Organizing your notes…",
     "Preparing data…",
     "Structuring the document…",
     "Just a few more seconds…"
   ];
-
   let i = 0;
-  let statusText = document.getElementById('statusText');
-  if (!statusText) {
-    statusText = document.createElement('p');
-    statusText.id = 'statusText';
-    statusText.style.color = '#2563eb';
-    statusText.style.fontWeight = '600';
-    statusText.style.marginTop = '10px';
-    loading.appendChild(statusText);
-  }
-
-  statusText.textContent = statusMessages[i];
   const statusInterval = setInterval(() => {
     i = (i + 1) % statusMessages.length;
     statusText.textContent = statusMessages[i];
   }, 5000);
 
-  // Call API
+  // API call
   const response = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -298,7 +288,7 @@ try {
   }
 
   clearInterval(statusInterval);
-  statusText.remove();
+  if (statusText) statusText.remove();
 
 } catch (err) {
   const statusText = document.getElementById('statusText');
