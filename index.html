@@ -269,11 +269,19 @@ try {
   }, 5000);
 
   // API call
-  const response = await fetch('/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ notes, format: selectedFormat })
-  });
+ const imageCaptions = imageList
+  .filter(img => img && img.caption)
+  .map((img, i) => `Image ${i + 1} (${img.name}): ${img.caption}`);
+
+const response = await fetch('/api/generate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    notes,
+    format: selectedFormat,
+    image_captions: imageCaptions
+  })
+});
 
   const data = await response.json();
 
