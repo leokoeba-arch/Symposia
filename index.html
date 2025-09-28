@@ -148,15 +148,16 @@
 /* style images slot */ 
 .image-slots {
   display: flex;
-  gap: 10px;
   justify-content: space-between;
-  margin-top: 10px;
-  flex-wrap: wrap;
+  gap: 10px; /* space between slots */
+  flex-wrap: nowrap; /* prevent wrapping */
+  width: 100%;
+  margin-bottom: 1.5rem; /* spacing before "Choose Format" */
 }
 
 .image-slot {
-  width: calc(20% - 8px);
-  height: 80px;
+  flex: 1; /* make them share the row equally */
+  aspect-ratio: 1 / 1;
   border-radius: 8px;
   background: #e2e8f0;
   display: flex;
@@ -166,7 +167,8 @@
   position: relative;
   transition: all 0.2s ease;
   border: 1px dashed #94a3b8;
-  overflow: hidden; /* prevent image overflow */
+  overflow: hidden;
+  max-width: 120px; /* optional: limit max width so they're not too big */
 }
 
 .image-slot:hover {
