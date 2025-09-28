@@ -153,6 +153,9 @@
 
     <label for="notes">Enter Your Notes</label>
     <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
+    
+    <label style="margin-top: 20px; display: block;">Add Images</label>
+    <div id="imageSlots" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;"></div>
 
     <label>Choose Format</label>
     <div class="format-buttons">
@@ -320,6 +323,119 @@ try {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
+   // Image Slots 
+    const imageSlots = document.getElementById('imageSlots');
+    const imageList = [];
+
+    const MAX_IMAGES = 5;
+    const MAX_CAPTION_LENGTH = 500;
+
+for (let i = 0; i < MAX_IMAGES; i++) {
+  const slot = document.createElement('div');
+  slot.classList.add('image-slot');
+  slot.style.width = '80px';
+  slot.style.height = '80px';
+  slot.style.borderRadius = '8px';
+  slot.style.background = '#e2e8f0';
+  slot.style.display = 'flex';
+  slot.style.justifyContent = 'center';
+  slot.style.alignItems = 'center';
+  slot.style.cursor = 'pointer';
+  slot.style.position = 'relative';
+
+  const plus = document.createElement('span');
+  plus.textContent = '+';
+  plus.style.fontSize = '2rem';
+  plus.style.color = '#475569';
+  slot.appendChild(plus);
+
+  slot.addEventListener('click', () => openImageModal(i));
+  imageSlots.appendChild(slot);
+}
+
+// Modal logic
+const modal = document.createElement('div');
+modal.style.display = 'none';
+modal.style.position = 'fixed';
+modal.style.top = '0';
+modal.style.left = '0';
+modal.style.width = '100vw';
+modal.style.height = '100vh';
+modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+modal.style.justifyContent = 'center';
+modal.style.alignItems = 'center';
+modal.style.zIndex = '9999';
+
+modal.innerHTML = `
+  <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; max-width: 90%;">
+    <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
+    <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
+    <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
+    <div style="text-align: center; margin-top: 12px;">
+      <button id="modalConfirmBtn" disabled style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; opacity: 0.6;">Confirm</button>
+    </div>
+  </div>
+`;
+
+document.body.appendChild(modal);
+
+let activeSlotIndex = null;
+let activeImageFile = null;
+
+function openImageModal(index) {
+  activeSlotIndex = index;
+  activeImageFile = null;
+  document.getElementById('modalImageInput').value = '';
+  document.getElementById('modalCaption').value = '';
+  document.getElementById('modalConfirmBtn').disabled = true;
+  modal.style.display = 'flex';
+}
+
+// Enable confirm only when caption is filled
+document.getElementById('modalCaption').addEventListener('input', (e) => {
+  const val = e.target.value.trim();
+  const btn = document.getElementById('modalConfirmBtn');
+  btn.disabled = val.length === 0 || val.length > MAX_CAPTION_LENGTH;
+  btn.style.opacity = btn.disabled ? 0.6 : 1;
+});
+
+document.getElementById('modalImageInput').addEventListener('change', (e) => {
+  activeImageFile = e.target.files[0];
+});
+
+document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+  if (!activeImageFile) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = reader.result;
+    const caption = document.getElementById('modalCaption').value.trim();
+
+    // Store metadata only (no base64 used in request for now)
+    imageList[activeSlotIndex] = {
+      name: activeImageFile.name,
+      caption: caption
+    };
+
+    // Update slot UI
+    const slot = imageSlots.children[activeSlotIndex];
+    slot.innerHTML = '';
+    const icon = document.createElement('div');
+    icon.textContent = '🖼️';
+    icon.style.fontSize = '1.5rem';
+    const label = document.createElement('div');
+    label.textContent = activeImageFile.name.slice(0, 12) + '...';
+    label.style.fontSize = '0.7rem';
+    label.style.textAlign = 'center';
+    label.style.marginTop = '4px';
+    slot.appendChild(icon);
+    slot.appendChild(label);
+
+    modal.style.display = 'none';
+  };
+  reader.readAsDataURL(activeImageFile);
+});
+
   </script>
 </body>
 </html>
