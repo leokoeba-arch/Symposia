@@ -392,6 +392,9 @@ modal.innerHTML = `
     <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
     <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
     <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
+    <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">
+  0/500
+</div>
     <div style="text-align: center; margin-top: 12px;">
       <button id="modalConfirmBtn" disabled style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; opacity: 0.6;">Confirm</button>
     </div>
@@ -414,9 +417,19 @@ function openImageModal(index) {
 
 // Enable confirm only when caption is filled
 document.getElementById('modalCaption').addEventListener('input', (e) => {
-  const val = e.target.value.trim();
+  const val = e.target.value;
+  const trimmed = val.trim();
   const btn = document.getElementById('modalConfirmBtn');
-  btn.disabled = val.length === 0 || val.length > MAX_CAPTION_LENGTH;
+  const countDisplay = document.getElementById('charCount');
+
+  // Aggiorna contatore
+  countDisplay.textContent = `${val.length}/${MAX_CAPTION_LENGTH}`;
+
+  // Cambia colore in rosso se sopra limite
+  countDisplay.style.color = val.length > MAX_CAPTION_LENGTH ? 'red' : '#64748b';
+
+  // Disattiva Confirm se vuoto o sopra limite
+  btn.disabled = trimmed.length === 0 || val.length > MAX_CAPTION_LENGTH;
   btn.style.opacity = btn.disabled ? 0.6 : 1;
 });
 
