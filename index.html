@@ -465,8 +465,21 @@ modal.innerHTML = `
   </div>
 `;
 
-
 document.body.appendChild(modal);
+
+     if (existingImageData) {
+    // You're editing an existing image
+    document.getElementById('modalImagePreview').style.display = 'block';
+    document.getElementById('modalImageTag').src = existingImageData.url;
+    document.getElementById('modalImageInput').style.display = 'none';
+    document.getElementById('changeImageBtn').style.display = 'inline-block';
+  } else {
+    // You're adding a new image
+    document.getElementById('modalImagePreview').style.display = 'none';
+    document.getElementById('modalImageInput').style.display = 'block';
+    document.getElementById('changeImageBtn').style.display = 'none';
+  }
+}
 
     // Chiudi il modal cliccando fuori dal box interno
 modal.addEventListener('click', (e) => {
