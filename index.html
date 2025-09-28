@@ -442,15 +442,7 @@ modal.style.zIndex = '9999';
 modal.innerHTML = `
   <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; max-width: 90%;">
     <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
-    <!-- Button triggers file input -->
-    <div style="text-align: center; margin-bottom: 10px;">
-    <button id="changeImageBtn" style="background: #e0f2fe; color: #2563eb; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 8px;">Change Image</button>
-    <input type="file" accept="image/*" id="modalImageInput" style="display: none;" />
-    
-    <!-- This is the preview area -->
-  <div id="modalImagePreview" style="margin-top: 6px;"></div>
-</div>
-
+    <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
     <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
     <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">
   0/500
