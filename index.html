@@ -472,31 +472,30 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 
   const reader = new FileReader();
   reader.onload = () => {
-    const base64 = reader.result;
-    const caption = document.getElementById('modalCaption').value.trim();
+  const base64 = reader.result;
+  const caption = document.getElementById('modalCaption').value.trim();
 
-    // Store metadata only (no base64 used in request for now)
-    imageList[activeSlotIndex] = {
-      name: activeImageFile.name,
-      caption: caption
-    };
-
-    // Update slot UI
-    const slot = imageSlots.children[activeSlotIndex];
-    slot.innerHTML = '';
-    const icon = document.createElement('div');
-    icon.textContent = '🖼️';
-    icon.style.fontSize = '1.5rem';
-    const label = document.createElement('div');
-    label.textContent = activeImageFile.name.slice(0, 12) + '...';
-    label.style.fontSize = '0.7rem';
-    label.style.textAlign = 'center';
-    label.style.marginTop = '4px';
-    slot.appendChild(icon);
-    slot.appendChild(label);
-
-    modal.style.display = 'none';
+  // Store metadata only (still skipping base64 for now)
+  imageList[activeSlotIndex] = {
+    name: activeImageFile.name,
+    caption: caption
   };
+
+  // Update slot UI with preview
+  const slot = imageSlots.children[activeSlotIndex];
+  slot.innerHTML = '';
+
+  const img = document.createElement('img');
+  img.src = base64;
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.objectFit = 'cover';
+  img.style.borderRadius = '8px';
+
+  slot.appendChild(img);
+  modal.style.display = 'none';
+};
+
   reader.readAsDataURL(activeImageFile);
 });
 
