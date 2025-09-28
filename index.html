@@ -146,15 +146,8 @@
     #downloadBtn:hover { background: #047857; }
     
 /* style images slot */ 
-  .image-slots {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
 .image-slot {
-  width: calc(20% - 8px); /* 5 per riga con gap incluso */
+  width: calc(20% - 8px);
   height: 80px;
   border-radius: 8px;
   background: #e2e8f0;
@@ -163,7 +156,12 @@
   align-items: center;
   cursor: pointer;
   position: relative;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  border: 1px dashed #94a3b8;
+}
+
+.image-slot:hover {
+  background: #cbd5e1;
 }
 
   </style>
