@@ -144,6 +144,28 @@
       transition: background 0.2s ease;
     }
     #downloadBtn:hover { background: #047857; }
+    
+/* style images slot */ 
+  .image-slots {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.image-slot {
+  width: calc(20% - 8px); /* 5 per riga con gap incluso */
+  height: 80px;
+  border-radius: 8px;
+  background: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
   </style>
 </head>
 <body>
@@ -155,7 +177,8 @@
     <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
     
     <label style="margin-top: 20px; display: block;">Add Images</label>
-    <div id="imageSlots" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;"></div>
+    <div id="imageSlots" <div id="imageSlots" class="image-slots"></div>
+    
 
     <label>Choose Format</label>
     <div class="format-buttons">
@@ -340,16 +363,6 @@ const response = await fetch('/api/generate', {
 
 for (let i = 0; i < MAX_IMAGES; i++) {
   const slot = document.createElement('div');
-  slot.classList.add('image-slot');
-  slot.style.width = '80px';
-  slot.style.height = '80px';
-  slot.style.borderRadius = '8px';
-  slot.style.background = '#e2e8f0';
-  slot.style.display = 'flex';
-  slot.style.justifyContent = 'center';
-  slot.style.alignItems = 'center';
-  slot.style.cursor = 'pointer';
-  slot.style.position = 'relative';
 
   const plus = document.createElement('span');
   plus.textContent = '+';
