@@ -442,20 +442,29 @@ modal.style.zIndex = '9999';
 modal.innerHTML = `
   <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; max-width: 90%;">
     <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
-<div id="modalImagePreview" style="text-align: center; margin-bottom: 10px;"></div>
-<input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px; display: none;" />
-<button id="changeImageBtn" type="button" style="display: none; background-color: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 10px;">
-  Change Image
-</button>
+
+    <!-- Image preview (only shown in edit mode) -->
+    <div id="modalImagePreview" style="text-align: center; margin-bottom: 10px; display: none;">
+      <img id="modalImageTag" src="" style="max-width: 100%; max-height: 150px; border-radius: 6px;" />
+    </div>
+
+    <!-- File input (only shown when uploading new or changing) -->
+    <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
+
+    <!-- Change Image Button (only shown in edit mode) -->
+    <button id="changeImageBtn" type="button" style="display: none; background-color: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 10px;">
+      Change Image
+    </button>
+
     <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
-    <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">
-  0/500
-</div>
+    <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">0/500</div>
+
     <div style="text-align: center; margin-top: 12px;">
       <button id="modalConfirmBtn" disabled style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; opacity: 0.6;">Confirm</button>
     </div>
   </div>
 `;
+
 
 document.body.appendChild(modal);
 
