@@ -504,8 +504,8 @@ function openImageModal(index) {
   }
 
   modal.style.display = 'flex';
-}
-// Show preview image if already uploaded
+
+  // Show preview image if already uploaded
 const slotImg = imageSlots.children[index].querySelector('img');
 if (slotImg) {
   modalImagePreview.innerHTML = `<img src="${slotImg.src}" style="max-width: 100%; max-height: 150px; border-radius: 6px;" />`;
@@ -528,6 +528,7 @@ modalInput.onchange = (e) => {
   };
   if (activeImageFile) reader.readAsDataURL(activeImageFile);
 };
+}
 
 // Enable confirm only when caption is filled
 document.getElementById('modalCaption').addEventListener('input', (e) => {
