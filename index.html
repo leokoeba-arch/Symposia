@@ -467,24 +467,68 @@ modal.innerHTML = `
 
 document.body.appendChild(modal);
 
-    // Chiudi il modal cliccando fuori dal box interno
+    // ===== 2. Close modal if user clicks outside =====
 modal.addEventListener('click', (e) => {
-  // Se l'utente clicca sullo sfondo scuro (non sul contenuto interno)
-  if (e.target === modal) {
-    modal.style.display = 'none';
-  }
-  if (existingImageData) {
-    // You're editing an existing image
-    document.getElementById('modalImagePreview').style.display = 'block';
-    document.getElementById('modalImageTag').src = existingImageData.url;
-    document.getElementById('modalImageInput').style.display = 'none';
-    document.getElementById('changeImageBtn').style.display = 'inline-block';
-  } else {
-    // You're adding a new image
-    document.getElementById('modalImagePreview').style.display = 'none';
-    document.getElementById('modalImageInput').style.display = 'block';
-    document.getElementById('changeImageBtn').style.display = 'none';
-  }
+if (e.target === modal) {
+modal.style.display = 'none';
+}
+});
+
+
+// ===== 3. Function to open the modal for new or edit mode =====
+function openImageModal({ existingImageData = null, onConfirm }) {
+const modalImagePreview = document.getElementById('modalImagePreview');
+const modalImageTag = document.getElementById('modalImageTag');
+const modalImageInput = document.getElementById('modalImageInput');
+const changeImageBtn = document.getElementById('changeImageBtn');
+const modalCaption = document.getElementById('modalCaption');
+const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+
+// Reset file input
+modalImageInput.value = '';
+
+
+// Reset caption and char counter
+modalCaption.value = existingImageData?.caption || '';
+document.getElementById('charCount').textContent = `${modalCaption.value.length}/500`;
+modalConfirmBtn.disabled = modalCaption.value.trim().length === 0;
+
+
+if (existingImageData) {
+// Edit mode
+modalImagePreview.style.display = 'block';
+modalImageTag.src = existingImageData.url;
+modalImageInput.style.display = 'none';
+changeImageBtn.style.display = 'inline-block';
+} else {
+// New image mode
+modalImagePreview.style.display = 'none';
+modalImageTag.src = '';
+modalImageInput.style.display = 'block';
+changeImageBtn.style.display = 'none';
+}
+
+
+// Button to allow changing image in edit mode
+changeImageBtn.onclick = () => {
+modalImageInput.style.display = 'block';
+modalImagePreview.style.display = 'none';
+changeImageBtn.style.display = 'none';
+};
+
+
+// Confirm button logic (you can wire this to update your state)
+modalConfirmBtn.onclick = () => {
+onConfirm({
+imageFile: modalImageInput.files[0], // may be undefined if unchanged
+caption: modalCaption.value.trim()
+});
+modal.style.display = 'none';
+};
+
+modal.style.display = 'flex';
+}
 });
 
 let activeSlotIndex = null;
