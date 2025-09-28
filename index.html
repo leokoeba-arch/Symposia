@@ -442,7 +442,15 @@ modal.style.zIndex = '9999';
 modal.innerHTML = `
   <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; max-width: 90%;">
     <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
-    <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
+    <!-- Button triggers file input -->
+    <div style="text-align: center; margin-bottom: 10px;">
+    <button id="changeImageBtn" style="background: #e0f2fe; color: #2563eb; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 8px;">Change Image</button>
+    <input type="file" accept="image/*" id="modalImageInput" style="display: none;" />
+    
+    <!-- This is the preview area -->
+  <div id="modalImagePreview" style="margin-top: 6px;"></div>
+</div>
+
     <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
     <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">
   0/500
@@ -473,6 +481,9 @@ function openImageModal(index) {
   const modalInput = document.getElementById('modalImageInput');
   const modalCaption = document.getElementById('modalCaption');
   const confirmBtn = document.getElementById('modalConfirmBtn');
+  const modalImagePreview = document.getElementById('modalImagePreview');
+  const changeImageBtn = document.getElementById('changeImageBtn');
+  const modalInput = document.getElementById('modalImageInput');
   const charCount = document.getElementById('charCount');
 
   activeImageFile = null;
@@ -494,7 +505,29 @@ function openImageModal(index) {
 
   modal.style.display = 'flex';
 }
+// Show preview image if already uploaded
+const slotImg = imageSlots.children[index].querySelector('img');
+if (slotImg) {
+  modalImagePreview.innerHTML = `<img src="${slotImg.src}" style="max-width: 100%; max-height: 150px; border-radius: 6px;" />`;
+} else {
+  modalImagePreview.innerHTML = '';
+}
 
+// Clicking "Change Image" triggers file picker
+changeImageBtn.onclick = () => {
+  modalInput.click();
+};
+
+// If new image selected, update preview and set file
+modalInput.onchange = (e) => {
+  activeImageFile = e.target.files[0];
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    modalImagePreview.innerHTML = `<img src="${reader.result}" style="max-width: 100%; max-height: 150px; border-radius: 6px;" />`;
+  };
+  if (activeImageFile) reader.readAsDataURL(activeImageFile);
+};
 
 // Enable confirm only when caption is filled
 document.getElementById('modalCaption').addEventListener('input', (e) => {
