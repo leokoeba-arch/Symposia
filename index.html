@@ -511,19 +511,40 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     caption: caption
   };
 
-  // Update slot UI with preview
   const slot = imageSlots.children[activeSlotIndex];
+slot.innerHTML = '';
+slot.style.position = 'relative';
+
+// Create image preview
+const img = document.createElement('img');
+img.src = base64;
+img.style.width = '100%';
+img.style.height = '100%';
+img.style.objectFit = 'cover';
+img.style.borderRadius = '8px';
+slot.appendChild(img);
+
+// Create remove button
+const removeBtn = document.createElement('button');
+removeBtn.textContent = '×';
+removeBtn.className = 'remove-btn';
+
+// On remove: clear slot, reset imageList
+removeBtn.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent modal from opening
+  imageList[activeSlotIndex] = null; // Clear metadata
   slot.innerHTML = '';
 
-  const img = document.createElement('img');
-  img.src = base64;
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.objectFit = 'cover';
-  img.style.borderRadius = '8px';
+  const plus = document.createElement('span');
+  plus.textContent = '+';
+  plus.style.fontSize = '2rem';
+  plus.style.color = '#475569';
+  slot.appendChild(plus);
+});
 
-  slot.appendChild(img);
-  modal.style.display = 'none';
+slot.appendChild(removeBtn);
+modal.style.display = 'none';
+
 };
 
   reader.readAsDataURL(activeImageFile);
