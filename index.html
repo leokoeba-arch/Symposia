@@ -171,6 +171,21 @@
 .image-slot:hover {
   background: #cbd5e1;
 }
+    .image-slot .remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  line-height: 18px;
+  text-align: center;
+  cursor: pointer;
+}
 
   </style>
 </head>
@@ -183,7 +198,7 @@
     <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
     
     <label style="margin-top: 20px; display: block;">Add Images</label>
-    <div id="imageSlots" class="image-slots"></div>
+    <div id="imageSlots" class="image-slots" style="margin-bottom: 30px;"></div>
     
 
     <label>Choose Format</label>
