@@ -468,12 +468,33 @@ let activeImageFile = null;
 
 function openImageModal(index) {
   activeSlotIndex = index;
+  const existing = imageList[index];
+
+  const modalInput = document.getElementById('modalImageInput');
+  const modalCaption = document.getElementById('modalCaption');
+  const confirmBtn = document.getElementById('modalConfirmBtn');
+  const charCount = document.getElementById('charCount');
+
   activeImageFile = null;
-  document.getElementById('modalImageInput').value = '';
-  document.getElementById('modalCaption').value = '';
-  document.getElementById('modalConfirmBtn').disabled = true;
+  modalInput.value = '';
+
+  if (existing) {
+    modalCaption.value = existing.caption || '';
+    charCount.textContent = `${existing.caption.length}/500`;
+    charCount.style.color = existing.caption.length > MAX_CAPTION_LENGTH ? 'red' : '#64748b';
+    confirmBtn.disabled = false;
+    confirmBtn.style.opacity = 1;
+  } else {
+    modalCaption.value = '';
+    charCount.textContent = `0/500`;
+    charCount.style.color = '#64748b';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = 0.6;
+  }
+
   modal.style.display = 'flex';
 }
+
 
 // Enable confirm only when caption is filled
 document.getElementById('modalCaption').addEventListener('input', (e) => {
