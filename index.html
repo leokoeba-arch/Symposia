@@ -467,7 +467,13 @@ modal.innerHTML = `
 
 document.body.appendChild(modal);
 
-     if (existingImageData) {
+    // Chiudi il modal cliccando fuori dal box interno
+modal.addEventListener('click', (e) => {
+  // Se l'utente clicca sullo sfondo scuro (non sul contenuto interno)
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+  if (existingImageData) {
     // You're editing an existing image
     document.getElementById('modalImagePreview').style.display = 'block';
     document.getElementById('modalImageTag').src = existingImageData.url;
@@ -478,14 +484,6 @@ document.body.appendChild(modal);
     document.getElementById('modalImagePreview').style.display = 'none';
     document.getElementById('modalImageInput').style.display = 'block';
     document.getElementById('changeImageBtn').style.display = 'none';
-  }
-}
-
-    // Chiudi il modal cliccando fuori dal box interno
-modal.addEventListener('click', (e) => {
-  // Se l'utente clicca sullo sfondo scuro (non sul contenuto interno)
-  if (e.target === modal) {
-    modal.style.display = 'none';
   }
 });
 
