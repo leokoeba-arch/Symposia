@@ -467,6 +467,15 @@ modal.innerHTML = `
 
 document.body.appendChild(modal);
 
+    const changeImageBtn = document.getElementById('changeImageBtn');
+const modalImageInput = document.getElementById('modalImageInput');
+
+if (changeImageBtn && modalImageInput) {
+  changeImageBtn.addEventListener('click', () => {
+    modalImageInput.click(); // Simulates click on the hidden input
+  });
+}
+
     // Chiudi il modal cliccando fuori dal box interno
 modal.addEventListener('click', (e) => {
   // Se l'utente clicca sullo sfondo scuro (non sul contenuto interno)
@@ -498,6 +507,9 @@ function openImageModal(index) {
   const modalCaption = document.getElementById('modalCaption');
   const confirmBtn = document.getElementById('modalConfirmBtn');
   const charCount = document.getElementById('charCount');
+  const modalImagePreview = document.getElementById('modalImagePreview');
+  const modalImageTag = document.getElementById('modalImageTag');
+  const changeImageBtn = document.getElementById('changeImageBtn');
 
   activeImageFile = null;
   modalInput.value = '';
@@ -508,12 +520,22 @@ function openImageModal(index) {
     charCount.style.color = existing.caption.length > MAX_CAPTION_LENGTH ? 'red' : '#64748b';
     confirmBtn.disabled = false;
     confirmBtn.style.opacity = 1;
+
+    // Show preview
+    modalImagePreview.style.display = 'block';
+    modalImageTag.src = imageSlots.children[index].querySelector('img')?.src || '';
+    modalInput.style.display = 'none';
+    changeImageBtn.style.display = 'inline-block';
   } else {
     modalCaption.value = '';
     charCount.textContent = `0/500`;
     charCount.style.color = '#64748b';
     confirmBtn.disabled = true;
     confirmBtn.style.opacity = 0.6;
+
+    modalImagePreview.style.display = 'none';
+    modalInput.style.display = 'block';
+    changeImageBtn.style.display = 'none';
   }
 
   modal.style.display = 'flex';
