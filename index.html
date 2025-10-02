@@ -377,7 +377,7 @@ const response = await fetch('/api/generate', {
    // Bold the main "Recommended Additions"
     draftText = draftText.replace(
     /(Recommended Additions)/gi,
-    ' 🟦 <strong style="font-family:\'Times New Roman\', Times, serif; font-weight:bold;">$1</strong>'
+    '🔷 <strong>$1</strong>'
     );
 
     output.innerHTML = `<div style="font-family:'Times New Roman', Times, serif;">${draftText.trim()}</div>` || 'No draft returned.';
