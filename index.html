@@ -224,6 +224,21 @@
   color: #3a73c2;
 }
 
+   #overlayBlockCopy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: transparent;
+  cursor: not-allowed;
+  display: none; /* ← initially hidden */
+}
+.output-wrapper {
+  position: relative;
+}
+
   </style>
 </head>
 <body>
@@ -256,7 +271,11 @@
   <!-- Removed the hardcoded <p> here -->
 </div>
 
-    <div id="output"></div>
+<div class="output-wrapper">
+  <div id="output"></div>
+  <div id="overlayBlockCopy"></div>
+</div>
+
     <!-- Single download button -->
     <button id="downloadBtn">Download Draft</button>
   </div>
@@ -384,7 +403,8 @@ const response = await fetch('/api/generate', {
 
     output.innerHTML = draftText.trim() || 'No draft returned.';
 if (draftText.trim()) downloadBtn.style.display = 'block';
-
+ // Prevent text selection (disables copying)
+  document.getElementById('output').style.userSelect = 'none';
   }
 
   clearInterval(statusInterval);
