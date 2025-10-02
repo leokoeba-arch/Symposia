@@ -374,8 +374,13 @@ const response = await fetch('/api/generate', {
     // Remove dangling empty "Recommended Additions"
     draftText = draftText.replace(/Recommended Additions\s*$/i, "");
 
-    // Bold the main "Recommended Additions"
-   draftText = draftText.replace(/(Recommended Additions)/gi, '🟦 <strong class="recommended-section">$1</strong>');
+   // Bold the main "Recommended Additions"
+    draftText = draftText.replace(
+    /(Recommended Additions)/gi,
+    ' 🟦 <strong style="font-family:\'Times New Roman\', Times, serif; font-weight:bold;">$1</strong>'
+    );
+
+    output.innerHTML = `<div style="font-family:'Times New Roman', Times, serif;">${draftText.trim()}</div>` || 'No draft returned.';
 
     output.innerHTML = draftText.trim() || 'No draft returned.';
 if (draftText.trim()) downloadBtn.style.display = 'block';
