@@ -216,6 +216,13 @@
 .remove-btn:hover {
   background: white;
 }
+    #outputText {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+    .recommended-section {
+  color: #3a73c2;
+}
 
   </style>
 </head>
@@ -368,10 +375,11 @@ const response = await fetch('/api/generate', {
     draftText = draftText.replace(/Recommended Additions\s*$/i, "");
 
     // Bold the main "Recommended Additions"
-    draftText = draftText.replace(/(Recommended Additions)/gi, "📌 **$1**");
+   draftText = draftText.replace(/(Recommended Additions)/gi, '🟦 <strong class="recommended-section">$1</strong>');
 
-    output.textContent = draftText.trim() || 'No draft returned.';
-    if (draftText.trim()) downloadBtn.style.display = 'block';
+    output.innerHTML = draftText.trim() || 'No draft returned.';
+if (draftText.trim()) downloadBtn.style.display = 'block';
+
   }
 
   clearInterval(statusInterval);
