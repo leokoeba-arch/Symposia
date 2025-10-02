@@ -561,6 +561,16 @@ document.getElementById('modalCaption').addEventListener('input', (e) => {
 
 document.getElementById('modalImageInput').addEventListener('change', (e) => {
   activeImageFile = e.target.files[0];
+
+   // Update preview image in modal
+  const preview = document.querySelector('#modalPreview img');
+  if (preview && activeImageFile) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.src = reader.result;
+    };
+    reader.readAsDataURL(activeImageFile);
+  }
 });
 
 document.getElementById('modalConfirmBtn').addEventListener('click', () => {
