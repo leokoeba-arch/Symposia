@@ -592,6 +592,13 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   reader.onload = () => {
     const base64 = reader.result;
 
+    // Also update preview in modal immediately when selecting new image
+const preview = document.querySelector('#modalPreview img');
+if (preview) {
+  preview.src = base64;
+  document.getElementById('modalImagePreview').style.display = 'block';
+}
+
     // Store metadata only (still skipping base64 for now)
     imageList[activeSlotIndex] = {
       name: activeImageFile.name,
