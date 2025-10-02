@@ -564,7 +564,10 @@ document.getElementById('modalImageInput').addEventListener('change', (e) => {
 });
 
 document.getElementById('modalConfirmBtn').addEventListener('click', () => {
-  if (!activeImageFile) return;
+const caption = document.getElementById('modalCaption').value.trim();
+
+// Allow confirm if you're editing existing image OR if a new image was added
+if (!activeImageFile && !imageList[activeSlotIndex]) return;
 
   const reader = new FileReader();
   reader.onload = () => {
