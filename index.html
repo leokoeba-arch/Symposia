@@ -564,57 +564,64 @@ document.getElementById('modalImageInput').addEventListener('change', (e) => {
 });
 
 document.getElementById('modalConfirmBtn').addEventListener('click', () => {
-const caption = document.getElementById('modalCaption').value.trim();
-
-// Allow confirm if you're editing existing image OR if a new image was added
-if (!activeImageFile && !imageList[activeSlotIndex]) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-  const base64 = reader.result;
   const caption = document.getElementById('modalCaption').value.trim();
 
-  // Store metadata only (still skipping base64 for now)
-  imageList[activeSlotIndex] = {
-    name: activeImageFile.name,
-    caption: caption
+  // ✅ CASE 1: Editing an existing image (no new image selected)
+  if (!activeImageFile && imageList[activeSlotIndex]) {
+    // Just update caption and close modal
+    imageList[activeSlotIndex].caption = caption;
+    modal.style.display = 'none';
+    return;
+  }
+
+  // ❌ CASE 2: Trying to confirm without any image at all
+  if (!activeImageFile) return;
+
+  // ✅ CASE 3: New image selected (your current logic)
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = reader.result;
+
+    // Store metadata only (still skipping base64 for now)
+    imageList[activeSlotIndex] = {
+      name: activeImageFile.name,
+      caption: caption
+    };
+
+    const slot = imageSlots.children[activeSlotIndex];
+    slot.innerHTML = '';
+    slot.style.position = 'relative';
+
+    // Create image preview
+    const img = document.createElement('img');
+    img.src = base64;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '8px';
+    slot.appendChild(img);
+
+    // Create remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.className = 'remove-btn';
+
+    // On remove: clear slot, reset imageList
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent modal from opening
+      imageList[activeSlotIndex] = null; // Clear metadata
+      slot.innerHTML = '';
+
+      const plus = document.createElement('span');
+      plus.textContent = '+';
+      plus.style.fontSize = '2rem';
+      plus.style.color = '#475569';
+      slot.appendChild(plus);
+    });
+
+    slot.appendChild(removeBtn);
+    modal.style.display = 'none';
   };
-
-  const slot = imageSlots.children[activeSlotIndex];
-slot.innerHTML = '';
-slot.style.position = 'relative';
-
-// Create image preview
-const img = document.createElement('img');
-img.src = base64;
-img.style.width = '100%';
-img.style.height = '100%';
-img.style.objectFit = 'cover';
-img.style.borderRadius = '8px';
-slot.appendChild(img);
-
-// Create remove button
-const removeBtn = document.createElement('button');
-removeBtn.textContent = '×';
-removeBtn.className = 'remove-btn';
-
-// On remove: clear slot, reset imageList
-removeBtn.addEventListener('click', (e) => {
-  e.stopPropagation(); // Prevent modal from opening
-  imageList[activeSlotIndex] = null; // Clear metadata
-  slot.innerHTML = '';
-
-  const plus = document.createElement('span');
-  plus.textContent = '+';
-  plus.style.fontSize = '2rem';
-  plus.style.color = '#475569';
-  slot.appendChild(plus);
-});
-
-slot.appendChild(removeBtn);
-modal.style.display = 'none';
-
-};
 
   reader.readAsDataURL(activeImageFile);
 });
