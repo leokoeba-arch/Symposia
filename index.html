@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Symposia</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
+      background: #f1f6fb;
       margin: 0;
       padding: 0;
       display: flex;
@@ -22,77 +23,228 @@
       margin: 40px auto;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
       max-width: 700px;
       width: 100%;
     }
     h1 {
       text-align: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       margin-bottom: 0.5rem;
-      color: #4f46e5;
+      color: #2563eb;
+      font-weight: 700;
     }
     p.subtitle {
       text-align: center;
       margin-bottom: 2rem;
-      color: #64748b;
+      color: #475569;
     }
-    textarea, select, input[type="file"] {
+    textarea {
       width: 100%;
+      max-width: 100%;
+      min-height: 150px;
+      resize: vertical;
       padding: 12px;
       margin-top: 10px;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
     }
-    button {
+    .format-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    .format-buttons button {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .format-buttons button.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+    #generateBtn {
       margin-top: 20px;
       width: 100%;
       padding: 14px;
       font-size: 1rem;
       font-weight: 600;
       color: white;
-      background: #4f46e5;
+      background: #2563eb;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    button:disabled {
+    #generateBtn:disabled {
       background: #94a3b8;
       cursor: not-allowed;
     }
-    button:hover:not(:disabled) {
-      background: #4338ca;
+    #generateBtn:hover:not(:disabled) {
+      background: #1d4ed8;
     }
     #loading {
       display: none;
-      margin-top: 15px;
+      margin-top: 20px;
       text-align: center;
-      color: #4f46e5;
-      font-weight: 600;
     }
+    .spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+    .spinner .dot {
+      width: 10px;
+      height: 10px;
+      background: #2563eb;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+    .spinner .dot:nth-child(2) { animation-delay: 0.2s; }
+    .spinner .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
     #output {
       margin-top: 25px;
       padding: 20px;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       background: #f9fafb;
+      font-family: 'Merriweather', serif;
+      font-size: 1rem;
+      line-height: 1.6;
       white-space: pre-wrap;
     }
-    #imagePreview {
+
+    /* Single download button (hidden until draft is ready) */
+    #downloadBtn {
+      display: none;
       margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    #imagePreview img {
-      max-width: 150px;
-      max-height: 150px;
+      padding: 12px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: #2563eb; /* fixed: valid color */
+      border: none;
       border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      object-fit: cover;
+      cursor: pointer;
+      transition: background 0.2s ease;
     }
+    #downloadBtn:hover { background: #047857; }
+    
+    /* style images slot */ 
+      .image-slots {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px; /* space between slots */
+        flex-wrap: nowrap; /* prevent wrapping */
+        width: 100%;
+        margin-bottom: 1.5rem; /* spacing before "Choose Format" */
+        overflow-x: auto;
+}
+
+      .image-slot {
+        flex: 1; /* make them share the row equally */
+        aspect-ratio: 1 / 1;
+        border-radius: 8px;
+        background: #e2e8f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        border: 1px dashed #94a3b8;
+        overflow: hidden;
+        max-width: 120px; /* optional: limit max width so they're not too big */
+        }
+
+        .image-slot:hover {
+          background: #cbd5e1;
+        }
+            .image-slot .remove-btn {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          background: #a61226;
+          color: #000000;
+          border: none;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          font-size: 0.7rem;
+          line-height: 18px;
+          text-align: center;
+          cursor: pointer;
+        }
+            .image-slot img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          border-radius: 6px;
+          }
+          .remove-btn { /* Remove image button*/
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #a61226;
+            color: #000000;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .remove-btn:hover {
+            background: white;
+          }
+              #outputText {
+            font-family: 'Times New Roman', Times, serif;
+          }
+
+    .recommended-section {
+  color: #3a73c2;
+}
+
+   #overlayBlockCopy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: transparent;
+  cursor: not-allowed;
+  display: none; /* ← initially hidden */
+}
+.output-wrapper {
+  position: relative;
+}
+
+    @media print {
+  #output {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -100,82 +252,431 @@
     <h1>Symposia</h1>
     <p class="subtitle">Turn your clinical notes into publishable drafts</p>
 
-    <label for="notes">Enter or Dictate Your Notes</label>
-    <textarea id="notes" rows="6" placeholder="Paste notes here or dictate..."></textarea>
+    <label for="notes">Enter Your Notes</label>
+    <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
+    
+    <label style="margin-top: 20px; margin-bottom: 10px; display: block;">Add Images</label>
+    <div id="imageSlots" class="image-slots" style="margin-bottom: 30px;"></div>
+    
 
-    <label for="files">Upload Files (Images, PDF, Word, PPT)</label>
-    <input type="file" id="files" multiple accept=".png,.jpg,.jpeg,.pdf,.docx,.pptx">
-    <div id="imagePreview"></div>
-
-    <label for="format">Choose Format</label>
-    <select id="format">
-      <option value="Case Study">Case Study</option>
-      <option value="Abstract">Abstract</option>
-      <option value="Presentation">Presentation</option>
-    </select>
+    <label>Choose Format</label>
+    <div class="format-buttons">
+      <button data-format="Abstract" class="active">Abstract</button>
+      <button data-format="Case Report">Case Report</button>
+      <button data-format="Presentation">Presentation</button>
+      <button data-format="Research">Research</button>
+    </div>
 
     <button id="generateBtn">Generate Draft</button>
-    <div id="loading">⏳ Generating draft… please wait</div>
+    <div id="loading">
+  <div class="spinner">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <!-- Removed the hardcoded <p> here -->
+</div>
 
-    <div id="output"></div>
+<div class="output-wrapper">
+  <div id="output"></div>
+  <div id="overlayBlockCopy"></div>
+</div>
+
+    <!-- Single download button -->
+    <button id="downloadBtn">Download Draft</button>
   </div>
 
   <script>
-    const generateBtn = document.getElementById('generateBtn');
-    const loading = document.getElementById('loading');
-    const output = document.getElementById('output');
-    const fileInput = document.getElementById('files');
-    const imagePreview = document.getElementById('imagePreview');
+    const generateBtn   = document.getElementById('generateBtn');
+    const loading       = document.getElementById('loading');
+    const output        = document.getElementById('output');
+    const downloadBtn   = document.getElementById('downloadBtn');
+    const formatButtons = document.querySelectorAll('.format-buttons button');
+    const statusMessages = [
+  "Organizing your notes…",
+  "Preparing data…",
+  "Structuring the document…",
+  "Just a few more seconds…"
+      ];
 
-    // Show previews of uploaded images
-    fileInput.addEventListener('change', () => {
-      imagePreview.innerHTML = '';
-      Array.from(fileInput.files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            imagePreview.appendChild(img);
-          };
-          reader.readAsDataURL(file);
-        }
+    let selectedFormat = 'Abstract'; // default
+
+    // Format selection
+    formatButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format || 'Abstract';
       });
     });
 
+    // Generate draft
     generateBtn.addEventListener('click', async () => {
       const notes = document.getElementById('notes').value;
-      const format = document.getElementById('format').value;
 
       if (!notes.trim()) {
-        alert("Please enter some notes.");
+        alert('Please enter some notes.');
         return;
       }
 
+      // reset UI
       generateBtn.disabled = true;
       loading.style.display = 'block';
       output.textContent = '';
+      downloadBtn.style.display = 'none';
+// Add rotating status messages
+const statusMessages = [
+  "Organizing your notes…",
+  "Preparing data…",
+  "Structuring the document…",
+  "Just a few more seconds…"
+];
 
-      try {
-        const response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes, format })
-        });
+let i = 0;
+const statusText = document.createElement('p');
+statusText.id = 'statusText';
+statusText.style.color = '#2563eb';
+statusText.style.fontWeight = '600';
+statusText.style.marginTop = '10px';
+loading.appendChild(statusText);
 
-        const data = await response.json();
-        if (data.error) {
-          output.textContent = "Error: " + data.error;
-        } else {
-          output.textContent = data.draft;
-        }
-      } catch (err) {
-        output.textContent = "Error generating draft.";
-      }
+statusText.textContent = statusMessages[i];
+const statusInterval = setInterval(() => {
+  i = (i + 1) % statusMessages.length;
+  statusText.textContent = statusMessages[i];
+}, 5000);
+      
+try {
+  // Clear any previous status text
+  let statusText = document.getElementById('statusText');
+  if (statusText) statusText.remove();
 
-      loading.style.display = 'none';
-      generateBtn.disabled = false;
+  // Create a fresh status element
+  statusText = document.createElement('p');
+  statusText.id = 'statusText';
+  statusText.style.color = '#2563eb';
+  statusText.style.fontWeight = '600';
+  statusText.style.marginTop = '10px';
+  statusText.textContent = "Generating draft…";
+  loading.appendChild(statusText);
+
+  // Rotating messages
+  const statusMessages = [
+    "Generating draft…",
+    "Organizing your notes…",
+    "Preparing data…",
+    "Structuring the document…",
+    "Just a few more seconds…"
+  ];
+  let i = 0;
+  const statusInterval = setInterval(() => {
+    i = (i + 1) % statusMessages.length;
+    statusText.textContent = statusMessages[i];
+  }, 5000);
+
+  // API call
+ const imageCaptions = imageList
+  .filter(img => img && img.caption)
+  .map((img, i) => `Image ${i + 1} (${img.name}): ${img.caption}`);
+
+const response = await fetch('/api/generate', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    notes,
+    format: selectedFormat,
+    image_captions: imageCaptions
+  })
+});
+
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    output.textContent = 'Error: ' + (data?.error?.message || data.error || JSON.stringify(data));
+  } else {
+    let draftText = data.draft || data.result || '';
+
+    // Remove dangling empty "Recommended Additions"
+    draftText = draftText.replace(/Recommended Additions\s*$/i, "");
+
+   // Bold the main "Recommended Additions"
+    draftText = draftText.replace(
+    /(Recommended Additions)/gi,
+    '🔷 <strong>$1</strong>'
+    );
+
+    output.innerHTML = `<div style="font-family:'Times New Roman', Times, serif;">${draftText.trim()}</div>` || 'No draft returned.';
+
+    output.innerHTML = draftText.trim() || 'No draft returned.';
+if (draftText.trim()) downloadBtn.style.display = 'block';
+ // Prevent text selection (disables copying)
+  document.getElementById('output').style.userSelect = 'none';
+  }
+
+  clearInterval(statusInterval);
+  if (statusText) statusText.remove();
+
+} catch (err) {
+  const statusText = document.getElementById('statusText');
+  if (statusText) statusText.remove();
+
+  output.textContent = 'Error generating draft: ' + err.message;
+} finally {
+  loading.style.display = 'none';
+  generateBtn.disabled = false;
+}
     });
+
+    // Download Word (.doc)
+    downloadBtn.addEventListener('click', () => {
+      const content = output.textContent || '';
+      if (!content.trim()) {
+        alert('No draft available to download.');
+        return;
+      }
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'symposia_draft.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+   // Image Slots 
+    const imageSlots = document.getElementById('imageSlots');
+    const imageList = [];
+
+    const MAX_IMAGES = 5;
+    const MAX_CAPTION_LENGTH = 500;
+
+for (let i = 0; i < MAX_IMAGES; i++) {
+  const slot = document.createElement('div');
+  slot.classList.add('image-slot');
+
+  const plus = document.createElement('span');
+  plus.textContent = '+';
+  plus.style.fontSize = '2rem';
+  plus.style.color = '#475569';
+  slot.appendChild(plus);
+
+  slot.addEventListener('click', () => openImageModal(i));
+  imageSlots.appendChild(slot);
+}
+
+// Modal logic
+const modal = document.createElement('div');
+modal.style.display = 'none';
+modal.style.position = 'fixed';
+modal.style.top = '0';
+modal.style.left = '0';
+modal.style.width = '100vw';
+modal.style.height = '100vh';
+modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+modal.style.justifyContent = 'center';
+modal.style.alignItems = 'center';
+modal.style.zIndex = '9999';
+
+modal.innerHTML = `
+  <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; max-width: 90%;">
+    <h3 style="margin-top: 0; text-align: center; color: #2563eb;">Upload Image</h3>
+
+    <!-- Image preview (only shown in edit mode) -->
+    <div id="modalImagePreview" style="text-align: center; margin-bottom: 10px; display: none;">
+      <img id="modalImageTag" src="" style="max-width: 100%; max-height: 150px; border-radius: 6px;" />
+    </div>
+
+    <!-- File input (only shown when uploading new or changing) -->
+    <input type="file" accept="image/*" id="modalImageInput" style="margin-bottom: 10px;" />
+
+    <!-- Change Image Button (only shown in edit mode) -->
+    <button id="changeImageBtn" type="button" style="display: none; background-color: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 10px;">
+      Change Image
+    </button>
+
+    <textarea id="modalCaption" rows="3" placeholder="Describe the image..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none;"></textarea>
+    <div id="charCount" style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">0/500</div>
+
+    <div style="text-align: center; margin-top: 12px;">
+      <button id="modalConfirmBtn" disabled style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; opacity: 0.6;">Confirm</button>
+    </div>
+  </div>
+`;
+
+document.body.appendChild(modal);
+
+    const changeImageBtn = document.getElementById('changeImageBtn');
+const modalImageInput = document.getElementById('modalImageInput');
+
+if (changeImageBtn && modalImageInput) {
+  changeImageBtn.addEventListener('click', () => {
+    modalImageInput.click(); // Simulates click on the hidden input
+  });
+}
+
+    // Chiudi il modal cliccando fuori dal box interno
+modal.addEventListener('click', (e) => {
+  // Se l'utente clicca sullo sfondo scuro (non sul contenuto interno)
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+  if (existingImageData) {
+    // You're editing an existing image
+    document.getElementById('modalImagePreview').style.display = 'block';
+    document.getElementById('modalImageTag').src = existingImageData.url;
+    document.getElementById('modalImageInput').style.display = 'none';
+    document.getElementById('changeImageBtn').style.display = 'inline-block';
+  } else {
+    // You're adding a new image
+    document.getElementById('modalImagePreview').style.display = 'none';
+    document.getElementById('modalImageInput').style.display = 'block';
+    document.getElementById('changeImageBtn').style.display = 'none';
+  }
+});
+
+let activeSlotIndex = null;
+let activeImageFile = null;
+
+function openImageModal(index) {
+  activeSlotIndex = index;
+  const existing = imageList[index];
+
+  const modalInput = document.getElementById('modalImageInput');
+  const modalCaption = document.getElementById('modalCaption');
+  const confirmBtn = document.getElementById('modalConfirmBtn');
+  const charCount = document.getElementById('charCount');
+  const modalImagePreview = document.getElementById('modalImagePreview');
+  const modalImageTag = document.getElementById('modalImageTag');
+  const changeImageBtn = document.getElementById('changeImageBtn');
+
+  activeImageFile = null;
+  modalInput.value = '';
+
+  if (existing) {
+    modalCaption.value = existing.caption || '';
+    charCount.textContent = `${existing.caption.length}/500`;
+    charCount.style.color = existing.caption.length > MAX_CAPTION_LENGTH ? 'red' : '#64748b';
+    confirmBtn.disabled = false;
+    confirmBtn.style.opacity = 1;
+
+    // Show preview
+    modalImagePreview.style.display = 'block';
+    modalImageTag.src = imageSlots.children[index].querySelector('img')?.src || '';
+    modalInput.style.display = 'none';
+    changeImageBtn.style.display = 'inline-block';
+  } else {
+    modalCaption.value = '';
+    charCount.textContent = `0/500`;
+    charCount.style.color = '#64748b';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = 0.6;
+
+    modalImagePreview.style.display = 'none';
+    modalInput.style.display = 'block';
+    changeImageBtn.style.display = 'none';
+  }
+
+  modal.style.display = 'flex';
+}
+
+// Enable confirm only when caption is filled
+document.getElementById('modalCaption').addEventListener('input', (e) => {
+  const val = e.target.value;
+  const trimmed = val.trim();
+  const btn = document.getElementById('modalConfirmBtn');
+  const countDisplay = document.getElementById('charCount');
+
+  // Aggiorna contatore
+  countDisplay.textContent = `${val.length}/${MAX_CAPTION_LENGTH}`;
+
+  // Cambia colore in rosso se sopra limite
+  countDisplay.style.color = val.length > MAX_CAPTION_LENGTH ? 'red' : '#64748b';
+
+  // Disattiva Confirm se vuoto o sopra limite
+  btn.disabled = trimmed.length === 0 || val.length > MAX_CAPTION_LENGTH;
+  btn.style.opacity = btn.disabled ? 0.6 : 1;
+});
+
+document.getElementById('modalImageInput').addEventListener('change', (e) => {
+  activeImageFile = e.target.files[0];
+
+   // Update preview image in modal
+  const preview = document.getElementById('modalImageTag');
+if (preview && activeImageFile) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    preview.src = reader.result;
+    document.getElementById('modalImagePreview').style.display = 'block';
+  };
+  reader.readAsDataURL(activeImageFile);
+}
+
+});
+
+document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+  const caption = document.getElementById('modalCaption').value.trim();
+
+  // ✅ CASE 1: Editing an existing image (no new image selected)
+  if (!activeImageFile && imageList[activeSlotIndex]) {
+    // Just update caption and close modal
+    imageList[activeSlotIndex].caption = caption;
+    modal.style.display = 'none';
+    return;
+  }
+
+  // ❌ CASE 2: Trying to confirm without any image at all
+  if (!activeImageFile) return;
+
+  // ✅ CASE 3: New image selected (your current logic)
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = reader.result;
+
+    // Store metadata only (still skipping base64 for now)
+    imageList[activeSlotIndex] = {
+      name: activeImageFile.name,
+      caption: caption
+    };
+
+    const slot = imageSlots.children[activeSlotIndex];
+    slot.innerHTML = '';
+    slot.style.position = 'relative';
+
+    // Create image preview
+    const img = document.createElement('img');
+    img.src = base64;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '8px';
+    slot.appendChild(img);
+
+    // Create remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.className = 'remove-btn';
+
+    // On remove: clear slot, reset imageList
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent modal from opening
+      imageList[activeSlotIndex] = null; // Clear metadata
+      slot.innerHTML = '';
+
+      const plus = document.createElement('span');
+      plus.textContent = '+';
+      plus.style.fontSize = '2rem';
+      plus.style.color = '#475569';
+      slot.appendChild(plus);
+    });
+
+    slot.appendChild(removeBtn);
+    modal.style.display = 'none';
+  };
+
+  reader.readAsDataURL(activeImageFile);
+});
+
   </script>
 </body>
 </html>
