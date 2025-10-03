@@ -743,74 +743,50 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   reader.readAsDataURL(activeImageFile);
 });
 
-    // Firebase login buttons
-document.getElementById('googleLoginBtn').addEventListener('click', async () => {
-  const { firebaseAuth, googleProvider } = window;
-  try {
-    const result = await signInWithPopup(firebaseAuth, googleProvider);
-    const user = result.user;
-    alert(`Signed in as ${user.displayName || user.email}`);
-  } catch (error) {
-    alert('Google sign-in error: ' + error.message);
-  }
-});
-
-document.getElementById('guestLoginBtn').addEventListener('click', async () => {
-  const { firebaseAuth } = window;
-  try {
-    const result = await signInAnonymously(firebaseAuth);
-    alert('Signed in as Guest');
-  } catch (error) {
-    alert('Guest sign-in error: ' + error.message);
-  }
-});
-
-document.getElementById('emailLoginBtn').addEventListener('click', async () => {
-  const { firebaseAuth } = window;
-  const email = prompt('Enter your email');
-  const password = prompt('Enter your password');
-  if (!email || !password) return;
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    alert(`Signed in as ${userCredential.user.email}`);
-  } catch (error) {
-    alert('Email sign-in error: ' + error.message);
-  }
-});
-
-    // 🔄 Monitor auth state
-onAuthStateChanged(firebaseAuth, user => {
-  if (user) {
-    console.log("✅ Logged in as:", user.email || "Guest");
-    // Example: update UI
-    document.querySelector(".subtitle").textContent = `Welcome, ${user.email || "Guest user"}!`;
-    // Optionally hide login buttons
-    document.getElementById("googleLoginBtn").style.display = "none";
-    document.getElementById("emailLoginBtn").style.display = "none";
-    document.getElementById("guestLoginBtn").style.display = "none";
-  } else {
-    console.log("🚪 Logged out");
-  }
-});
-
-  document.getElementById("googleLoginBtn").addEventListener("click", function () {
-  window.signInWithGoogle();
-});
-
-document.getElementById("emailLoginBtn").addEventListener("click", function () {
-  const email = prompt("Enter your email:");
-  const password = prompt("Enter your password:");
-  if (email && password) {
-    window.signInWithEmail(email, password);
-  }
-});
-
-document.getElementById("guestLoginBtn").addEventListener("click", function () {
-  window.signInAsGuest();
-});
-
   </script>
+
+  <script type="module">
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+  const auth = getAuth();
+
+  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      alert("Signed in as " + user.displayName);
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert("Login failed");
+    }
+  });
+
+  document.getElementById("emailLoginBtn").addEventListener("click", async () => {
+    const email = prompt("Enter your email:");
+    const password = prompt("Enter your password:");
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      alert("Signed in as " + user.email);
+    } catch (error) {
+      console.error("Email login error:", error);
+      alert("Login failed");
+    }
+  });
+
+  document.getElementById("guestLoginBtn").addEventListener("click", async () => {
+    try {
+      const userCredential = await signInAnonymously(auth);
+      const user = userCredential.user;
+      alert("Signed in as guest (UID: " + user.uid + ")");
+    } catch (error) {
+      console.error("Guest login error:", error);
+      alert("Login failed");
+    }
+  });
+</script>
+
 
 </body>
 </html>
