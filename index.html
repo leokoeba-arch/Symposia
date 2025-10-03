@@ -309,7 +309,8 @@ window.signInWithEmail = async function(email, password) {
 };
 
   document.getElementById("emailLoginBtn").addEventListener("click", handleEmailLogin);
-  
+  document.getElementById("guestLoginBtn").addEventListener("click", signInAsGuest);
+
 window.signInAsGuest = async function() {
   try {
     const result = await signInAnonymously(firebaseAuth);
@@ -332,25 +333,25 @@ window.signInAsGuest = async function() {
     Sign in with Google
   </button>
 
-      <!-- Email login section -->
-    <input
-      type="email"
-      id="emailInput"
-      placeholder="Enter your email"
-      class="w-full p-2 border border-gray-300 rounded mt-2"
-    />
-    <input
-      type="password"
-      id="passwordInput"
-      placeholder="Enter your password"
-      class="w-full p-2 border border-gray-300 rounded mt-2"
-    />
-    <button
-      onclick="handleEmailLogin()"
-      class="w-full bg-black text-white py-2 rounded mt-2"
-    >
-      Sign in with Email
-    </button>
+    <!-- Email login section -->
+<input
+  type="email"
+  id="emailInput"
+  placeholder="Enter your email"
+  class="w-full p-2 border border-gray-300 rounded mt-2"
+/>
+<input
+  type="password"
+  id="passwordInput"
+  placeholder="Enter your password"
+  class="w-full p-2 border border-gray-300 rounded mt-2"
+/>
+
+      <button id="emailLoginBtn"
+        class="w-full bg-black text-white py-2 rounded mt-2">
+  Sign in with Email
+</button>
+
 
   <button id="guestLoginBtn" style="padding: 10px; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
     Continue as Guest
