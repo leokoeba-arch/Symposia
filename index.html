@@ -793,25 +793,24 @@ onAuthStateChanged(firebaseAuth, user => {
     console.log("🚪 Logged out");
   }
 });
+
+    document.getElementById("googleLoginBtn").addEventListener("click", function () {
+  signInWithGoogle();
+});
+
+document.getElementById("emailLoginBtn").addEventListener("click", function () {
+  const email = prompt("Enter your email:");
+  const password = prompt("Enter your password:");
+  if (email && password) {
+    signInWithEmail(email, password);
+  }
+});
+
+document.getElementById("guestLoginBtn").addEventListener("click", function () {
+  signInAsGuest();
+});
+
   </script>
 
-  <script>
-  document.getElementById("googleLoginBtn").addEventListener("click", function () {
-    signInWithGoogle();
-  });
-
-  document.getElementById("emailLoginBtn").addEventListener("click", function () {
-    const email = prompt("Enter your email:");
-    const password = prompt("Enter your password:");
-    if (email && password) {
-      signInWithEmail(email, password);
-    }
-  });
-
-  document.getElementById("guestLoginBtn").addEventListener("click", function () {
-    signInAsGuest();
-  });
-</script>
-  
 </body>
 </html>
