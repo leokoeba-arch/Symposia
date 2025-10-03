@@ -268,6 +268,34 @@
 
   window.firebaseAuth = auth;
   window.googleProvider = provider;
+
+  window.signInWithGoogle = async function() {
+  try {
+    const result = await signInWithPopup(firebaseAuth, googleProvider);
+    alert(`Signed in as ${result.user.email}`);
+  } catch (error) {
+    alert("Google sign-in error: " + error.message);
+  }
+};
+
+window.signInWithEmail = async function(email, password) {
+  try {
+    const result = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    alert(`Signed in as ${result.user.email}`);
+  } catch (error) {
+    alert("Email sign-in error: " + error.message);
+  }
+};
+
+window.signInAsGuest = async function() {
+  try {
+    const result = await signInAnonymously(firebaseAuth);
+    alert("Signed in as guest");
+  } catch (error) {
+    alert("Guest sign-in error: " + error.message);
+  }
+};
+
 </script>
 
 </head>
@@ -765,7 +793,25 @@ onAuthStateChanged(firebaseAuth, user => {
     console.log("🚪 Logged out");
   }
 });
-
   </script>
+
+  <script>
+  document.getElementById("googleLoginBtn").addEventListener("click", function () {
+    signInWithGoogle();
+  });
+
+  document.getElementById("emailLoginBtn").addEventListener("click", function () {
+    const email = prompt("Enter your email:");
+    const password = prompt("Enter your password:");
+    if (email && password) {
+      signInWithEmail(email, password);
+    }
+  });
+
+  document.getElementById("guestLoginBtn").addEventListener("click", function () {
+    signInAsGuest();
+  });
+</script>
+  
 </body>
 </html>
