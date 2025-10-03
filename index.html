@@ -251,6 +251,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC093oO75BzyES08rY5O6rK7IQRbqSnCEE",
@@ -765,15 +766,22 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 document.getElementById("emailLoginBtn").addEventListener("click", async () => {
   const email = prompt("Enter your email:");
   const password = prompt("Enter your password:");
-  const auth = window.firebaseAuth;
+  if (!email || !password) return;
 
   try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    const user = result.user;
-    alert(`Signed in as ${user.email}`);
+    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    alert(`Signed in as ${userCredential.user.email}`);
   } catch (error) {
-    console.error("Email login error:", error);
-    alert("Login failed");
+    if (error.code === 'auth/user-not-found') {
+      try {
+        const newUser = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        alert(`New user created: ${newUser.user.email}`);
+      } catch (signupError) {
+        alert('Signup failed: ' + signupError.message);
+      }
+    } else {
+      alert('Login failed: ' + error.message);
+    }
   }
 });
 
