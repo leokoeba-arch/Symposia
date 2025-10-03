@@ -20,7 +20,7 @@
     }
     .container {
       background: white;
-      margin: 40px auto;
+      margin: 100px auto 40px auto; /* ⬅︎ added top margin */
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
@@ -282,13 +282,17 @@
 }
 
 .top-banner .login-btn {
-  background-color: #2563eb;
-  color: white;
+  margin-right: 15px;
   padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
   font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap; /* prevent wrapping */
 }
 
 .top-banner .login-btn:hover {
@@ -334,7 +338,7 @@
   <!-- ✅ TOP FIXED BANNER CON LOGO E LOGIN -->
 <div class="top-banner">
   <div class="logo" onclick="window.location.reload();">S</div>
-  <div class="dr-name" id="drName">Dr. Rossi</div>
+  <div class="dr-name" id="drName" style="display: none;">Dr. Rossi</div>
   <button class="login-btn" onclick="toggleLoginModal()">Login / Register</button>
 </div>
 
