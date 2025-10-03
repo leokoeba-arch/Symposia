@@ -762,18 +762,16 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     }
   });
 
- document.getElementById('emailLoginBtn').addEventListener('click', async () => {
-  const { firebaseAuth } = window; // ✅ always use the initialized auth
-  const email = prompt('Enter your email:');
-  const password = prompt('Enter your password:');
-  if (!email || !password) return;
-
+document.getElementById("emailLoginBtn").addEventListener("click", async () => {
+  const email = prompt("Enter your email:");
+  const password = prompt("Enter your password:");
   try {
-    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    alert(`Signed in as ${userCredential.user.email}`);
+    const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+    const user = userCredential.user;
+    alert("Signed in as " + user.email);
   } catch (error) {
-    console.error('Email login error:', error);
-    alert('Email sign-in error: ' + error.message);
+    console.error("Email login error:", error);
+    alert("Login failed");
   }
 });
 
