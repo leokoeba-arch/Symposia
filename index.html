@@ -19,13 +19,11 @@
       color: #1e293b;
     }
     .container {
+      margin: 80px auto 40px auto; /* pushes down from top */
+      max-width: 800px;
       background: white;
-      margin: 100px auto 40px auto; /* ⬅︎ added top margin */
+      border-radius: 10px;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      max-width: 700px;
-      width: 100%;
     }
     h1 {
       text-align: center;
@@ -250,49 +248,38 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 60px;
+  right: 0;
+  height: 50px;
   background-color: #1e293b;
   color: white;
   display: flex;
+  justify-content: space-between; /* separates logo and login */
   align-items: center;
-  justify-content: space-between;
   padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 1000;
+  z-index: 999;
 }
 
-.top-banner .logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #2563eb;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo {
+  font-size: 24px;
   font-weight: bold;
   cursor: pointer;
 }
 
-.top-banner .dr-name {
-  font-size: 1rem;
-  margin-left: 15px;
-  color: #f1f6fb;
+#drName {
+  margin-right: 15px;
+  font-weight: 500;
+  display: none; /* hide initially */
+  color: white;
 }
 
-.top-banner .login-btn {
-  margin-right: 15px;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-  font-weight: 600;
+.login-btn {
+  background-color: #3b82f6;
   color: white;
-  background-color: #2563eb;
   border: none;
+  padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  white-space: nowrap; /* prevent wrapping */
+  font-weight: 500;
 }
 
 .top-banner .login-btn:hover {
@@ -338,9 +325,13 @@
   <!-- ✅ TOP FIXED BANNER CON LOGO E LOGIN -->
 <div class="top-banner">
   <div class="logo" onclick="window.location.reload();">S</div>
-  <div class="dr-name" id="drName" style="display: none;">Dr. Rossi</div>
-  <button class="login-btn" onclick="toggleLoginModal()">Login / Register</button>
+
+  <div style="display: flex; align-items: center;">
+    <div class="dr-name" id="drName">Dr. Rossi</div>
+    <button class="login-btn" onclick="toggleLoginModal()">Login / Register</button>
+  </div>
 </div>
+
 
 <!-- ✅ LOGIN MODAL -->
 <div id="loginModal" class="modal">
