@@ -250,8 +250,7 @@
   <!-- Firebase Core + Auth -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC093oO75BzyES08rY5O6rK7IQRbqSnCEE",
@@ -284,7 +283,16 @@ window.signInWithEmail = async function(email, password) {
     const result = await signInWithEmailAndPassword(firebaseAuth, email, password);
     alert(`Signed in as ${result.user.email}`);
   } catch (error) {
-    alert("Email sign-in error: " + error.message);
+    if (error.code === 'auth/user-not-found') {
+      try {
+        const result = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        alert(`Account created for ${result.user.email}`);
+      } catch (createError) {
+        alert(`Registration failed: Firebase Error (${createError.code})`);
+      }
+    } else {
+      alert(`Login failed: Firebase Error (${error.code})`);
+    }
   }
 };
 
