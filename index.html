@@ -794,20 +794,20 @@ onAuthStateChanged(firebaseAuth, user => {
   }
 });
 
-    document.getElementById("googleLoginBtn").addEventListener("click", function () {
-  signInWithGoogle();
+  document.getElementById("googleLoginBtn").addEventListener("click", function () {
+  window.signInWithGoogle();
 });
 
 document.getElementById("emailLoginBtn").addEventListener("click", function () {
   const email = prompt("Enter your email:");
   const password = prompt("Enter your password:");
   if (email && password) {
-    signInWithEmail(email, password);
+    window.signInWithEmail(email, password);
   }
 });
 
 document.getElementById("guestLoginBtn").addEventListener("click", function () {
-  signInAsGuest();
+  window.signInAsGuest();
 });
 
   </script>
