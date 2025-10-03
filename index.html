@@ -145,80 +145,80 @@
     }
     #downloadBtn:hover { background: #047857; }
     
-/* style images slot */ 
-.image-slots {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px; /* space between slots */
-  flex-wrap: nowrap; /* prevent wrapping */
-  width: 100%;
-  margin-bottom: 1.5rem; /* spacing before "Choose Format" */
-  overflow-x: auto;
+    /* style images slot */ 
+      .image-slots {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px; /* space between slots */
+        flex-wrap: nowrap; /* prevent wrapping */
+        width: 100%;
+        margin-bottom: 1.5rem; /* spacing before "Choose Format" */
+        overflow-x: auto;
 }
 
-.image-slot {
-  flex: 1; /* make them share the row equally */
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  background: #e2e8f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-  border: 1px dashed #94a3b8;
-  overflow: hidden;
-  max-width: 120px; /* optional: limit max width so they're not too big */
-}
+      .image-slot {
+        flex: 1; /* make them share the row equally */
+        aspect-ratio: 1 / 1;
+        border-radius: 8px;
+        background: #e2e8f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        border: 1px dashed #94a3b8;
+        overflow: hidden;
+        max-width: 120px; /* optional: limit max width so they're not too big */
+        }
 
-.image-slot:hover {
-  background: #cbd5e1;
-}
-    .image-slot .remove-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: #a61226;
-  color: #000000;
-  border: none;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 0.7rem;
-  line-height: 18px;
-  text-align: center;
-  cursor: pointer;
-}
-    .image-slot img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 6px;
-}
-.remove-btn { /* Remove image button*/
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: #a61226;
-  color: #000000;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.remove-btn:hover {
-  background: white;
-}
-    #outputText {
-  font-family: 'Times New Roman', Times, serif;
-}
+        .image-slot:hover {
+          background: #cbd5e1;
+        }
+            .image-slot .remove-btn {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          background: #a61226;
+          color: #000000;
+          border: none;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          font-size: 0.7rem;
+          line-height: 18px;
+          text-align: center;
+          cursor: pointer;
+        }
+            .image-slot img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          border-radius: 6px;
+          }
+          .remove-btn { /* Remove image button*/
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #a61226;
+            color: #000000;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .remove-btn:hover {
+            background: white;
+          }
+              #outputText {
+            font-family: 'Times New Roman', Times, serif;
+          }
 
     .recommended-section {
   color: #3a73c2;
@@ -246,118 +246,11 @@
 }
 
   </style>
-
-  <!-- Firebase Core + Auth -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC093oO75BzyES08rY5O6rK7IQRbqSnCEE",
-    authDomain: "symposia-6581f.firebaseapp.com",
-    projectId: "symposia-6581f",
-    storageBucket: "symposia-6581f.firebasestorage.app",
-    messagingSenderId: "184543923693",
-    appId: "1:184543923693:web:c6cccb35b98f9f68deabe4",
-    measurementId: "G-GJNW7LNM3J"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  window.firebaseAuth = auth;
-  window.googleProvider = provider;
-
-  window.signInWithGoogle = async function() {
-  try {
-    const result = await signInWithPopup(firebaseAuth, googleProvider);
-    alert(`Signed in as ${result.user.email}`);
-  } catch (error) {
-    alert("Google sign-in error: " + error.message);
-  }
-};
-
-window.signInWithEmail = async function(email, password) {
-  try {
-    const result = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    alert(`Signed in as ${result.user.email}`);
-  } catch (error) {
-    if (error.code === 'auth/user-not-found') {
-      try {
-        const result = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-        alert(`Account created for ${result.user.email}`);
-      } catch (createError) {
-        alert(`Registration failed: Firebase Error (${createError.code})`);
-      }
-    } else {
-      alert(`Login failed: Firebase Error (${error.code})`);
-    }
-  }
-};
-
-  window.handleEmailLogin = function () {
-  const email = document.getElementById("emailInput").value.trim();
-  const password = document.getElementById("passwordInput").value;
-
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
-  }
-
-  window.signInWithEmail(email, password);
-};
-
-  document.getElementById("emailLoginBtn").addEventListener("click", handleEmailLogin);
-  document.getElementById("guestLoginBtn").addEventListener("click", signInAsGuest);
-
-window.signInAsGuest = async function() {
-  try {
-    const result = await signInAnonymously(firebaseAuth);
-    alert("Signed in as guest");
-  } catch (error) {
-    alert("Guest sign-in error: " + error.message);
-  }
-};
-
-</script>
-
 </head>
 <body>
   <div class="container">
     <h1>Symposia</h1>
     <p class="subtitle">Turn your clinical notes into publishable drafts</p>
-
-    <div style="margin-bottom: 20px;">
-  <button id="googleLoginBtn" style="padding: 10px; background: #4285F4; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-bottom: 10px;">
-    Sign in with Google
-  </button>
-
-<div class="flex flex-col gap-2 mt-2 w-full">
-  <input
-    type="email"
-    id="emailInput"
-    placeholder="Enter your email"
-    class="w-full p-2 border border-gray-300 rounded"
-  />
-  <input
-    type="password"
-    id="passwordInput"
-    placeholder="Enter your password"
-    class="w-full p-2 border border-gray-300 rounded"
-  />
-  <button
-    id="emailLoginBtn"
-    class="w-full bg-[#64748b] text-white py-2 rounded"
-  >
-    Sign in with Email
-  </button>
-</div>
-      
-  <button id="guestLoginBtn" style="padding: 10px; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
-    Continue as Guest
-  </button>
-</div>
 
     <label for="notes">Enter Your Notes</label>
     <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
@@ -785,58 +678,5 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 });
 
   </script>
-
-  <script type="module">
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-
-  const auth = getAuth();
-
-  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      alert("Signed in as " + user.displayName);
-    } catch (error) {
-      console.error("Google login error:", error);
-      alert("Login failed");
-    }
-  });
-
-document.getElementById("emailLoginBtn").addEventListener("click", async () => {
-  const email = prompt("Enter your email:");
-  const password = prompt("Enter your password:");
-  if (!email || !password) return;
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    alert(`Signed in as ${userCredential.user.email}`);
-  } catch (error) {
-    if (error.code === 'auth/user-not-found') {
-      try {
-        const newUser = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-        alert(`New user created: ${newUser.user.email}`);
-      } catch (signupError) {
-        alert('Signup failed: ' + signupError.message);
-      }
-    } else {
-      alert('Login failed: ' + error.message);
-    }
-  }
-});
-
-  document.getElementById("guestLoginBtn").addEventListener("click", async () => {
-    try {
-      const userCredential = await signInAnonymously(auth);
-      const user = userCredential.user;
-      alert("Signed in as guest (UID: " + user.uid + ")");
-    } catch (error) {
-      console.error("Guest login error:", error);
-      alert("Login failed");
-    }
-  });
-</script>
-
-
 </body>
 </html>
