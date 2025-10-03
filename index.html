@@ -245,9 +245,115 @@
   }
 }
 
+    /* 🔹 Top banner */
+.top-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #1e293b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.top-banner .logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.top-banner .dr-name {
+  font-size: 1rem;
+  margin-left: 15px;
+  color: #f1f6fb;
+}
+
+.top-banner .login-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.top-banner .login-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Modal stile */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+  border-radius: 8px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover {
+  color: black;
+}
+
   </style>
 </head>
-<body>
+
+  <!-- ✅ TOP FIXED BANNER CON LOGO E LOGIN -->
+<div class="top-banner">
+  <div class="logo" onclick="window.location.reload();">S</div>
+  <div class="dr-name" id="drName">Dr. Rossi</div>
+  <button class="login-btn" onclick="toggleLoginModal()">Login / Register</button>
+</div>
+
+<!-- ✅ LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="toggleLoginModal()">&times;</span>
+    <h2>Accesso</h2>
+    <input type="text" id="firstName" placeholder="Nome" />
+    <input type="text" id="lastName" placeholder="Cognome" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="signInWithEmail()">Login</button>
+    <p style="text-align:center; margin: 10px 0;">oppure</p>
+    <button onclick="signInWithGoogle()">Continua con Google</button>
+    <button onclick="registerWithEmail()">Registrati con Email</button>
+  </div>
+</div>
+  
   <div class="container">
     <h1>Symposia</h1>
     <p class="subtitle">Turn your clinical notes into publishable drafts</p>
@@ -676,7 +782,17 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 
   reader.readAsDataURL(activeImageFile);
 });
-
   </script>
+
+  <script>
+function toggleLoginModal() {
+  const modal = document.getElementById('loginModal');
+  modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+}
+
+// Esempio: qui metteremo le funzioni Firebase (signInWithEmail, registerWithEmail, signInWithGoogle)
+// che già avevi nel tuo codice.
+</script>
+
 </body>
 </html>
