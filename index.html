@@ -246,11 +246,49 @@
 }
 
   </style>
+
+  <!-- Firebase Core + Auth -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC093oO75BzyES08rY5O6rK7IQRbqSnCEE",
+    authDomain: "symposia-6581f.firebaseapp.com",
+    projectId: "symposia-6581f",
+    storageBucket: "symposia-6581f.firebasestorage.app",
+    messagingSenderId: "184543923693",
+    appId: "1:184543923693:web:c6cccb35b98f9f68deabe4",
+    measurementId: "G-GJNW7LNM3J"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  window.firebaseAuth = auth;
+  window.googleProvider = provider;
+</script>
+
 </head>
 <body>
   <div class="container">
     <h1>Symposia</h1>
     <p class="subtitle">Turn your clinical notes into publishable drafts</p>
+
+    <div style="margin-bottom: 20px;">
+  <button id="googleLoginBtn" style="padding: 10px; background: #4285F4; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-bottom: 10px;">
+    Sign in with Google
+  </button>
+
+  <button id="emailLoginBtn" style="padding: 10px; background: #555; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-bottom: 10px;">
+    Sign in with Email
+  </button>
+
+  <button id="guestLoginBtn" style="padding: 10px; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
+    Continue as Guest
+  </button>
+</div>
 
     <label for="notes">Enter Your Notes</label>
     <textarea id="notes" rows="6" placeholder="Please type your notes here..."></textarea>
@@ -675,6 +713,57 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   };
 
   reader.readAsDataURL(activeImageFile);
+});
+
+    // Firebase login buttons
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  const { firebaseAuth, googleProvider } = window;
+  try {
+    const result = await signInWithPopup(firebaseAuth, googleProvider);
+    const user = result.user;
+    alert(`Signed in as ${user.displayName || user.email}`);
+  } catch (error) {
+    alert('Google sign-in error: ' + error.message);
+  }
+});
+
+document.getElementById('guestLoginBtn').addEventListener('click', async () => {
+  const { firebaseAuth } = window;
+  try {
+    const result = await signInAnonymously(firebaseAuth);
+    alert('Signed in as Guest');
+  } catch (error) {
+    alert('Guest sign-in error: ' + error.message);
+  }
+});
+
+document.getElementById('emailLoginBtn').addEventListener('click', async () => {
+  const { firebaseAuth } = window;
+  const email = prompt('Enter your email');
+  const password = prompt('Enter your password');
+  if (!email || !password) return;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    alert(`Signed in as ${userCredential.user.email}`);
+  } catch (error) {
+    alert('Email sign-in error: ' + error.message);
+  }
+});
+
+    // 🔄 Monitor auth state
+onAuthStateChanged(firebaseAuth, user => {
+  if (user) {
+    console.log("✅ Logged in as:", user.email || "Guest");
+    // Example: update UI
+    document.querySelector(".subtitle").textContent = `Welcome, ${user.email || "Guest user"}!`;
+    // Optionally hide login buttons
+    document.getElementById("googleLoginBtn").style.display = "none";
+    document.getElementById("emailLoginBtn").style.display = "none";
+    document.getElementById("guestLoginBtn").style.display = "none";
+  } else {
+    console.log("🚪 Logged out");
+  }
 });
 
   </script>
