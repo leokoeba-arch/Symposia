@@ -225,26 +225,26 @@
         color: #3a73c2;
       }
 
-   #overlayBlockCopy {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  background-color: transparent;
-  cursor: not-allowed;
-  display: none; /* ← initially hidden */
-}
-.output-wrapper {
-  position: relative;
-}
-
-    @media print {
-  #output {
-    display: none !important;
-  }
-}
+           #overlayBlockCopy {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 10;
+          background-color: transparent;
+          cursor: not-allowed;
+          display: none; /* ← initially hidden */
+        }
+        .output-wrapper {
+          position: relative;
+        }
+        
+            @media print {
+          #output {
+            display: none !important;
+          }
+        }
 
     /* 🔹 Top banner */
 .top-banner {
@@ -282,6 +282,7 @@
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  font: inherit;
   font-weight: 500;
 }
 
@@ -303,7 +304,7 @@
 /* ===== Modal Panel (card) ===== */
 .modal__panel {
    width:100%;
-  max-width: 380px;           
+  max-width: 400px;           
   margin: 6vh auto;
   background:#fff;
   border-radius:12px;
@@ -348,24 +349,26 @@
   gap: 10px;
 }
 
-/* Provider button: centered icon + label */
+/* Provider buttons – consistent type + bigger icons */
 .provider-btn {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  width:100%;
-  border:1px solid #e5e7eb; border-radius:10px;
-  background:#fff; color:#1f2937;
-  padding:12px 14px;
-  font: 500 15px/1 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* ensure same type everywhere */
-  cursor:pointer;
+  font: inherit;             /* use the same font as the rest */
+  font-weight: 600;
+  letter-spacing: .2px;
 }
-.provider-btn:hover { background: #f8fafc; }
-.provider-btn svg{ width:18px; height:18px; display:block; }
+
+.provider-btn svg {
+  width: 22px;               /* bigger, but still balanced */
+  height: 22px;
+}
 
 .provider-btn .icon {
-  display: inline-flex;
-  width: 20px;
-  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  width: 22px; height: 22px; /* ensures the same box even if SVG has its own viewBox */
+  margin-right: 10px;
 }
+
+.provider-btn:hover { background: #f8fafc; }
 
 /* “OR” divider */
 .hr-text,
@@ -425,41 +428,37 @@
   gap: 12px;
 }
 
-/* Password field with eye icon (centered eye, proper swap, hover) */
-.password-wrap{
-  position: relative;
-}
-.password-wrap input{
-  padding-right: 46px; /* room for the eye button */
-}
+/* Password field with eye icon */
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 48px; } /* a bit more space */
 
+/* Eye icon button (right, vertically centered, not clipped) */
 .password-toggle{
   position: absolute;
-  right: 12px;
+  right: 8px;                /* was 10px */
   top: 50%;
   transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
+  display: grid;
+  place-items: center;
+  width: 34px;               /* a touch bigger so it’s never cropped */
+  height: 34px;
+  border: 0;
   background: transparent;
   color: #64748b;
   cursor: pointer;
-  border-radius: 6px;
 }
+
+/* Swap eye / eye-off correctly
+   - .eye  = open eye (used when the text is visible)
+   - .eye-off = closed eye (used when the text is hidden) */
+.password-toggle .eye { display: none; }            /* default: hidden text -> show CLOSED eye */
+.password-toggle .eye-off { display: block; }       /* …so closed eye shows initially */
+.password-toggle.is-on .eye { display: block; }     /* when “showing text”, show OPEN eye */
+.password-toggle.is-on .eye-off { display: none; }
+
+.password-toggle svg { width: 22px; height: 22px; } /* sharper icons */
+
 .password-toggle:hover{ background: #eef2f7; }
-
-/* swap eye/eye-off */
-.password-toggle .eye-off{ display: none; }
-.password-toggle.is-on .eye{ display: none; }     /* hide open eye when showing text */
-.password-toggle.is-on .eye-off{ display: block; }/* show slashed eye when showing text */
-
-.password-toggle svg{
-  width: 18px;
-  height: 18px;
-}
 
 /* Actions */
 .actions-inline {
@@ -532,22 +531,23 @@
    <div class="provider-stack">
   <!-- Google -->
   <button type="button" class="provider-btn" onclick="continueWithGoogle()">
-    <!-- Google 'G' SVG -->
-    <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#FFC107" d="M43.6 20.5h-1.9V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.9 0-12.5-5.6-12.5-12.5S17.1 11 24 11c3.1 0 6 .9 8.3 3l5.7-5.7C34.6 5.6 29.5 4 24 4 12.3 4 2.9 13.4 2.9 25.1S12.3 46.3 24 46.3c11.1 0 20.2-9.1 20.2-20.2 0-1.6-.2-3.1-.6-4.6z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.4 16.4 18.8 14 24 14c3.1 0 6 .9 8.3 3l5.7-5.7C34.6 5.6 29.5 4 24 4 16.6 4 10.1 8.5 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 46.3c5.3 0 10.2-1.8 14-4.8l-6.4-4.9c-2 1.4-4.6 2.3-7.6 2.3-5.3 0-9.8-3.4-11.4-8.1l-6.7 5.1c3.7 6.1 10.3 10.4 18.1 10.4z"/>
-      <path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-1 2.9-3.2 5.4-6.1 6.9l6.4 4.9c3.7-3.4 6-8.4 6-14.3 0-1.6-.2-3.1-.6-4.5z"/>
-    </svg>
+    <!-- Google icon -->
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path fill="#EA4335" d="M12 10.2v3.7h5.3c-.2 1.1-.9 2.5-2.2 3.4l3.4 2.6c2-1.9 3.2-4.7 3.2-8.1 0-.8-.1-1.5-.2-2.2H12z"/>
+        <path fill="#34A853" d="M6.6 14.2l-.8.6-2.7 2.1C4.4 19.4 7 21 10.1 21c2.7 0 5-1 6.6-2.7l-3.4-2.6c-.9.6-2 1-3.2 1-2.5 0-4.6-1.7-5.4-4z"/>
+        <path fill="#4285F4" d="M3.1 7.4l2.7 2.1c.7-2.1 2.6-3.5 4.8-3.5 1.5 0 2.8.5 3.8 1.4L18.9 4C17.1 2.4 14.8 1.5 12 1.5 7.9 1.5 4.5 3.8 3.1 7.4z"/>
+        <path fill="#FBBC05" d="M21.7 12c0-.7-.1-1.4-.2-2.1H12v4h5.3c-.2 1.1-.9 2.5-2.2 3.4l3.4 2.6c2-1.9 3.2-4.7 3.2-8z"/>
+      </svg>
     <span>Log in with Google</span>
   </button>
 
   <!-- Apple -->
   <button type="button" class="provider-btn" onclick="continueWithApple()">
-    <!-- Apple SVG -->
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="currentColor" d="M16.365 1.43c0 1.14-.493 2.206-1.274 2.97-.78.762-1.9 1.31-3.04 1.23-.135-1.08.394-2.21 1.173-2.985.781-.848 2.104-1.48 3.141-1.215zM21.7 17.4c-.578 1.35-1.25 2.62-2.226 3.77-.96 1.11-2.167 2.41-3.736 2.43-1.526.02-1.933-.79-3.598-.79-1.67 0-2.118.77-3.607.81-1.529.03-2.695-1.2-3.66-2.3-2.003-2.28-3.543-6.42-2.34-9.79.643-1.79 2.044-3.3 3.73-3.34 1.461-.03 2.379.81 3.596.81 1.186 0 1.906-.81 3.599-.81 1.253 0 2.577.68 3.511 1.84-.912.49-1.756 1.32-2.027 2.47-.351 1.54.409 3.16 1.403 3.96.801.64 1.75.99 2.686 1.04-.219.65-.462 1.3-.44 1.7z"/>
-    </svg>
+   <!-- Apple icon -->
+<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+  <path fill="currentColor"
+    d="M16.365 13.207c-.028-3.02 2.466-4.455 2.579-4.521-1.406-2.054-3.599-2.335-4.366-2.367-1.861-.189-3.637 1.1-4.584 1.1-.961 0-2.418-1.078-3.984-1.047-2.045.03-3.959 1.188-5.015 3.02-2.158 3.74-.552 9.265 1.551 12.296 1.035 1.488 2.262 3.156 3.885 3.1 1.569-.062 2.158-1.002 4.055-1.002 1.882 0 2.429 1.002 4.075.972 1.685-.03 2.748-1.5 3.768-2.996 1.181-1.71 1.669-3.364 1.695-3.451-.037-.016-3.259-1.278-3.559-5.104zM13.7 5.387c.835-1.012 1.4-2.422 1.245-3.827-1.205.052-2.663.802-3.53 1.813-.778.898-1.454 2.333-1.27 3.71 1.347.105 2.717-.684 3.555-1.696z"/>
+</svg>
     <span>Log in with Apple</span>
   </button>
 </div>
@@ -611,7 +611,7 @@
 <!-- Forgot password (shown only in Login mode) -->
 <div id="forgotRow" class="actions-inline">
   <span></span>
-  <button class="link" type="button" onclick="startResetPassword()">Forgot password?</button>
+<button id="forgotLink" class="link" type="button" onclick="startResetPassword()">Forgot password?</button>
 </div>
 
     <!-- Primary CTA -->
@@ -1056,7 +1056,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 });
   </script>
 
- <script>
+<script>
   let isRegisterMode = false;
 
   // Open/close modal. mode: 'login' | 'register'
@@ -1084,52 +1084,70 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   // Switch between Login and Create account
   function switchAuthMode(toRegister) {
     isRegisterMode = !!toRegister;
-    document.getElementById('nameFields').style.display = isRegisterMode ? 'grid' : 'none';
 
-    // Update texts
-    document.getElementById('authTitle').textContent = isRegisterMode
+    // Show/hide name fields
+    const nameFields = document.getElementById('nameFields');
+    if (nameFields) nameFields.style.display = isRegisterMode ? 'grid' : 'none';
+
+    // Update headings/subhead
+    const title = document.getElementById('authTitle');
+    const subtitle = document.getElementById('authSubtitle');
+    if (title) title.textContent = isRegisterMode
       ? 'Create your Symposia account'
       : 'Welcome to Symposia';
-
-    document.getElementById('authSubtitle').textContent = isRegisterMode
+    if (subtitle) subtitle.textContent = isRegisterMode
       ? 'A few details to get started.'
       : 'Log in to generate your draft.';
 
-    document.getElementById('primaryAuthBtn').textContent = isRegisterMode
-      ? 'Create account'
-      : 'Log in';
+    // Primary button label
+    const primaryBtn = document.getElementById('primaryAuthBtn');
+    if (primaryBtn) primaryBtn.textContent = isRegisterMode ? 'Create account' : 'Log in';
 
-    document.getElementById('authModeText').textContent = isRegisterMode
+    // Forgot password — hide in register, show in login
+    const forgot = document.getElementById('forgotLink');
+    if (forgot) forgot.style.display = isRegisterMode ? 'none' : 'inline-block';
+
+    // Switcher line
+    const modeText = document.getElementById('authModeText');
+    if (modeText) modeText.textContent = isRegisterMode
       ? 'Already have an account?'
       : 'Don’t have an account?';
 
     const switchBtn = document.getElementById('switchAuthModeBtn');
-    switchBtn.textContent = isRegisterMode ? 'Log in' : 'Create one';
-    switchBtn.setAttribute('onclick', `switchAuthMode(${!isRegisterMode})`);
+    if (switchBtn) {
+      switchBtn.textContent = isRegisterMode ? 'Log in' : 'Create one';
+      switchBtn.setAttribute('onclick', `switchAuthMode(${!isRegisterMode})`);
+    }
   }
 
-  // Show/hide password
-  function togglePassword(inputId, btn) {
-  const input = document.getElementById(inputId);
-  const showing = input.type === 'password';   
-  input.type = showing ? 'text' : 'password';
-  btn.classList.toggle('is-on', showing);
-  btn.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
-}
+  // Show/hide password (single correct version)
+  function togglePassword(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const willShowText = (input.type === 'password'); // switching TO text
+    input.type = willShowText ? 'text' : 'password';
 
-  // Primary action (just demos for now)
+    // “is-on” means eye is OPEN (text visible)
+    if (btnEl) {
+      btnEl.classList.toggle('is-on', willShowText);
+      btnEl.setAttribute('aria-label', willShowText ? 'Hide password' : 'Show password');
+      btnEl.setAttribute('aria-pressed', String(willShowText));
+    }
+  }
+
+  // Primary action (demo only)
   function handlePrimaryAuth() {
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value.trim();
+    const email = document.getElementById('authEmail')?.value.trim();
+    const password = document.getElementById('authPassword')?.value.trim();
     if (!email || !password) return alert('Please enter email and password.');
 
     if (isRegisterMode) {
-      const first = document.getElementById('firstName').value.trim();
-      const last  = document.getElementById('lastName').value.trim();
-      // TODO: connect to Firebase createUserWithEmailAndPassword + profile update
+      const first = document.getElementById('firstName')?.value.trim() || '';
+      const last  = document.getElementById('lastName')?.value.trim() || '';
+      // TODO: Firebase createUserWithEmailAndPassword + profile update
       alert(`(Demo) Create account\n${first} ${last}\n${email}`);
     } else {
-      // TODO: connect to Firebase signInWithEmailAndPassword
+      // TODO: Firebase signInWithEmailAndPassword
       alert(`(Demo) Log in\n${email}`);
     }
   }
@@ -1138,23 +1156,13 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   function continueWithGoogle() { alert('(Demo) Log in with Google'); }
   function continueWithApple()  { alert('(Demo) Log in with Apple'); }
 
-   /* Eye toggle */
-function togglePassword(inputId, btn) {
-  const input = document.getElementById(inputId);
-  const show = input.type === 'password';
-  input.type = show ? 'text' : 'password';
-  btn.classList.toggle('is-on', show);
-  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-}
-   
   function startResetPassword() {
-    const email = document.getElementById('authEmail').value.trim();
+    const email = document.getElementById('authEmail')?.value.trim();
     if (!email) return alert('Enter your email first.');
-    // TODO: Firebase sendPasswordResetEmail
+    // TODO: Firebase sendPasswordResetEmail(email)
     alert(`(Demo) Password reset link would be sent to:\n${email}`);
   }
 </script>
-
 
 </body>
 </html>
