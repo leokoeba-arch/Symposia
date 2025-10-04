@@ -289,39 +289,134 @@
   background-color: #1d4ed8;
 }
 
-/* Modal stile */
+/* Modal backdrop */
 .modal {
-  display: none;
+  display: none;            /* toggled via JS */
   position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
   z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
 }
 
+/* Card */
 .modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 30px;
-  border: 1px solid #888;
-  width: 300px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 420px;
+  margin: 6vh auto;
+  background: #fff;
   border-radius: 12px;
+  padding: 26px 22px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.20);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+/* Close */
+.modal-content .close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  color: #64748b;
   cursor: pointer;
 }
-.close:hover {
-  color: black;
+
+/* Labels / inputs */
+.modal-content label {
+  display: block;
+  font-size: 0.9rem;
+  color: #334155;
+  margin-bottom: 6px;
 }
+.modal-content input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+}
+
+/* Grid for first/last name */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Password with show */
+.password-wrap {
+  position: relative;
+}
+.password-wrap .show-pass {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-google {
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+.btn-google:hover { background: #f8fafc; }
+
+/* Tiny pieces */
+.muted { color: #6b7280; }
+.small { font-size: 0.9rem; }
+.actions-row { display: flex; justify-content: flex-end; margin-top: -4px; }
+
+.link {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* “or” */
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 2px;
+}
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+.or-divider span {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
 
   </style>
 </head>
@@ -337,19 +432,56 @@
 </div>
 
 
-<!-- ✅ LOGIN MODAL -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="toggleLoginModal()">&times;</span>
-    <h2>Accesso</h2>
-    <input type="text" id="firstName" placeholder="Nome" />
-    <input type="text" id="lastName" placeholder="Cognome" />
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="signInWithEmail()">Login</button>
-    <p style="text-align:center; margin: 10px 0;">oppure</p>
-    <button onclick="signInWithGoogle()">Continua con Google</button>
-    <button onclick="registerWithEmail()">Registrati con Email</button>
+<!-- LOGIN / REGISTER MODAL -->
+<div id="authModal" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button class="close" aria-label="Close" onclick="toggleAuthModal(false)">×</button>
+
+    <h2 id="authTitle">Welcome</h2>
+    <p id="authSubtitle" class="muted">Log in to continue</p>
+
+    <div id="nameFields" class="grid-2" style="display:none;">
+      <div>
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" autocomplete="given-name" />
+      </div>
+      <div>
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" autocomplete="family-name" />
+      </div>
+    </div>
+
+    <div>
+      <label for="authEmail">Email</label>
+      <input type="email" id="authEmail" autocomplete="email" />
+    </div>
+
+    <div>
+      <label for="authPassword">Password</label>
+      <div class="password-wrap">
+        <input type="password" id="authPassword" autocomplete="current-password" />
+        <button class="show-pass" type="button" onclick="togglePassword('authPassword', this)">Show</button>
+      </div>
+    </div>
+
+    <button id="primaryAuthBtn" class="btn btn-primary" onclick="handlePrimaryAuth()">
+      Log in
+    </button>
+
+    <div class="or-divider"><span>or</span></div>
+
+    <button class="btn btn-google" onclick="signInWithGoogle()">
+      Continue with Google
+    </button>
+
+    <div class="muted small actions-row">
+      <button class="link" type="button" onclick="startResetPassword()">Forgot password?</button>
+    </div>
+
+    <div class="muted small">
+      <span id="authModeText">Don’t have an account?</span>
+      <button class="link" type="button" id="switchAuthModeBtn" onclick="switchAuthMode(true)">Create one</button>
+    </div>
   </div>
 </div>
   
@@ -787,6 +919,66 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 function toggleLoginModal() {
   const modal = document.getElementById('loginModal');
   modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+}
+
+    let isRegisterMode = false;
+
+function toggleAuthModal(show = true) {
+  const modal = document.getElementById('authModal');
+  modal.style.display = show ? 'block' : 'none';
+}
+
+function switchAuthMode(toRegister) {
+  isRegisterMode = !!toRegister;
+  // Show/hide name fields
+  document.getElementById('nameFields').style.display = isRegisterMode ? 'grid' : 'none';
+  // Update primary button and texts
+  document.getElementById('primaryAuthBtn').textContent = isRegisterMode ? 'Create account' : 'Log in';
+  document.getElementById('authTitle').textContent = isRegisterMode ? 'Create your account' : 'Welcome';
+  document.getElementById('authSubtitle').textContent = isRegisterMode ? 'A few details to get started' : 'Log in to continue';
+  // Update switch line
+  document.getElementById('authModeText').textContent = isRegisterMode ? 'Already have an account?' : 'Don’t have an account?';
+  document.getElementById('switchAuthModeBtn').textContent = isRegisterMode ? 'Log in' : 'Create one';
+  document.getElementById('switchAuthModeBtn').setAttribute('onclick', `switchAuthMode(${!isRegisterMode})`);
+}
+
+function togglePassword(inputId, btnEl) {
+  const input = document.getElementById(inputId);
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  btnEl.textContent = isPwd ? 'Hide' : 'Show';
+}
+
+function handlePrimaryAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
+
+  if (!email || !password) {
+    alert('Please enter email and password.');
+    return;
+  }
+
+  if (isRegisterMode) {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    // TODO: call registerWithEmail(firstName, lastName, email, password)
+    alert(`(Demo) Create account:\n${firstName} ${lastName}\n${email}`);
+  } else {
+    // TODO: call signInWithEmail(email, password)
+    alert(`(Demo) Log in with email:\n${email}`);
+  }
+}
+
+function signInWithGoogle() {
+  // TODO: Firebase Google sign-in
+  alert('(Demo) Continue with Google');
+}
+
+function startResetPassword() {
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email) return alert('Enter your email first.');
+  // TODO: Firebase sendPasswordResetEmail(email)
+  alert(`(Demo) Password reset link would be sent to:\n${email}`);
 }
 
 // Esempio: qui metteremo le funzioni Firebase (signInWithEmail, registerWithEmail, signInWithGoogle)
