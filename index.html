@@ -916,19 +916,15 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   </script>
 
   <script>
-function toggleLoginModal() {
-  const modal = document.getElementById('loginModal');
-  modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
-}
 
     let isRegisterMode = false;
 
-function toggleAuthModal(show = true) {
-  const modal = document.getElementById('authModal');
-  modal.style.display = show ? 'block' : 'none';
-}
+    function toggleAuthModal(show = true) {
+    const modal = document.getElementById('authModal');
+    modal.style.display = show ? 'block' : 'none';
+  }
 
-function switchAuthMode(toRegister) {
+  function switchAuthMode(toRegister) {
   isRegisterMode = !!toRegister;
   // Show/hide name fields
   document.getElementById('nameFields').style.display = isRegisterMode ? 'grid' : 'none';
