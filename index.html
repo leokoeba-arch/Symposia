@@ -339,29 +339,34 @@
   color: #475569;
 }
 
-/* Provider buttons row */
+/* Provider buttons stack */
 .provider-stack {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin: 8px 0 14px;
 }
 
+/* Provider button: centered icon + label */
 .provider-btn {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;  /* <-- centers icon + text */
   gap: 10px;
-  padding: 12px 14px;
+  height: 44px;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
   background: #fff;
-  color: #0f172a;
-  font-size: 1rem;
-  cursor: pointer;
+  color: #111827;
+  font-weight: 500;
 }
 .provider-btn:hover { background: #f8fafc; }
-.provider-btn svg { width: 20px; height: 20px; }
+
+.provider-btn .icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+}
 
 /* “OR” divider */
 .hr-text {
@@ -408,19 +413,35 @@
   gap: 12px;
 }
 
-/* Password + show button */
-.password-wrap { position: relative; }
-.show-pass {
+/* Password field with eye icon */
+.password-wrap {
+  position: relative;
+}
+.password-wrap input {
+  padding-right: 44px; /* space for the eye button */
+}
+
+/* Eye icon button */
+.password-toggle {
   position: absolute;
-  top: 50%;
   right: 10px;
+  top: 50%;
   transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   border: 0;
   background: transparent;
-  color: #2563eb;
-  font-size: 0.88rem;
+  color: #64748b;
   cursor: pointer;
 }
+
+/* Swap eye / eye-off */
+.password-toggle .eye-off { display: none; }
+.password-toggle.is-on .eye { display: none; }
+.password-toggle.is-on .eye-off { display: block; }
+.password-toggle svg { width: 20px; height: 20px; }
 
 /* Actions */
 .actions-inline {
@@ -490,23 +511,31 @@
     <p id="authSubtitle" class="modal__subtitle">Log in to generate your draft.</p>
 
     <!-- Provider buttons -->
-    <div class="provider-stack">
-      <button type="button" class="provider-btn" onclick="continueWithGoogle()">
-        <!-- Google icon (simple SVG) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="#EA4335" d="M12 10.2v3.7h5.2c-.2 1.2-1.4 3.4-5.2 3.4-3.1 0-5.7-2.6-5.7-5.8s2.6-5.8 5.7-5.8c1.8 0 3 .7 3.7 1.3l2.5-2.4C16.3 2.7 14.3 2 12 2 6.9 2 2.8 6.1 2.8 11.2S6.9 20.4 12 20.4c6.9 0 9.6-4.9 9.1-8.2H12z"/>
-        </svg>
-        <span>Continue with Google</span>
-      </button>
+   <div class="provider-stack">
+  <button type="button" class="provider-btn" onclick="continueWithGoogle()">
+    <span class="icon" aria-hidden="true">
+      <!-- Google icon -->
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M23.6 12.3c0-.9-.1-1.5-.3-2.2H12v4.1h6.6c-.1 1.1-.8 2.6-2.2 3.6l-.02.15 3.2 2.48.22.02C22.3 18.7 23.6 15.8 23.6 12.3z" fill="#4285F4"/>
+        <path d="M12 24c3.2 0 5.9-1.1 7.8-3l-3.7-2.8c-1 .7-2.4 1.2-4.1 1.2-3.1 0-5.6-2.1-6.5-4.9H1.7v3.1C3.6 21.4 7.5 24 12 24z" fill="#34A853"/>
+        <path d="M5.5 14.5c-.2-.7-.3-1.5-.3-2.3s.1-1.6.3-2.3V6.8H1.7C.9 8.5.5 10.2.5 12s.4 3.5 1.2 5.2l3.8-2.7z" fill="#FBBC05"/>
+        <path d="M12 4.7c1.8 0 3.4.6 4.6 1.8l3.4-3.4C17.9 1.1 15.2 0 12 0 7.5 0 3.6 2.6 1.7 6.8l3.8 2.9C6.4 6.8 8.9 4.7 12 4.7z" fill="#EA4335"/>
+      </svg>
+    </span>
+    <span>Log in with Google</span>
+  </button>
 
-      <button type="button" class="provider-btn" onclick="continueWithApple()">
-        <!-- Apple icon (simple SVG) -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="#0f172a" d="M16.4 12.8c0-2.1 1.7-3.2 1.8-3.3-1-.1-2.1.6-2.6.6-.8 0-1.6-.6-2.6-.6-1.3 0-2.5.8-3.2 2.1-1.4 2.5-.4 6.2 1 8.2.7 1 1.5 2.1 2.6 2 .9 0 1.2-.7 2.4-.7s1.5.7 2.5.7 1.7-1 2.4-2c.8-1.1 1.1-2.2 1.1-2.2-.1 0-2.1-.8-2.4-3.8zM14.6 6.4c.5-.6.8-1.4.7-2.2-.7 0-1.6.5-2.1 1.1-.5.6-.8 1.3-.7 2.1.8.1 1.6-.4 2.1-1z"/>
-        </svg>
-        <span>Log in with Apple</span>
-      </button>
-    </div>
+  <button type="button" class="provider-btn" onclick="continueWithApple()">
+    <span class="icon" aria-hidden="true">
+      <!-- Apple icon -->
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.7 16.5c-.3.7-.7 1.4-1.2 2.1-.7 1-1.3 1.7-2.1 1.7-.8 0-1.1-.6-2.2-.6s-1.4.5-2.2.6c-.9 0-1.6-.9-2.3-1.9C8.5 17 7.2 14.1 8.5 12c.6-1 1.6-1.6 2.6-1.6.9 0 1.7.6 2.2.6.5 0 1.5-.7 2.6-.6.4 0 1.7.2 2.5 1.5-.1.1-1.5.9-1.5 2.6.1 1.7 1.6 2.4 1.8 2.6zM15.9 4.2c.5-.6.9-1.5.8-2.4-1 .1-1.9.6-2.5 1.3-.5.6-.9 1.4-.8 2.3.9.1 1.8-.4 2.5-1.2z"/>
+      </svg>
+    </span>
+    <span>Log in with Apple</span>
+  </button>
+</div>
+
 
     <div class="hr-text"><span>or</span></div>
 
@@ -531,8 +560,22 @@
     <!-- Password + show -->
     <div class="form-row password-wrap">
       <label for="authPassword">Password</label>
-      <input type="password" id="authPassword" autocomplete="current-password" />
-      <button class="show-pass" type="button" onclick="togglePassword('authPassword', this)">Show</button>
+       <input type="password" id="authPassword" autocomplete="current-password" />
+        <button type="button"
+          class="password-toggle"
+          aria-label="Show password"
+          onclick="togglePassword('authPassword', this)">
+    <!-- eye -->
+    <svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+    <!-- eye-off -->
+    <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17.94 17.94C16.2 19.2 14.2 20 12 20 5 20 1 12 1 12a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24C10.57 4.08 11.27 4 12 4c7 0 11 8 11 8a21.9 21.9 0 0 1-3.06 4.34"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  </button>
     </div>
 
     <div class="actions-inline">
@@ -1060,9 +1103,18 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   }
 
   // Provider stubs (wire to Firebase later)
-  function continueWithGoogle() { alert('(Demo) Continue with Google'); }
+  function continueWithGoogle() { alert('(Demo) Log in with Google'); }
   function continueWithApple()  { alert('(Demo) Log in with Apple'); }
 
+   /* Eye toggle */
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  btn.classList.toggle('is-on', show);
+  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+}
+   
   function startResetPassword() {
     const email = document.getElementById('authEmail').value.trim();
     if (!email) return alert('Enter your email first.');
