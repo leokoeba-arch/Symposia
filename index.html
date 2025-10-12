@@ -1224,27 +1224,59 @@ async function handlePrimaryAuth() {
       await user.updateProfile({ displayName: `${first} ${last}` });
 
       alert(`✅ Registered as ${user.email}`);
+      document.getElementById('authModal').style.display = 'none';
+      document.querySelector('.login-btn').style.display = 'none';
+      updateUserUI(user); // <-- define this function next
+
     } else {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       alert(`✅ Logged in as ${user.email}`);
+      document.getElementById('authModal').style.display = 'none';
+      document.querySelector('.login-btn').style.display = 'none';
+      updateUserUI(user); // <-- define this function next
     }
   } catch (err) {
     alert(`❌ ${err.message}`);
   }
 }
 
-  // Provider stubs (wired to Firebase)
+  // Log in with Google
   function continueWithGoogle() {
   signInWithPopup(auth, googleProvider)
     .then((result) => {
-      alert(`Signed in with Google: ${result.user.email}`);
-    })
+  const user = result.user;
+  alert(`Signed in with Google: ${user.email}`);
+  document.getElementById('authModal').style.display = 'none';
+  document.querySelector('.login-btn').style.display = 'none';
+  updateUserUI(user);
+})
     .catch((error) => {
       console.error(error);
       alert(`Google login error:\n${error.message}`);
     });
 }
-  function startResetPassword() {
+
+function updateUserUI(user) {
+  const loginBtn = document.querySelector('.login-btn');
+  const userMenu = document.getElementById('userMenu');
+  const drName = document.getElementById('drName');
+
+  if (user && user.displayName) {
+    // Example: extract surname
+    const fullName = user.displayName.trim();
+    const surname = fullName.split(' ').slice(-1)[0]; // take last word
+    const isMobile = window.innerWidth <= 768;
+
+    drName.textContent = isMobile
+      ? `Dr. ${surname[0].toUpperCase()}.`
+      : `Dr. ${surname}`;
+
+    loginBtn.style.display = 'none';
+    userMenu.style.display = 'flex'; // or 'block' depending on your layout
+  }
+}
+   
+    function startResetPassword() {
   const email = document.getElementById('authEmail')?.value.trim();
   if (!email) return alert('Enter your email first.');
   sendPasswordResetEmail(auth, email)
