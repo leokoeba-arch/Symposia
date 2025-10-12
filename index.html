@@ -511,6 +511,27 @@
 }
 .modal__footer .link { font-weight: 600; }
 
+.forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+  margin-bottom: 12px; /* Adds breathing room from the login button */
+}
+
+.forgot-password {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  text-align: right;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
 /* Small screens */
 @media (max-width: 480px) {
   .hr-text { gap: 8px; margin: 10px 0; }
@@ -549,27 +570,21 @@
     <!-- Provider buttons -->
    <div class="provider-stack">
   <!-- Google -->
-  <button type="button" class="provider-btn" onclick="continueWithGoogle()">
-    <!-- Google icon -->
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-        <path fill="#EA4335" d="M12 10.2v3.7h5.3c-.2 1.1-.9 2.5-2.2 3.4l3.4 2.6c2-1.9 3.2-4.7 3.2-8.1 0-.8-.1-1.5-.2-2.2H12z"/>
-        <path fill="#34A853" d="M6.6 14.2l-.8.6-2.7 2.1C4.4 19.4 7 21 10.1 21c2.7 0 5-1 6.6-2.7l-3.4-2.6c-.9.6-2 1-3.2 1-2.5 0-4.6-1.7-5.4-4z"/>
-        <path fill="#4285F4" d="M3.1 7.4l2.7 2.1c.7-2.1 2.6-3.5 4.8-3.5 1.5 0 2.8.5 3.8 1.4L18.9 4C17.1 2.4 14.8 1.5 12 1.5 7.9 1.5 4.5 3.8 3.1 7.4z"/>
-        <path fill="#FBBC05" d="M21.7 12c0-.7-.1-1.4-.2-2.1H12v4h5.3c-.2 1.1-.9 2.5-2.2 3.4l3.4 2.6c2-1.9 3.2-4.7 3.2-8z"/>
-      </svg>
-    <span>Log in with Google</span>
-  </button>
+<button class="social-btn google-btn">
+  <span class="icon">
+    <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="48px" height="48px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+  </span>
+  Log in with Google
+</button>
 
-  <!-- Apple -->
-  <button type="button" class="provider-btn" onclick="continueWithApple()">
-   <!-- Apple icon -->
-<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-  <path fill="currentColor"
-    d="M16.365 13.207c-.028-3.02 2.466-4.455 2.579-4.521-1.406-2.054-3.599-2.335-4.366-2.367-1.861-.189-3.637 1.1-4.584 1.1-.961 0-2.418-1.078-3.984-1.047-2.045.03-3.959 1.188-5.015 3.02-2.158 3.74-.552 9.265 1.551 12.296 1.035 1.488 2.262 3.156 3.885 3.1 1.569-.062 2.158-1.002 4.055-1.002 1.882 0 2.429 1.002 4.075.972 1.685-.03 2.748-1.5 3.768-2.996 1.181-1.71 1.669-3.364 1.695-3.451-.037-.016-3.259-1.278-3.559-5.104zM13.7 5.387c.835-1.012 1.4-2.422 1.245-3.827-1.205.052-2.663.802-3.53 1.813-.778.898-1.454 2.333-1.27 3.71 1.347.105 2.717-.684 3.555-1.696z"/>
-</svg>
-    <span>Log in with Apple</span>
-  </button>
-</div>
+<!-- Apple -->
+<button class="social-btn apple-btn">
+  <span class="icon">
+   <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M25.565,9.785c-0.123,0.077-3.051,1.702-3.051,5.305c0.138,4.109,3.695,5.55,3.756,5.55 c-0.061,0.077-0.537,1.963-1.947,3.94C23.204,26.283,21.962,28,20.076,28c-1.794,0-2.438-1.135-4.508-1.135 c-2.223,0-2.852,1.135-4.554,1.135c-1.886,0-3.22-1.809-4.4-3.496c-1.533-2.208-2.836-5.673-2.882-9 c-0.031-1.763,0.307-3.496,1.165-4.968c1.211-2.055,3.373-3.45,5.734-3.496c1.809-0.061,3.419,1.242,4.523,1.242 c1.058,0,3.036-1.242,5.274-1.242C21.394,7.041,23.97,7.332,25.565,9.785z M15.001,6.688c-0.322-1.61,0.567-3.22,1.395-4.247 c1.058-1.242,2.729-2.085,4.17-2.085c0.092,1.61-0.491,3.189-1.533,4.339C18.098,5.937,16.488,6.872,15.001,6.688z"/></svg>
+  </span>
+  Log in with Apple
+</button>
+
 
     <div class="hr-text"><span>or</span></div>
 
@@ -628,9 +643,10 @@
 </div>
 
 <!-- Forgot password (shown only in Login mode) -->
-<div id="forgotRow" class="actions-inline">
-  <span></span>
-<button id="forgotLink" class="link" type="button" onclick="startResetPassword()">Forgot password?</button>
+<div class="forgot-row">
+  <button id="forgotLink" class="forgot-password" type="button" onclick="startResetPassword()">
+    Forgot password?
+  </button>
 </div>
 
     <!-- Primary CTA -->
