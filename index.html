@@ -536,10 +536,11 @@
 @media (max-width: 480px) {
   .hr-text { gap: 8px; margin: 10px 0; }
   .modal__panel {
-    width: 90vw;
-    max-width: 480px;
-    padding: 20px;
-    border-radius: 16px;
+    width: 94vw;                 /* slightly less than 100vw to avoid touching edges */
+    margin: 6vh auto;            /* keep vertical centering */
+    padding: 20px 16px;          /* reduce padding on smaller screens */
+    border-radius: 14px;         /* keep it consistent */
+    box-sizing: border-box;
   }
   .modal__title   { font-size: 1.35rem; }
   .modal__subtitle{ font-size: .95rem; }
