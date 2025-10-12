@@ -1131,6 +1131,26 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
 <script>
   let isRegisterMode = false;
 
+  // ===== Firebase SDK Setup =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, OAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
+  authDomain: "symposia-6411a.firebaseapp.com",
+  projectId: "symposia-6411a",
+  storageBucket: "symposia-6411a.firebasestorage.app",
+  messagingSenderId: "764049033413",
+  appId: "1:764049033413:web:a14022bac19894322dc8ac"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const googleProvider = new GoogleAuthProvider();
+const appleProvider = new OAuthProvider('apple.com');
+
   // Open/close modal. mode: 'login' | 'register'
   function toggleAuthModal(show = true, mode = 'login') {
     const modal = document.getElementById('authModal');
@@ -1207,33 +1227,79 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     }
   }
 
-  // Primary action (demo only)
-  function handlePrimaryAuth() {
-    const email = document.getElementById('authEmail')?.value.trim();
-    const password = document.getElementById('authPassword')?.value.trim();
-    if (!email || !password) return alert('Please enter email and password.');
+  // Primary action Firebase
+async function handlePrimaryAuth() {
+  const email = document.getElementById('authEmail')?.value.trim();
+  const password = document.getElementById('authPassword')?.value.trim();
+  if (!email || !password) return alert('Please enter email and password.');
 
+  try {
     if (isRegisterMode) {
       const first = document.getElementById('firstName')?.value.trim() || '';
-      const last  = document.getElementById('lastName')?.value.trim() || '';
-      // TODO: Firebase createUserWithEmailAndPassword + profile update
-      alert(`(Demo) Create account\n${first} ${last}\n${email}`);
-    } else {
-      // TODO: Firebase signInWithEmailAndPassword
-      alert(`(Demo) Log in\n${email}`);
-    }
-  }
+      const last = document.getElementById('lastName')?.value.trim() || '';
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
-  // Provider stubs (wire to Firebase later)
-  function continueWithGoogle() { alert('(Demo) Log in with Google'); }
-  function continueWithApple()  { alert('(Demo) Log in with Apple'); }
+      // Optional: update user profile
+      await user.updateProfile({ displayName: `${first} ${last}` });
+
+      alert(`✅ Registered as ${user.email}`);
+    } else {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      alert(`✅ Logged in as ${user.email}`);
+    }
+  } catch (err) {
+    alert(`❌ ${err.message}`);
+  }
+}
+
+  // Provider stubs (wired to Firebase)
+  function continueWithGoogle() {
+  signInWithPopup(auth, googleProvider)
+    .then((result) => {
+      alert(`Signed in with Google: ${result.user.email}`);
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(`Google login error:\n${error.message}`);
+    });
+}
+
+function continueWithApple() {
+  signInWithPopup(auth, appleProvider)
+    .then((result) => {
+      alert(`Signed in with Apple: ${result.user.email}`);
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(`Apple login error:\n${error.message}`);
+    });
+}
 
   function startResetPassword() {
-    const email = document.getElementById('authEmail')?.value.trim();
-    if (!email) return alert('Enter your email first.');
-    // TODO: Firebase sendPasswordResetEmail(email)
-    alert(`(Demo) Password reset link would be sent to:\n${email}`);
-  }
+  const email = document.getElementById('authEmail')?.value.trim();
+  if (!email) return alert('Enter your email first.');
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      alert(`Password reset email sent to: ${email}`);
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(`Error:\n${error.message}`);
+    });
+}
+
+  function logoutUser() {
+  signOut(auth)
+    .then(() => {
+      alert("🚪 Logged out successfully!");
+      // Optional: redirect or update UI
+    })
+    .catch((error) => {
+      console.error("Logout error:", error);
+      alert(`Logout error:\n${error.message}`);
+    });
+}
+  
 </script>
 
 </body>
