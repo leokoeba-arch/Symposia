@@ -276,14 +276,18 @@
 }
 
 .login-btn {
-  background-color: #3b82f6;
-  color: white;
+   background-color: #3b82f6;
+  color: #fff;
   border: none;
   padding: 8px 15px;
-  border-radius: 5px;
+  border-radius: 8px;        /* a bit softer */
   cursor: pointer;
-  font: inherit;
-  font-weight: 500;
+  font-family: inherit;      /* same font as page */
+  font-weight: 600;          /* match headings/buttons */
+  letter-spacing: .2px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  touch-action: manipulation;
 }
 
 .top-banner .login-btn:hover {
@@ -303,17 +307,13 @@
 
 /* ===== Modal Panel (card) ===== */
 .modal__panel {
-   width:100%;
-  max-width: 400px;           
+  width: 100%;
+  max-width: 392px;          /* slightly slimmer, feels taller/elegant */
   margin: 6vh auto;
   background:#fff;
-  border-radius:12px;
-  padding: 28px 24px;         
-  box-shadow:0 12px 32px rgba(0,0,0,0.20);
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  border-radius: 14px;
+  padding: 26px 22px;
+  box-shadow:0 16px 40px rgba(2, 6, 23, .24);
 }
 
 /* Close (×) */
@@ -333,7 +333,7 @@
 /* Header */
 .modal__title {
   margin: 2px 0 2px;
-  font-size: 1.6rem;
+  font-size: 1.52rem;
   font-weight: 700;
   color: #0f172a;
 }
@@ -343,22 +343,33 @@
 }
 
 /* Provider buttons stack */
-.provider-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.provider-stack { display: flex; flex-direction: column; gap: 10px; }
+
 
 /* Provider buttons – consistent type + bigger icons */
 .provider-btn {
-  font: inherit;             /* use the same font as the rest */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;     /* centers icon + text together */
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f3f4f6;         /* light neutral like your mock */
+  color: #0f172a;
+  font: inherit;                /* same font as rest */
   font-weight: 600;
   letter-spacing: .2px;
+  cursor: pointer;
+  transition: background .15s ease, box-shadow .15s ease;
+  touch-action: manipulation;
 }
 
 .provider-btn svg {
-  width: 22px;               /* bigger, but still balanced */
-  height: 22px;
+  width: 24px;
+  height: 24px;
+  display: block;               /* avoids inline baseline wobble */
 }
 
 .provider-btn .icon {
@@ -368,7 +379,8 @@
   margin-right: 10px;
 }
 
-.provider-btn:hover { background: #f8fafc; }
+.provider-btn:hover { background: #eef2f7; }
+.provider-btn:active { transform: translateY(0.5px); }
 
 /* “OR” divider */
 .hr-text,
@@ -397,7 +409,6 @@
 .or-divider > span {
   line-height: 1;
 }
-
 
 /* Form fields */
 .form-row { margin-bottom: 12px; }
@@ -440,12 +451,13 @@
   transform: translateY(-50%);
   display: grid;
   place-items: center;
-  width: 34px;               /* a touch bigger so it’s never cropped */
-  height: 34px;
+  width: 36px;               /* a touch bigger so it’s never cropped */
+  height: 36px;
   border: 0;
   background: transparent;
   color: #64748b;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 /* Swap eye / eye-off correctly
@@ -501,8 +513,15 @@
 
 /* Small screens */
 @media (max-width: 480px) {
-  .modal__panel { padding: 22px; margin: 6vh 12px; }
-  .grid-2 { grid-template-columns: 1fr; }
+  .hr-text { gap: 8px; margin: 10px 0; }
+  .modal__panel {
+    max-width: 92vw;         /* stops the “too wide” feel */
+    margin: 6vh auto;
+    padding: 18px 16px;
+    border-radius: 12px;
+  }
+  .modal__title   { font-size: 1.35rem; }
+  .modal__subtitle{ font-size: .95rem; }
 }
 
   </style>
