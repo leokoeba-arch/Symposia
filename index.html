@@ -558,7 +558,7 @@
   <div class="logo" onclick="window.location.reload();">S</div>
 
   <div style="display: flex; align-items: center;">
-    <div class="dr-name" id="drName">Dr. Rossi</div>
+    <div class="dr-name" id="drName"></div>
     <button class="login-btn" onclick="toggleAuthModal(true)">Log in / Register</button>
   </div>
 </div>
@@ -666,7 +666,7 @@
 </div>
 
     <!-- Primary CTA -->
-    <button id="primaryAuthBtn" class="btn btn-primary" type="button" onclick="handlePrimaryAuth()">Log in</button>
+<button id="primaryAuthBtn" class="btn btn-primary" type="button" onclick="handlePrimaryAuth()" disabled> Log in </button>
 
     <!-- Footer: switch mode -->
     <div class="modal__footer">
@@ -894,7 +894,7 @@ for (let i = 0; i < MAX_IMAGES; i++) {
   imageSlots.appendChild(slot);
 }
 
-// Modal logic
+// Image upload Modal logic
 const modal = document.createElement('div');
 modal.style.display = 'none';
 modal.style.position = 'fixed';
@@ -1263,24 +1263,30 @@ async function handlePrimaryAuth() {
 
 function updateUserUI(user) {
   const loginBtn = document.querySelector('.login-btn');
-  const userMenu = document.getElementById('userMenu');
   const drName = document.getElementById('drName');
 
-  if (user && user.displayName) {
-    // Example: extract surname
-    const fullName = user.displayName.trim();
-    const surname = fullName.split(' ').slice(-1)[0]; // take last word
+  // Hide login button if it exists
+  if (loginBtn) loginBtn.style.display = 'none';
+
+ // Update Dr. Name if drName element and user exist
+  if (drName && user) {
+    let label = '';
     const isMobile = window.innerWidth <= 768;
 
-    drName.textContent = isMobile
-      ? `Dr. ${surname[0].toUpperCase()}.`
-      : `Dr. ${surname}`;
+    if (user.displayName) {
+      const fullName = user.displayName.trim();
+      const surname = fullName.split(' ').slice(-1)[0]; // last word
+      label = isMobile ? `Dr. ${surname[0].toUpperCase()}.` : `Dr. ${surname}`;
+    } else if (user.email) {
+      const username = user.email.split('@')[0];
+      label = isMobile ? `Dr. ${username[0].toUpperCase()}.` : `Dr. ${username}`;
+    }
 
-    loginBtn.style.display = 'none';
-    userMenu.style.display = 'flex'; // or 'block' depending on your layout
+    drName.textContent = label;
+    drName.style.display = 'inline-block';
   }
 }
-   
+
     function startResetPassword() {
   const email = document.getElementById('authEmail')?.value.trim();
   if (!email) return alert('Enter your email first.');
@@ -1314,6 +1320,48 @@ function updateUserUI(user) {
   window.logoutUser = logoutUser;
     
 </script>
+  
+  // Log in / Register modal button management
+<script>
+  const primaryBtn = document.getElementById('primaryAuthBtn');
+  const emailInput = document.getElementById('authEmail');
+  const passwordInput = document.getElementById('authPassword');
+  const firstNameInput = document.getElementById('firstName');
+  const lastNameInput = document.getElementById('lastName');
+
+  function updatePrimaryBtnState() {
+    const isRegisterMode = primaryBtn.textContent.includes('Create account');
+
+    const emailFilled = emailInput?.value.trim() !== '';
+    const passwordFilled = passwordInput?.value.trim() !== '';
+
+    if (isRegisterMode) {
+      const firstNameFilled = firstNameInput?.value.trim() !== '';
+      const lastNameFilled = lastNameInput?.value.trim() !== '';
+      primaryBtn.disabled = !(firstNameFilled && lastNameFilled && emailFilled && passwordFilled);
+    } else {
+      primaryBtn.disabled = !(emailFilled && passwordFilled);
+    }
+  }
+
+  // Add listeners to relevant fields
+  [emailInput, passwordInput, firstNameInput, lastNameInput].forEach(input => {
+    if (input) input.addEventListener('input', updatePrimaryBtnState);
+  });
+
+  // Also update button state when switching modes
+  const switchModeBtn = document.getElementById('switchAuthModeBtn');
+  if (switchModeBtn) {
+    switchModeBtn.addEventListener('click', () => {
+      // slight delay to wait for the DOM to update textContent
+      setTimeout(updatePrimaryBtnState, 10);
+    });
+  }
+
+  // Initialize
+  updatePrimaryBtnState();
+</script>
+
 
 </body>
 </html>
