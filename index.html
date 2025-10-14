@@ -1241,18 +1241,23 @@ async function handlePrimaryAuth() {
 }
 
   // Log in with Google
-  function continueWithGoogle() {
-  signInWithPopup(auth, googleProvider)
+ function continueWithGoogle() {
+    signInWithPopup(auth, googleProvider)
     .then((result) => {
-  const user = result.user;
-  alert(`Signed in with Google: ${user.email}`);
-  document.getElementById('authModal').style.display = 'none';
-  document.querySelector('.login-btn').style.display = 'none';
-  updateUserUI(user);
-})
+    const user = result.user;
+    alert(`Signed in with Google: ${user.email}`);
+    
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'none';
+    
+    const loginBtn = document.querySelector('.login-btn');
+    if (loginBtn) loginBtn.style.display = 'none';
+    
+    updateUserUI(user);
+    })
     .catch((error) => {
-      console.error(error);
-      alert(`Google login error:\n${error.message}`);
+    console.error(error);
+    alert(`❌ Google login error:\n${error.message}`);
     });
 }
 
