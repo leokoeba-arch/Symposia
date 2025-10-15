@@ -667,8 +667,11 @@
       </span>
     </button>
   </div>
-    <p id="requiredNote" class="requiredOnly" style="display: none; color: #888; font-size: 12px; margin-top: 5px;">  *required field
-</p>
+<!-- Required field note, visible only in Create Account mode -->
+<div id="requiredFieldsNote" style="display: none; color: #555; font-size: 0.85rem; margin-top: 4px;">
+  *required field
+</div>
+
 </div>
 
 <!-- Forgot password (shown only in Login mode) -->
@@ -1375,7 +1378,37 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+  <script>
+  function updateRequiredIndicators(isCreateMode) {
+    const requiredLabels = [
+      { labelId: 'firstName', labelText: 'First name' },
+      { labelId: 'lastName', labelText: 'Last name' },
+      { labelId: 'authEmail', labelText: 'Email' },
+      { labelId: 'authPassword', labelText: 'Password' }
+    ];
 
+    requiredLabels.forEach(({ labelId, labelText }) => {
+      const label = document.querySelector(`label[for="${labelId}"]`);
+      if (label) {
+        if (isCreateMode) {
+          // Add asterisk if not already present
+          if (!label.innerHTML.includes('*')) {
+            label.innerHTML = labelText + '<span style="color:red;">*</span>';
+          }
+        } else {
+          // Remove asterisk on login mode
+          label.innerHTML = labelText;
+        }
+      }
+    });
+
+    // Show/hide required note under password
+    const requiredNote = document.getElementById('requiredNote');
+    if (requiredNote) {
+      requiredNote.style.display = isCreateMode ? 'block' : 'none';
+    }
+  }
+</script>
 
 </body>
 </html>
