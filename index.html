@@ -622,13 +622,17 @@
 
     <!-- Email -->
     <div class="form-row">
-      <label for="authEmail">Email*</label>
+      <label for="authEmail">Email   
+        <span class="requiredOnly" style="display:none;">*</span>
+      </label>
       <input type="email" id="authEmail" autocomplete="email" />
     </div>
 
    <!-- Password -->
 <div class="form-row">
-  <label for="authPassword">Password*</label>
+  <label for="authPassword">Password
+    <span class="requiredOnly" style="display:none;">*</span>
+  </label>
 
   <!-- relative wrapper so the eye button can be absolutely positioned -->
   <div class="password-wrap">
@@ -663,7 +667,8 @@
       </span>
     </button>
   </div>
-    <span class="single-required-note">*required field</span>
+    <p id="requiredNote" class="requiredOnly" style="display: none; color: #888; font-size: 12px; margin-top: 5px;">  *required field
+</p>
 </div>
 
 <!-- Forgot password (shown only in Login mode) -->
@@ -1143,6 +1148,11 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   // Switch between Login and Create account
   function switchAuthMode(toRegister) {
     isRegisterMode = !!toRegister;
+
+    const requiredEls = document.querySelectorAll('.requiredOnly');
+    requiredEls.forEach(el => {
+    el.style.display = isCreatingAccount ? 'inline' : 'none';
+    });
 
     // Show/hide name fields
     const nameFields = document.getElementById('nameFields');
