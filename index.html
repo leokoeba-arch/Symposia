@@ -549,12 +549,12 @@
   .modal__title   { font-size: 1.35rem; }
   .modal__subtitle{ font-size: .95rem; }
 }
-
-    .auth-btn:disabled {
-  background-color: #ccc;   /* grey background */
-  color: #666;              /* lighter text */
-  cursor: not-allowed;      /* "forbidden" cursor */
-  opacity: 0.6;             /* slightly transparent */
+   .single-required-note {
+  font-size: 0.75rem;   /* Small text */
+  color: #999;          /* Light gray */
+  margin-top: 4px;
+  display: block;
+  margin-left: 2px;
 }
 
   </style>
@@ -611,24 +611,24 @@
     <!-- Name fields (shown in Create account) -->
     <div id="nameFields" class="grid-2" style="display:none;">
       <div class="form-row">
-        <label for="firstName">First name</label>
+        <label for="firstName">First name*</label>
         <input type="text" id="firstName" autocomplete="given-name" />
       </div>
       <div class="form-row">
-        <label for="lastName">Last name</label>
+        <label for="lastName">Last name*</label>
         <input type="text" id="lastName" autocomplete="family-name" />
       </div>
     </div>
 
     <!-- Email -->
     <div class="form-row">
-      <label for="authEmail">Email</label>
+      <label for="authEmail">Email*</label>
       <input type="email" id="authEmail" autocomplete="email" />
     </div>
 
    <!-- Password -->
 <div class="form-row">
-  <label for="authPassword">Password</label>
+  <label for="authPassword">Password*</label>
 
   <!-- relative wrapper so the eye button can be absolutely positioned -->
   <div class="password-wrap">
@@ -663,6 +663,7 @@
       </span>
     </button>
   </div>
+    <span class="single-required-note">*required field</span>
 </div>
 
 <!-- Forgot password (shown only in Login mode) -->
