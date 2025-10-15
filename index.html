@@ -1149,11 +1149,6 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   function switchAuthMode(toRegister) {
     isRegisterMode = !!toRegister;
 
-    const requiredEls = document.querySelectorAll('.requiredOnly');
-    requiredEls.forEach(el => {
-    el.style.display = isCreatingAccount ? 'inline' : 'none';
-    });
-
     // Show/hide name fields
     const nameFields = document.getElementById('nameFields');
     if (nameFields) nameFields.style.display = isRegisterMode ? 'grid' : 'none';
@@ -1187,6 +1182,11 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
       switchBtn.textContent = isRegisterMode ? 'Log in' : 'Create one';
       switchBtn.setAttribute('onclick', `switchAuthMode(${!isRegisterMode})`);
     }
+
+     const requiredEls = document.querySelectorAll('.requiredOnly');
+    requiredEls.forEach(el => {
+    el.style.display = isCreatingAccount ? 'inline' : 'none';
+    });
   }
 
   // Show/hide password (single correct version)
