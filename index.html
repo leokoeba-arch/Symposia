@@ -550,6 +550,13 @@
   .modal__subtitle{ font-size: .95rem; }
 }
 
+    .auth-btn:disabled {
+  background-color: #ccc;   /* grey background */
+  color: #666;              /* lighter text */
+  cursor: not-allowed;      /* "forbidden" cursor */
+  opacity: 0.6;             /* slightly transparent */
+}
+
   </style>
 </head>
 
@@ -1321,46 +1328,42 @@ function updateUserUI(user) {
     
 </script>
   
-  // Log in / Register modal button management
 <script>
-  const primaryBtn = document.getElementById('primaryAuthBtn');
-  const emailInput = document.getElementById('authEmail');
-  const passwordInput = document.getElementById('authPassword');
-  const firstNameInput = document.getElementById('firstName');
-  const lastNameInput = document.getElementById('lastName');
+document.addEventListener("DOMContentLoaded", () => {
+  const primaryBtn = document.getElementById("primaryAuthBtn");
+  const fields = [
+    document.getElementById("authEmail"),
+    document.getElementById("authPassword"),
+    document.getElementById("firstName"),
+    document.getElementById("lastName")
+  ];
 
-  function updatePrimaryBtnState() {
-    const isRegisterMode = primaryBtn.textContent.includes('Create account');
+  function checkFields() {
+    // if register mode → require first+last+email+password
+    // if login mode → require only email+password
+    const requireName = isRegisterMode; // <-- uses your existing flag
+    const filled = fields.every(f => {
+      if (!f) return true; // ignore missing fields
+      if (requireName && (f.id === "firstName" || f.id === "lastName")) {
+        return f.value.trim() !== "";
+      }
+      if (f.id === "authEmail" || f.id === "authPassword") {
+        return f.value.trim() !== "";
+      }
+      return true;
+    });
 
-    const emailFilled = emailInput?.value.trim() !== '';
-    const passwordFilled = passwordInput?.value.trim() !== '';
-
-    if (isRegisterMode) {
-      const firstNameFilled = firstNameInput?.value.trim() !== '';
-      const lastNameFilled = lastNameInput?.value.trim() !== '';
-      primaryBtn.disabled = !(firstNameFilled && lastNameFilled && emailFilled && passwordFilled);
-    } else {
-      primaryBtn.disabled = !(emailFilled && passwordFilled);
-    }
+    primaryBtn.disabled = !filled;
   }
 
-  // Add listeners to relevant fields
-  [emailInput, passwordInput, firstNameInput, lastNameInput].forEach(input => {
-    if (input) input.addEventListener('input', updatePrimaryBtnState);
+  fields.forEach(f => {
+    if (f) f.addEventListener("input", checkFields);
   });
 
-  // Also update button state when switching modes
-  const switchModeBtn = document.getElementById('switchAuthModeBtn');
-  if (switchModeBtn) {
-    switchModeBtn.addEventListener('click', () => {
-      // slight delay to wait for the DOM to update textContent
-      setTimeout(updatePrimaryBtnState, 10);
-    });
-  }
-
-  // Initialize
-  updatePrimaryBtnState();
+  checkFields(); // run once at start
+});
 </script>
+
 
 
 </body>
