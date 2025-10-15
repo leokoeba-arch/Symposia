@@ -557,6 +557,21 @@
   margin-left: 2px;
 }
 
+     .create-only {
+    display: none;
+  }
+
+  .required-asterisk {
+    color: inherit;
+    font-weight: normal;
+    margin-left: 2px;
+  }
+
+  .required-note {
+    font-size: 0.8em;
+    color: inherit;
+    margin-top: 4px;
+  }
   </style>
 </head>
 
@@ -611,28 +626,24 @@
     <!-- Name fields (shown in Create account) -->
     <div id="nameFields" class="grid-2" style="display:none;">
       <div class="form-row">
-        <label for="firstName">First name*</label>
+      <label for="firstName">First name<span class="required-asterisk create-only">*</span></label>
         <input type="text" id="firstName" autocomplete="given-name" />
       </div>
       <div class="form-row">
-        <label for="lastName">Last name*</label>
+      <label for="lastName">Last name<span class="required-asterisk create-only">*</span></label>
         <input type="text" id="lastName" autocomplete="family-name" />
       </div>
     </div>
 
     <!-- Email -->
     <div class="form-row">
-      <label for="authEmail">Email   
-        <span class="requiredOnly" style="display:none;">*</span>
-      </label>
+      <label for="authEmail">Email<span class="required-asterisk create-only">*</span></label>
       <input type="email" id="authEmail" autocomplete="email" />
     </div>
 
    <!-- Password -->
 <div class="form-row">
-  <label for="authPassword">Password
-    <span class="requiredOnly" style="display:none;">*</span>
-  </label>
+  <label for="authPassword">Password<span class="required-asterisk create-only">*</span></label>
 
   <!-- relative wrapper so the eye button can be absolutely positioned -->
   <div class="password-wrap">
@@ -670,9 +681,8 @@
 </div>
 
     <!-- Required field note, visible only in Create Account mode -->
-<div id="requiredFieldsNote" style="display: none; color: #555; font-size: 0.85rem; margin-top: 4px;">
-  *required field
-</div>
+<p class="required-note create-only">*required field</p>
+
 
 <!-- Forgot password (shown only in Login mode) -->
 <div class="forgot-row">
@@ -1190,6 +1200,10 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     requiredEls.forEach(el => {
     el.style.display = isCreatingAccount ? 'inline' : 'none';
     });
+    // show/hide grey note under password
+    const requiredNote = document.getElementById('requiredNote');
+    if (requiredNote) requiredNote.style.display = isRegisterMode ? 'block' : 'none';
+
   }
 
   // Show/hide password (single correct version)
