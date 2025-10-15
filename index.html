@@ -682,8 +682,7 @@
 </div>
 
     <!-- Required field note, visible only in Create Account mode -->
-<p class="required-note create-only">*required field</p>
-
+<p id="requiredNote" class="required-note">*required field</p>
 
 <!-- Forgot password (shown only in Login mode) -->
 <div class="forgot-row">
@@ -1162,6 +1161,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   // Switch between Login and Create account
   function switchAuthMode(toRegister) {
     isRegisterMode = !!toRegister;
+    updateRequiredIndicators(isRegisterMode);
 
     // Show/hide name fields
     const nameFields = document.getElementById('nameFields');
@@ -1223,6 +1223,30 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
       btnEl.setAttribute('aria-pressed', String(willShowText));
     }
   }
+
+  function updateRequiredIndicators(isRegisterMode) {
+  const requiredLabels = [
+    { labelId: 'firstName', labelText: 'First name' },
+    { labelId: 'lastName', labelText: 'Last name' },
+    { labelId: 'authEmail', labelText: 'Email' },
+    { labelId: 'authPassword', labelText: 'Password' }
+  ];
+
+  requiredLabels.forEach(({ labelId, labelText }) => {
+    const label = document.querySelector(`label[for="${labelId}"]`);
+    if (label) {
+      label.innerHTML = isRegisterMode
+        ? `${labelText} <span style="color:red;">*</span>`
+        : labelText;
+    }
+  });
+
+  const requiredNote = document.getElementById('requiredNote');
+  if (requiredNote) {
+    requiredNote.style.display = isRegisterMode ? 'block' : 'none';
+  }
+}
+
 </script>
 
   <script type="module">
@@ -1393,38 +1417,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   checkFields(); // run once at start
 });
-</script>
-
-  <script>
-  function updateRequiredIndicators(isRegisterMode) {
-    const requiredLabels = [
-      { labelId: 'firstName', labelText: 'First name' },
-      { labelId: 'lastName', labelText: 'Last name' },
-      { labelId: 'authEmail', labelText: 'Email' },
-      { labelId: 'authPassword', labelText: 'Password' }
-    ];
-
-    requiredLabels.forEach(({ labelId, labelText }) => {
-      const label = document.querySelector(`label[for="${labelId}"]`);
-      if (label) {
-        if (isRegisterMode) {
-          // Add asterisk if not already present
-          if (!label.innerHTML.includes('*')) {
-            label.innerHTML = labelText + '<span style="color:red;">*</span>';
-          }
-        } else {
-          // Remove asterisk on login mode
-          label.innerHTML = labelText;
-        }
-      }
-    });
-
-    // Show/hide required note under password
-    const requiredNote = document.getElementById('requiredNote');
-    if (requiredNote) {
-      requiredNote.style.display = isRegisterMode ? 'block' : 'none';
-    }
-  }
 </script>
 
 </body>
