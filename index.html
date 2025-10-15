@@ -1236,7 +1236,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     const label = document.querySelector(`label[for="${labelId}"]`);
     if (label) {
       label.innerHTML = isRegisterMode
-        ? `${labelText} <span style="color:red;">*</span>`
+        ? `${labelText} <span style="color:#999;">*</span>`
         : labelText;
     }
   });
