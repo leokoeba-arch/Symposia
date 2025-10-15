@@ -1396,7 +1396,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
   <script>
-  function updateRequiredIndicators(isCreateMode) {
+  function updateRequiredIndicators(isRegisterMode) {
     const requiredLabels = [
       { labelId: 'firstName', labelText: 'First name' },
       { labelId: 'lastName', labelText: 'Last name' },
@@ -1407,7 +1407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requiredLabels.forEach(({ labelId, labelText }) => {
       const label = document.querySelector(`label[for="${labelId}"]`);
       if (label) {
-        if (isCreateMode) {
+        if (isRegisterMode) {
           // Add asterisk if not already present
           if (!label.innerHTML.includes('*')) {
             label.innerHTML = labelText + '<span style="color:red;">*</span>';
@@ -1422,7 +1422,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show/hide required note under password
     const requiredNote = document.getElementById('requiredNote');
     if (requiredNote) {
-      requiredNote.style.display = isCreateMode ? 'block' : 'none';
+      requiredNote.style.display = isRegisterMode ? 'block' : 'none';
     }
   }
 </script>
