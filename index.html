@@ -573,6 +573,61 @@
   margin: 4px 0 0 0;
 }
 
+    .side-menu {
+  position: fixed;
+  top: 0;
+  right: -280px; /* hidden by default */
+  width: 280px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,.15);
+  transition: right 0.3s ease;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.side-menu.open { right: 0; }
+
+.side-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.side-menu-header span {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.side-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-menu-list li {
+  margin-bottom: 15px;
+}
+
+.side-menu-list button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #1e293b;
+}
+.side-menu-list button:hover {
+  color: #2563eb;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
   </style>
 </head>
 
@@ -584,6 +639,19 @@
     <div class="dr-name" id="drName"></div>
     <button class="login-btn" onclick="toggleAuthModal(true)">Log in / Register</button>
   </div>
+</div>
+
+  <!-- ===== SIDE MENU (hidden by default) ===== -->
+<div id="sideMenu" class="side-menu">
+  <div class="side-menu-header">
+    <span id="sideMenuName"></span>
+    <button class="close-btn" onclick="toggleSideMenu(false)">×</button>
+  </div>
+  <ul class="side-menu-list">
+    <li><button onclick="openPersonalInfo()">Personal Info</button></li>
+    <li><button onclick="openBilling()">Billing Info</button></li>
+    <li><button onclick="logoutUser()">Logout</button></li>
+  </ul>
 </div>
 
 
@@ -1198,10 +1266,10 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
     }
 
      const requiredEls = document.querySelectorAll('.requiredOnly');
-    requiredEls.forEach(el => {
-    el.style.display = isCreatingAccount ? 'inline' : 'none';
+      requiredEls.forEach(el => {
+      el.style.display = isRegisterMode ? 'inline' : 'none';
     });
-    
+
     // show/hide grey note under password
     const requiredNote = document.getElementById('requiredNote');
     if (requiredNote) {
@@ -1247,14 +1315,40 @@ document.getElementById('modalConfirmBtn').addEventListener('click', () => {
   }
 }
 
+  function toggleSideMenu(show) {
+  const sideMenu = document.getElementById('sideMenu');
+  const nameEl   = document.getElementById('sideMenuName');
+  const storedFirst = localStorage.getItem('userFirstName') || '';
+  const storedLast  = localStorage.getItem('userLastName')  || '';
+
+  if (!sideMenu) return;
+
+  if (show) {
+    sideMenu.classList.add('open');
+    nameEl.textContent = `Dr. ${storedLast || storedFirst}`;
+  } else {
+    sideMenu.classList.remove('open');
+  }
+}
+
 </script>
 
   <script type="module">
 
   // ===== Firebase SDK Setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  updateProfile,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
@@ -1267,6 +1361,20 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+ onAuthStateChanged(auth, (user) => {
+  if (user) {
+    updateUserUI(user);
+  } else {
+    const loginBtn = document.querySelector('.login-btn');
+    const drName   = document.getElementById('drName');
+    if (loginBtn) loginBtn.style.display = 'inline-block';
+    if (drName) {
+      drName.textContent = '';
+      drName.style.display = 'none';
+    }
+  }
+});
+   
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -1277,18 +1385,22 @@ async function handlePrimaryAuth() {
   if (!email || !password) return alert('Please enter email and password.');
 
   try {
-    if (isRegisterMode) {
+       if (isRegisterMode) {
       const first = document.getElementById('firstName')?.value.trim() || '';
-      const last = document.getElementById('lastName')?.value.trim() || '';
+      const last  = document.getElementById('lastName')?.value.trim() || '';
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-
-      // Optional: update user profile
-      await user.updateProfile({ displayName: `${first} ${last}` });
-
+    
+      // Save displayName with the modular API
+      await updateProfile(user, { displayName: `${first} ${last}` });
+    
+      // Persist locally too (so we can fall back if displayName is missing)
+      localStorage.setItem('userFirstName', first);
+      localStorage.setItem('userLastName',  last);
+    
       alert(`✅ Registered as ${user.email}`);
       document.getElementById('authModal').style.display = 'none';
       document.querySelector('.login-btn').style.display = 'none';
-      updateUserUI(user); // <-- define this function next
+      updateUserUI(user);
 
     } else {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
@@ -1308,7 +1420,17 @@ async function handlePrimaryAuth() {
     .then((result) => {
     const user = result.user;
     alert(`Signed in with Google: ${user.email}`);
-    
+
+      // Store first/last locally for banner fallback
+      const full = (user.displayName || '').trim();
+      if (full) {
+        const parts = full.split(/\s+/);
+        const first = parts[0] || '';
+        const last  = parts.length > 1 ? parts[parts.length - 1] : '';
+        localStorage.setItem('userFirstName', first);
+        localStorage.setItem('userLastName',  last);
+      }
+
     const modal = document.getElementById('authModal');
     if (modal) modal.style.display = 'none';
     
@@ -1325,29 +1447,39 @@ async function handlePrimaryAuth() {
 
 function updateUserUI(user) {
   const loginBtn = document.querySelector('.login-btn');
-  const drName = document.getElementById('drName');
+  const drNameEl = document.getElementById('drName');
 
-  // Hide login button if it exists
   if (loginBtn) loginBtn.style.display = 'none';
+  if (!drNameEl || !user) return;
 
- // Update Dr. Name if drName element and user exist
-  if (drName && user) {
-    let label = '';
-    const isMobile = window.innerWidth <= 768;
+  const isMobile = window.innerWidth <= 768;
 
-    if (user.displayName) {
-      const fullName = user.displayName.trim();
-      const surname = fullName.split(' ').slice(-1)[0]; // last word
-      label = isMobile ? `Dr. ${surname[0].toUpperCase()}.` : `Dr. ${surname}`;
-    } else if (user.email) {
-      const username = user.email.split('@')[0];
-      label = isMobile ? `Dr. ${username[0].toUpperCase()}.` : `Dr. ${username}`;
-    }
+  // 1) Prefer locally stored names (from our registration or Google fallback)
+  const storedFirst = (localStorage.getItem('userFirstName') || '').trim();
+  const storedLast  = (localStorage.getItem('userLastName')  || '').trim();
 
-    drName.textContent = label;
-    drName.style.display = 'inline-block';
+  let surname = '';
+  if (storedLast) {
+    surname = storedLast;
+  } else if (user.displayName) {
+    const parts = user.displayName.trim().split(/\s+/);
+    surname = parts.length ? parts[parts.length - 1] : '';
   }
+
+  let label = '';
+  if (surname) {
+    label = isMobile ? `Dr. ${surname.charAt(0).toUpperCase()}.` : `Dr. ${surname}`;
+  } else if (user.email) {
+    // Fallback to email username
+    const username = user.email.split('@')[0];
+    label = isMobile ? `Dr. ${username.charAt(0).toUpperCase()}.` : `Dr. ${username}`;
+  }
+
+  drNameEl.textContent = label;
+  drNameEl.onclick = () => toggleSideMenu(true);
+  drNameEl.style.display = 'inline-block';
 }
+
 
     function startResetPassword() {
   const email = document.getElementById('authEmail')?.value.trim();
@@ -1366,13 +1498,22 @@ function updateUserUI(user) {
   signOut(auth)
     .then(() => {
       alert("🚪 Logged out successfully!");
-      // Optional: redirect or update UI
+      const loginBtn = document.querySelector('.login-btn');
+      const drName   = document.getElementById('drName');
+      if (loginBtn) loginBtn.style.display = 'inline-block';
+      if (drName) {
+        drName.textContent = '';
+        drName.style.display = 'none';
+      }
+      // (optionally) keep localStorage names; they’re useful after next login.
     })
     .catch((error) => {
       console.error("Logout error:", error);
       alert(`Logout error:\n${error.message}`);
     });
+    toggleSideMenu(false);
 }
+
    // Expose to global scope for inline onclick=""
   window.toggleAuthModal = toggleAuthModal;
   window.switchAuthMode = switchAuthMode;
