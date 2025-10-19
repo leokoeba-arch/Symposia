@@ -743,25 +743,37 @@
 .download-popup { 
   display: none; 
   position: absolute;
-  right: 12px;
-  top: 60px;
+  top: 52px; /* right below the Remaining Downloads button */
+  left: 0;
+  right: 0;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.15);
-  padding: 14px;
-  width: 230px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.15);
+  padding: 14px 16px;
+  width: calc(100% - 28px); /* full width minus padding */
+  margin: 0 auto;
   z-index: 4000;
 }
 
-.download-popup.open {
-  display: block;
+.download-popup.open { display: block; }
+
+.download-popup__close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
 }
+.download-popup__close:hover { color: #1e293b; }
 
 .download-popup p {
   font-size: 0.9rem;
   color: #334155;
-  margin-bottom: 10px;
+  margin: 0 0 10px;
 }
 
 .download-popup button {
@@ -774,10 +786,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-
-.download-popup button:hover {
-  background: #1d4ed8;
-}
+.download-popup button:hover { background: #1d4ed8; }
 
 /* === Slightly larger card on desktop === */
 @media (min-width: 769px) {
@@ -870,10 +879,9 @@
   </div>
   <!-- === Remaining Downloads Popup === -->
 <div id="downloadPopup" class="download-popup">
-  <div class="download-popup__panel">
-    <p>You have <strong id="popupRemaining">0 / 8</strong> downloads remaining.</p>
-    <button id="goUpgradeFromPopup" class="download-popup__cta">Upgrade</button>
-  </div>
+  <button class="download-popup__close" onclick="toggleDownloadPopup(false)">×</button>
+  <p>You have <strong id="popupRemaining">0 / 8</strong> downloads remaining.</p>
+  <button id="goUpgradeFromPopup" class="download-popup__cta">Upgrade</button>
 </div>
 </div>
 
@@ -1977,41 +1985,71 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rowCounter)     rowCounter.textContent     = text;
     if (popupRemaining) popupRemaining.textContent = text;
   }
+  
+// ====== DOWNLOAD LIMIT GUARD + UPGRADE MODAL ======
+if (downloadBtn) {
+  downloadBtn.addEventListener(
+    "click",
+    (e) => {
+      // If limit reached → block download and show the big upgrade modal
+      if (downloadCount >= maxDownloads) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
 
-  // Small popup open/close
-  function openDownloadsPopup() {
-    syncDownloadUI();
-    if (downloadPopup) downloadPopup.classList.add("open");
-  }
-  function closeDownloadsPopup() {
-    if (downloadPopup) downloadPopup.classList.remove("open");
-  }
+        const upgradePopup = document.getElementById("upgradePopup");
+        if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
+        return;
+      }
 
-  // Open small popup from the “Remaining Downloads” row
-  if (remainingBtn) {
-    remainingBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openDownloadsPopup();
-    });
+      // Otherwise allow download, then bump count
+      Promise.resolve().then(() => {
+        downloadCount = Math.min(downloadCount + 1, maxDownloads);
+        saveDownloadCount();
+        syncDownloadUI();
+
+        if (downloadCount >= maxDownloads) {
+          downloadBtn.disabled = true;
+          downloadBtn.classList.add("disabled");
+        }
+      });
+    },
+    true // capture phase → ensures this runs before the native download handler
+  );
+}
+
+// ====== SMALL POPUP TOGGLER (Remaining Downloads) ======
+function toggleDownloadPopup(show) {
+  const popup = document.getElementById("downloadPopup");
+  if (!popup) return;
+  if (show) popup.classList.add("open");
+  else popup.classList.remove("open");
+}
+
+// open when clicking on “Remaining Downloads”
+document.getElementById("remainingDownloadsBtn")?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleDownloadPopup(true);
+});
+
+// close when clicking outside the popup
+document.addEventListener("click", (e) => {
+  const popup = document.getElementById("downloadPopup");
+  if (popup && !popup.contains(e.target) && !e.target.closest("#remainingDownloadsBtn")) {
+    toggleDownloadPopup(false);
   }
-  // Close small popup by clicking anywhere else
-  document.addEventListener("click", (e) => {
-    if (!downloadPopup) return;
-    const inside = e.target.closest("#downloadPopup");
-    const onBtn  = e.target.closest("#remainingDownloadsBtn");
-    if (!inside && !onBtn) closeDownloadsPopup();
+});
+
+// “Upgrade” button inside the small popup
+if (goUpgradeBtn) {
+  goUpgradeBtn.addEventListener("click", () => {
+    toggleDownloadPopup(false);
+    const upgradePopup = document.getElementById("upgradePopup");
+    if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
   });
+}
 
-  // “Upgrade” from small popup → open the big modal
-  if (goUpgradeBtn) {
-    goUpgradeBtn.addEventListener("click", () => {
-      closeDownloadsPopup();
-      if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
-    });
-  }
-
-  // Helper to bump counter after a successful save
-   function bumpDownloadCount() {
+// ====== CLOUD SYNC FUNCTIONS ======
+function bumpDownloadCount() {
   downloadCount = Math.min(downloadCount + 1, maxDownloads);
   localStorage.setItem(keyName, String(downloadCount));
   saveDownloadCountToCloud(currentEmail, downloadCount); // 🔹 sync to Firestore
@@ -2023,7 +2061,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 }
 
-  async function syncInitialDownloadCount() {
+async function syncInitialDownloadCount() {
   if (!currentEmail) return;
   const cloudCount = await fetchDownloadCount(currentEmail);
   if (cloudCount > downloadCount) {
@@ -2032,27 +2070,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   syncDownloadUI();
 }
-  // Guard the real download: intercept BEFORE your existing handler
-  if (downloadBtn) {
-    downloadBtn.addEventListener(
-      "click",
-      (e) => {
-        // If limit reached → block the download and show big modal
-        if (downloadCount >= maxDownloads) {
-          e.stopImmediatePropagation();
-          e.preventDefault();
-          if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
-          return;
-        }
-        Promise.resolve().then(() => bumpDownloadCount());
-      },
-      true // <-- capture: our guard runs before the original listener that saves the file
-    );
-  }
-  syncInitialDownloadCount(); // 🔹 pull initial value from Firestore
-  syncDownloadUI();
+
+// ====== INITIALIZATION ======
+syncInitialDownloadCount(); // 🔹 pull initial value from Firestore
+syncDownloadUI();
 });
 </script>
+
 <script type="module">
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
 
