@@ -627,7 +627,7 @@
   position: fixed;
   top: 52px;
   right: 16px;
-  width: 280px;
+  width: 320px;
   max-width: 92vw;
   background: #fff;
   border-radius: 12px;
@@ -739,6 +739,53 @@
   font-size: 0.9rem;
 }
 
+/* === User Menu popup === */
+.download-popup {
+  position: absolute;
+  top: 70px;
+  right: 320px; /* positions next to the menu */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.15);
+  padding: 14px 16px;
+  width: 240px;
+  z-index: 3500;
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.download-popup.open {
+  display: block;
+}
+
+.download-popup p {
+  font-size: 0.9rem;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.download-popup button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-popup button:hover {
+  background: #1d4ed8;
+}
+
+/* === Slightly larger card on desktop === */
+@media (min-width: 769px) {
+  .user-menu {
+    width: 320px;
+  }
+}
+    
   /* === Upgrade Modal === */
 #upgradeModal[aria-hidden="true"] {
   display: none;
@@ -880,6 +927,12 @@
 </div>
 
 <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
+
+<div id="downloadPopup" class="download-popup">
+  <p>Your free version has <strong><span id="popupRemaining">8</span></strong> remaining downloads.<br>
+  Upgrade to unlock unlimited downloads and Pro features.</p>
+  <button onclick="openUpgradeModal()">Upgrade</button>
+</div>
 
 
 <!-- ===== LOGIN / REGISTER MODAL ===== -->
@@ -1954,6 +2007,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (downloadBtn) {
     downloadBtn.addEventListener("click", handleDownloadClick);
+  }
+});
+
+  // === Remaining Downloads Popup ===
+const remainingDownloadsBtn = document.querySelector(
+  '.menu-item span'
+);
+const downloadPopup = document.getElementById('downloadPopup');
+const popupRemaining = document.getElementById('popupRemaining');
+
+document.querySelectorAll('.menu-item').forEach(item => {
+  if (item.textContent.includes("Remaining Downloads")) {
+    item.addEventListener("click", () => {
+      popupRemaining.textContent = maxDownloads - downloadCount;
+      downloadPopup.classList.toggle("open");
+    });
+  }
+});
+
+// Close popup when clicking outside
+document.addEventListener("click", (e) => {
+  if (!downloadPopup.contains(e.target) && 
+      !e.target.closest(".menu-item")) {
+    downloadPopup.classList.remove("open");
   }
 });
 
