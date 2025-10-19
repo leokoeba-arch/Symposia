@@ -740,18 +740,18 @@
 }
 
 /* === User Menu remaining downloads popup === */
-.download-popup {
+.download-popup { 
+  display: none; 
   position: absolute;
-  top: 70px;
-  right: 320px; /* positions next to the menu */
+  right: 12px;
+  top: 60px;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 18px rgba(0,0,0,.15);
-  padding: 14px 16px;
-  width: 240px;
-  z-index: 3500;
-  display: none;
-  animation: fadeIn 0.2s ease;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  padding: 14px;
+  width: 230px;
+  z-index: 4000;
 }
 
 .download-popup.open {
@@ -869,7 +869,7 @@
     </button>
   </div>
   <!-- === Remaining Downloads Popup === -->
-<div id="downloadPopup" class="download-popup" aria-hidden="true">
+<div id="downloadPopup" class="download-popup">
   <div class="download-popup__panel">
     <p>You have <strong id="popupRemaining">0 / 8</strong> downloads remaining.</p>
     <button id="goUpgradeFromPopup" class="download-popup__cta">Upgrade</button>
