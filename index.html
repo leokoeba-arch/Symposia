@@ -1682,7 +1682,8 @@ async function handlePrimaryAuth() {
       // Persist locally too (so we can fall back if displayName is missing)
       localStorage.setItem('userFirstName', first);
       localStorage.setItem('userLastName',  last);
-    
+      localStorage.setItem('userEmail', user.email);
+
       alert(`✅ Registered as ${user.email}`);
       document.getElementById('authModal').style.display = 'none';
       document.querySelector('.login-btn').style.display = 'none';
@@ -1690,6 +1691,7 @@ async function handlePrimaryAuth() {
 
     } else {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
+  localStorage.setItem('userEmail', user.email);
 
   // Try to populate localStorage from displayName (if available)
   if (user.displayName) {
@@ -1734,6 +1736,7 @@ async function handlePrimaryAuth() {
       if (last)  localStorage.setItem('userLastName',  last);
 
       alert(`Signed in with Google: ${user.email}`);
+      localStorage.setItem('userEmail', user.email);
 
       const modal = document.getElementById('authModal');
       if (modal) modal.style.display = 'none';
@@ -1847,6 +1850,8 @@ function updateUserUI(user) {
         drName.textContent = '';
         drName.style.display = 'none';
       }
+        // 🔹 clear stored email to reset the bound counter
+      localStorage.removeItem("userEmail");
       toggleSideMenu(false);
     })
     .catch((error) => {
@@ -1922,9 +1927,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");    // button in small popup
   const downloadBtn    = document.getElementById("downloadBtn");           // the real download button
 
-  // --- Counter state ---
+   // --- Counter setup (key bound to email) ---
   const maxDownloads = 8;
-  let downloadCount = parseInt(localStorage.getItem("downloadCount") || "0", 10);
+
+  // Get current user email (from your Firebase login or stored name)
+  const currentEmail =
+    localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail") || "guest";
+
+  // Use the email as part of the key
+  const keyName = `downloadCount_${currentEmail}`;
+
+  let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
+
+  function saveDownloadCount() {
+    localStorage.setItem(keyName, String(downloadCount));
+  }
+
 
   function syncDownloadUI() {
     const text = `${downloadCount} / ${maxDownloads}`;
@@ -1965,11 +1983,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Helper to bump counter after a successful save
-  function bumpDownloadCount() {
+   function bumpDownloadCount() {
     downloadCount = Math.min(downloadCount + 1, maxDownloads);
-    localStorage.setItem("downloadCount", String(downloadCount));
+    saveDownloadCount();
     syncDownloadUI();
+
+    if (downloadCount >= maxDownloads && downloadBtn) {
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add("disabled");
+    }
   }
+
 
   // Guard the real download: intercept BEFORE your existing handler
   if (downloadBtn) {
