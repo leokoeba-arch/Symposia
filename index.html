@@ -2053,6 +2053,128 @@ document.addEventListener("DOMContentLoaded", () => {
   syncDownloadUI();
 });
 </script>
+<script type="module">
+/* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
+
+// Ensure Firebase Auth and Firestore already exist (imported earlier)
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const auth = getAuth();
+const db   = getFirestore();
+
+const remainingBtn   = document.getElementById("remainingDownloadsBtn");
+const downloadPopup  = document.getElementById("downloadPopup");
+const popupRemaining = document.getElementById("popupRemaining");
+const rowCounter     = document.getElementById("downloadCounter");
+const upgradePopup   = document.getElementById("upgradePopup");
+const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");
+const downloadBtn    = document.getElementById("downloadBtn");
+
+const maxDownloads = 8;
+let downloadCount = 0;
+let currentEmail  = null;
+let keyName       = "downloadCount_guest";
+
+// --- Firestore helpers ---
+async function fetchDownloadCount(userEmail) {
+  if (!userEmail) return 0;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().count || 0 : 0;
+  } catch (err) {
+    console.error("Error fetching count:", err);
+    return 0;
+  }
+}
+
+async function saveDownloadCountToCloud(userEmail, count) {
+  if (!userEmail) return;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    await setDoc(ref, { count }, { merge: true });
+  } catch (err) {
+    console.error("Error saving count:", err);
+  }
+}
+
+// --- UI helpers ---
+function syncDownloadUI() {
+  const text = `${downloadCount} / ${maxDownloads}`;
+  if (rowCounter) rowCounter.textContent = text;
+  if (popupRemaining) popupRemaining.textContent = text;
+}
+
+function openDownloadsPopup() {
+  syncDownloadUI();
+  downloadPopup?.classList.add("open");
+}
+function closeDownloadsPopup() {
+  downloadPopup?.classList.remove("open");
+}
+
+// --- Popup and upgrade button ---
+remainingBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openDownloadsPopup();
+});
+document.addEventListener("click", (e) => {
+  if (!downloadPopup) return;
+  const inside = e.target.closest("#downloadPopup");
+  const onBtn  = e.target.closest("#remainingDownloadsBtn");
+  if (!inside && !onBtn) closeDownloadsPopup();
+});
+goUpgradeBtn?.addEventListener("click", () => {
+  closeDownloadsPopup();
+  upgradePopup?.setAttribute("aria-hidden", "false");
+});
+
+// --- Counter bump logic ---
+function bumpDownloadCount() {
+  downloadCount = Math.min(downloadCount + 1, maxDownloads);
+  localStorage.setItem(keyName, String(downloadCount));
+  if (currentEmail) saveDownloadCountToCloud(currentEmail, downloadCount);
+  syncDownloadUI();
+
+  if (downloadCount >= maxDownloads && downloadBtn) {
+    downloadBtn.disabled = true;
+    downloadBtn.classList.add("disabled");
+  }
+}
+
+// --- Guard actual download click ---
+downloadBtn?.addEventListener(
+  "click",
+  (e) => {
+    if (downloadCount >= maxDownloads) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      upgradePopup?.setAttribute("aria-hidden", "false");
+      return;
+    }
+    Promise.resolve().then(() => bumpDownloadCount());
+  },
+  true
+);
+
+// --- Auth-based sync ---
+onAuthStateChanged(auth, async (user) => {
+  if (user && user.email) {
+    currentEmail = user.email;
+    keyName = `downloadCount_${currentEmail}`;
+    const local = parseInt(localStorage.getItem(keyName) || "0", 10);
+    const cloud = await fetchDownloadCount(currentEmail);
+    downloadCount = Math.max(local, cloud);
+    localStorage.setItem(keyName, String(downloadCount));
+  } else {
+    currentEmail = null;
+    keyName = "downloadCount_guest";
+    downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
+  }
+  syncDownloadUI();
+});
+</script>
 
 
 </body>
