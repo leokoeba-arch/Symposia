@@ -738,6 +738,63 @@
   color: #1e293b;
   font-size: 0.9rem;
 }
+
+  /* === Upgrade Modal === */
+#upgradeModal[aria-hidden="true"] {
+  display: none;
+}
+#upgradeModal[aria-hidden="false"] {
+  display: flex;
+}
+
+#upgradeModal .modal__panel {
+  max-width: 400px;
+  width: 92%;
+  padding: 22px 20px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+#upgradeModal .modal__title {
+  font-size: 1.4rem;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+#upgradeModal .modal__subtitle {
+  color: #475569;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+#upgradeModal .modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover { background: #1e4ed8; }
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-secondary:hover { background: #d1d5db; }
+
   </style>
 </head>
 
@@ -966,7 +1023,6 @@
     <div class="dot"></div>
     <div class="dot"></div>
   </div>
-  <!-- Removed the hardcoded <p> here -->
 </div>
 
 <div class="output-wrapper">
@@ -977,6 +1033,23 @@
     <!-- Single download button -->
     <button id="downloadBtn">Download Draft</button>
   </div>
+
+  <!-- ===== UPGRADE MODAL ===== -->
+<div id="upgradeModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" onclick="closeUpgradeModal()"></div>
+  <div class="modal__panel">
+    <h2 class="modal__title">Free Limit Reached</h2>
+    <p class="modal__subtitle">
+      You’ve reached your <strong>8-draft limit</strong> on the Free plan.
+      Upgrade now to continue downloading your Symposia drafts without limits.
+    </p>
+
+    <div class="modal__actions">
+      <button class="btn-primary" onclick="openBillingInfo()">Upgrade Plan</button>
+      <button class="btn-secondary" onclick="closeUpgradeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
   <script>
     const generateBtn   = document.getElementById('generateBtn');
@@ -1820,6 +1893,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   checkFields(); // run once at start
 });
+
+  // === Download Counter Logic ===
+let downloadCount = 0;
+const maxDownloads = 8;
+const downloadBtn = document.getElementById("downloadDraftBtn"); // adjust to your actual button ID
+
+function handleDownloadClick() {
+  if (downloadCount >= maxDownloads) {
+    openUpgradeModal();
+    return;
+  }
+
+  // Normal download action here
+  downloadCount++;
+  document.getElementById("downloadCount").textContent = downloadCount;
+
+  if (downloadCount >= maxDownloads) {
+    downloadBtn.disabled = true;
+    downloadBtn.classList.add("disabled");
+  }
+}
+
+// === Upgrade Modal Control ===
+function openUpgradeModal() {
+  document.getElementById("upgradeModal").setAttribute("aria-hidden", "false");
+}
+function closeUpgradeModal() {
+  document.getElementById("upgradeModal").setAttribute("aria-hidden", "true");
+}
+
 </script>
 
 </body>
