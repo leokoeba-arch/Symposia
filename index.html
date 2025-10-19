@@ -742,96 +742,80 @@
 @media (min-width: 769px) {
   .user-menu {width: 320px;}}
 
-/* === UPGRADE MODAL WRAPPER (safe positioning & visibility) === */
+/* === UPGRADE MODAL (centered, crisp & responsive) === */
 #upgradeModal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   display: none;
   justify-content: center;
-  align-items: flex-start;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
+  align-items: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
   z-index: 9999;
-  padding-top: 80px; /* ensures it appears below the blue header text */
+  transition: opacity 0.25s ease;
 }
-
 #upgradeModal.open {
   display: flex !important;
+  opacity: 1;
 }
 
+/* === PANEL === */
 .upgrade-modal__panel {
   position: relative;
+  width: 95%;
+  max-width: 920px;
   background: #fff;
-  border-radius: 14px;
-  padding: 32px;
-  max-width: 1000px;
-  width: 92%;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.25s ease;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  padding: 28px 36px;
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.25s ease;
 }
 
-/* === CLOSE / BACK BUTTONS === */
+/* === CLOSE / BACK === */
 .upgrade-modal__close {
   position: absolute;
   top: 14px;
-  right: 16px;
-  font-size: 1.4rem;
+  right: 18px;
   background: none;
   border: none;
+  font-size: 22px;
+  color: #555;
   cursor: pointer;
-  color: #333;
-  z-index: 10;
+  transition: color 0.2s;
 }
-.upgrade-modal__close:hover {
-  color: #000;
-}
-.back-btn {
+.upgrade-modal__close:hover { color: #000; }
+
+#backToPlansBtn {
   position: absolute;
   top: 14px;
-  left: 16px;
+  left: 18px;
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 18px;
   color: #2563eb;
   cursor: pointer;
-}
-.back-btn:hover {
-  text-decoration: underline;
-}
-
-/* === MAIN CONTENT === */
-.upgrade-modal {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.upgrade-step {
-  display: flex;
-  gap: 32px;
-}
-.upgrade-step.hidden {
   display: none;
 }
 
-/* LEFT SIDE (Choose Your Plan) */
-.upgrade-left,
-.payment-left {
-  flex: 0 0 30%; /* narrower side */
-  background: linear-gradient(145deg, #eef3ff, #f9fbff);
-  border-radius: 10px;
+/* === CONTENT LAYOUT === */
+.upgrade-step {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+.upgrade-step.hidden { display: none; }
+
+.upgrade-left, .payment-left {
+  flex: 0 0 30%;
+  background: linear-gradient(160deg,#f4f7ff,#eef3ff);
+  border-radius: 12px;
   padding: 20px;
 }
 
-/* RIGHT SIDE (Benefits + Subscription Options) */
-.upgrade-right,
-.payment-right {
-  flex: 0 0 70%;
+.upgrade-right, .payment-right {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -842,125 +826,92 @@
 .plan-card {
   border: 2px solid #e0e0e0;
   border-radius: 10px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   margin-bottom: 12px;
   cursor: pointer;
   transition: 0.25s;
 }
 .plan-card.active {
-  border-color: #2563eb;
-  background: #f2f7ff;
+  border-color:#2563eb;
+  background:#f3f8ff;
 }
-.plan-card.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.plan-card.disabled { opacity:0.6; cursor:not-allowed; }
 
-/* === BENEFITS LIST === */
-.benefits li {
-  list-style: none;
-  margin-bottom: 6px;
-}
-.benefits li::before {
-  content: "✔ ";
-  color: #2563eb;
-}
+/* === BENEFITS / BILLING === */
+.benefits li { list-style:none; margin-bottom:6px; }
+.benefits li::before { content:"✔ "; color:#2563eb; }
+.billing-options label { display:block; margin:6px 0; }
 
-/* === BILLING OPTIONS === */
-.billing-options label {
-  display: block;
-  margin: 8px 0;
-}
-
-/* === DISCOUNT INPUT === */
+/* === DISCOUNT SECTION === */
 .discount-section {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
+  display:flex;
+  gap:8px;
+  margin-top:12px;
 }
 .discount-section input {
-  flex: 1;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  flex:1;
+  padding:7px;
+  border:1px solid #ccc;
+  border-radius:6px;
 }
 .discount-section button {
-  padding: 6px 12px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+  padding:7px 12px;
+  border:none;
+  border-radius:6px;
+  background:#2563eb;
+  color:#fff;
+  cursor:pointer;
 }
 #discountMessage {
-  font-size: 0.85em;
-  margin-top: 4px;
-  color: #2563eb;
+  margin-top:6px;
+  font-size:0.9em;
+  color:#2563eb;
 }
 
-/* === PAYMENT STAGE === */
-.card-stack {
-  margin-top: 20px;
-}
-.card {
-  width: 200px;
-  height: 120px;
-  border-radius: 10px;
-  margin-top: -40px;
-  opacity: 0.9;
-}
-.card.visa {
-  background: linear-gradient(135deg, #2a52be, #547fff);
-}
-.card.master {
-  background: linear-gradient(135deg, #ff5f6d, #ffc371);
-}
-.card.amex {
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
-}
+/* === PAYMENT STEP === */
 .payment-methods {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 8px;
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:10px;
 }
 .payment-methods button {
-  background: #f7f7f7;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
+  background:#f6f6f6;
+  border:1px solid #ccc;
+  border-radius:6px;
+  padding:6px 10px;
+  cursor:pointer;
 }
 .total-line {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  font-size: 1rem;
+  display:flex;
+  justify-content:space-between;
+  font-size:1rem;
+  margin-top:10px;
 }
+
+/* === BUTTONS === */
+.modal__btn-primary {
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:10px 18px;
+  font-size:1rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background 0.2s ease;
+}
+.modal__btn-primary:hover { background:#1d4ed8; }
 
 /* === ANIMATION === */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { transform:translateY(15px); opacity:0; }
+  to { transform:translateY(0); opacity:1; }
 }
 
-/* === RESPONSIVE (Mobile/Tablet) === */
-@media (max-width: 768px) {
-  .upgrade-modal__panel {
-    padding: 20px;
-  }
-  .upgrade-step {
-    flex-direction: column;
-  }
-  .upgrade-left,
-  .upgrade-right {
-    flex: 1 1 100%;
-  }
+/* === RESPONSIVE === */
+@media (max-width: 768px){
+  .upgrade-step { flex-direction:column; }
+  .upgrade-left,.payment-left { flex:1 0 auto; }
 }
 
     
@@ -2295,102 +2246,193 @@ function closeAllMenus() {
 </script>
 
 <script>
-/* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
+/* === DOWNLOAD SYSTEM: COUNTER + UPGRADE MODAL === */
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Element references (exact IDs present in your file) ---
-  const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card row button
-  const rowCounter     = document.getElementById("downloadCounter");       // number in the card row (e.g. "0 / 8")
-  const upgradePopup   = document.getElementById("upgradePopup");          // big “limit reached” modal
-  const downloadBtn    = document.getElementById("downloadBtn");           // the real download button
+  // --- ELEMENT REFERENCES ---
+  const downloadBtn = document.getElementById("downloadBtn");
+  const remainingBtn = document.getElementById("remainingDownloadsBtn");
+  const rowCounter = document.getElementById("downloadCounter");
+  const output = document.getElementById("output");
 
-   // --- Counter setup (key bound to email) ---
+  // --- CONFIGURATION ---
   const maxDownloads = 8;
-  const currentEmail = localStorage.getItem("userEmail") || null;
-  const keyName = currentEmail ? `downloadCount_${currentEmail}` : "downloadCount";
-  // Get current user email (from your Firebase login or stored name)
-  const currentEmail = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail") || "guest";
-  // Use the email as part of the key
+  const currentEmail =
+    localStorage.getItem("userEmail") ||
+    sessionStorage.getItem("userEmail") ||
+    "guest";
   const keyName = `downloadCount_${currentEmail}`;
 
+  // --- STATE ---
   let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
 
+  /* === UI SYNC === */
+  function syncDownloadUI() {
+    const text = `${downloadCount} / ${maxDownloads}`;
+    if (rowCounter) rowCounter.textContent = text;
+
+    // disable button visually at limit
+    if (downloadBtn && downloadCount >= maxDownloads) {
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add("disabled");
+    }
+  }
+
+  /* === SAVE LOCAL + CLOUD === */
   function saveDownloadCount() {
     localStorage.setItem(keyName, String(downloadCount));
+    saveDownloadCountToCloud?.(currentEmail, downloadCount); // optional cloud sync
   }
-  syncInitialDownloadCount(); // <- ensures counter restores from Firestore
 
- function syncDownloadUI() {
-  const text = `${downloadCount} / ${maxDownloads}`;
-  const rowCounter = document.getElementById("downloadCounter");
-  if (rowCounter) rowCounter.textContent = text;
-}
-  const remainingBtn = document.getElementById("remainingDownloadsBtn");
-if (remainingBtn) {
-  remainingBtn.addEventListener("click", () => openUpgradeModal());
-}
-  
-// ===== DOWNLOAD LIMIT GUARD + UPGRADE MODAL =====
-if (downloadBtn) {
-  downloadBtn.addEventListener("click", (e) => {
-
-     // 🔒 Block download if user is not logged in
+  /* === INITIAL SYNC FROM CLOUD === */
+  async function syncInitialDownloadCount() {
     if (!currentEmail || currentEmail === "guest") {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      openLoginModal(); // this should open your existing sign-in / register modal
+      syncDownloadUI();
       return;
     }
-      // If limit reached → block download and show the main Upgrade modal
-      if (downloadCount >= maxDownloads) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        openUpgradeModal(); // 🔹 trigger main upgrade modal instead
-        return;
+    try {
+      const cloudCount = await fetchDownloadCount?.(currentEmail);
+      if (cloudCount > downloadCount) {
+        downloadCount = cloudCount;
+        localStorage.setItem(keyName, String(downloadCount));
       }
-      // Otherwise allow download, then bump count
-      Promise.resolve().then(() => {
+    } catch (err) {
+      console.warn("Could not sync from cloud:", err);
+    }
+    syncDownloadUI();
+  }
+
+  /* === UPGRADE MODAL === */
+  function openUpgradeModal() {
+    const m = document.getElementById("upgradeModal");
+    if (!m) return;
+    m.classList.add("open");
+    m.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeUpgradeModal() {
+    const m = document.getElementById("upgradeModal");
+    if (!m) return;
+    m.classList.remove("open");
+    m.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  /* === STEP NAVIGATION INSIDE MODAL === */
+  function showUpgradeStep(step) {
+    const s1 = document.getElementById("upgradeStep1");
+    const s2 = document.getElementById("upgradeStep2");
+    const back = document.getElementById("backToPlansBtn");
+    if (!s1 || !s2) return;
+    if (step === 2) {
+      s1.classList.add("hidden");
+      s2.classList.remove("hidden");
+      if (back) back.style.display = "block";
+    } else {
+      s1.classList.remove("hidden");
+      s2.classList.add("hidden");
+      if (back) back.style.display = "none";
+    }
+  }
+
+  /* === DISCOUNT HANDLING === */
+  function applyDiscount() {
+    const code = document.getElementById("discountCode")?.value.trim().toUpperCase();
+    const msg = document.getElementById("discountMessage");
+    const total = document.getElementById("totalAmount");
+    let price = 15;
+
+    if (!msg || !total) return;
+
+    if (code === "SYMPO10") {
+      msg.textContent = "✅ 10% discount applied!";
+      price *= 0.9;
+    } else if (code) {
+      msg.textContent = "❌ Invalid code.";
+    } else {
+      msg.textContent = "";
+    }
+
+    total.textContent = `€${price.toFixed(2)}`;
+  }
+
+  /* === EVENT: UPGRADE BUTTONS === */
+  if (remainingBtn) {
+    remainingBtn.addEventListener("click", () => {
+      openUpgradeModal();
+    });
+  }
+
+  const upgradePlanBtn = document.getElementById("upgradePlanBtn");
+  if (upgradePlanBtn) {
+    upgradePlanBtn.addEventListener("click", () => {
+      openUpgradeModal();
+    });
+  }
+
+  /* === DOWNLOAD GUARD === */
+  if (downloadBtn) {
+    downloadBtn.addEventListener(
+      "click",
+      (e) => {
+        const content = output?.textContent?.trim() || "";
+
+        // Nothing to download
+        if (!content) {
+          alert("No draft available to download.");
+          e.preventDefault();
+          return;
+        }
+
+        // 🔒 Not logged in → open login modal
+        if (!currentEmail || currentEmail === "guest") {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          toggleAuthModal(true); // your existing login/register modal
+          return;
+        }
+
+        // ⛔ Limit reached → open upgrade modal
+        if (downloadCount >= maxDownloads) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openUpgradeModal();
+          return;
+        }
+
+        // ✅ Normal download flow
+        const blob = new Blob(["\ufeff", content], { type: "application/msword" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "symposia_draft.docx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Increment counter
         downloadCount = Math.min(downloadCount + 1, maxDownloads);
         saveDownloadCount();
         syncDownloadUI();
-
-        if (downloadCount >= maxDownloads && downloadBtn) {
-          downloadBtn.disabled = true;
-          downloadBtn.classList.add("disabled");
-        }
-      });
-    },
-    true // capture: ensures this runs before the native download handler
-  );
-}
-
-// ====== CLOUD SYNC FUNCTIONS ======
-function bumpDownloadCount() {
-  downloadCount = Math.min(downloadCount + 1, maxDownloads);
-  localStorage.setItem(keyName, String(downloadCount));
-  saveDownloadCountToCloud(currentEmail, downloadCount); // 🔹 sync to Firestore
-  syncDownloadUI();
-
-  if (downloadCount >= maxDownloads && downloadBtn) {
-    downloadBtn.disabled = true;
-    downloadBtn.classList.add("disabled");
+      },
+      true // capture phase
+    );
   }
-}
 
-async function syncInitialDownloadCount() {
-  if (!currentEmail) return;
-  const cloudCount = await fetchDownloadCount(currentEmail);
-  if (cloudCount > downloadCount) {
-    downloadCount = cloudCount;
-    localStorage.setItem(keyName, String(downloadCount));
-  }
-  syncDownloadUI();
-}
+  /* === UNIVERSAL CLICKS (close modal when clicking backdrop) === */
+  document.addEventListener("click", (e) => {
+    const modal = document.getElementById("upgradeModal");
+    if (modal?.classList.contains("open") && !e.target.closest(".upgrade-modal__panel")) {
+      closeUpgradeModal();
+    }
+  });
 
-// ====== INITIALIZATION ======
-syncInitialDownloadCount(); // 🔹 pull initial value from Firestore
-syncDownloadUI();
+  /* === INIT === */
+  syncInitialDownloadCount();
 });
 </script>
+
 
 <script type="module">
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
