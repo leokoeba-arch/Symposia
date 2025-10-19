@@ -1633,6 +1633,14 @@ import {
   getAdditionalUserInfo
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
@@ -1645,6 +1653,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db   = getFirestore(app); // 🔹 added line for Firestore
  onAuthStateChanged(auth, (user) => {
   const loginBtn = document.querySelector('.login-btn');
   const drNameEl = document.getElementById('drName');
@@ -1660,7 +1669,29 @@ const auth = getAuth(app);
     toggleSideMenu(false);
   }
 });
-   
+
+// === 🔹 FIRESTORE SYNC HELPERS ===
+async function fetchDownloadCount(userEmail) {
+  if (!userEmail) return 0;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().count || 0 : 0;
+  } catch (err) {
+    console.error("Error fetching download count:", err);
+    return 0;
+  }
+}
+
+async function saveDownloadCountToCloud(userEmail, count) {
+  if (!userEmail) return;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    await setDoc(ref, { count }, { merge: true });
+  } catch (err) {
+    console.error("Error saving download count:", err);
+  }
+}
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -1916,7 +1947,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
-
 document.addEventListener("DOMContentLoaded", () => {
   // --- Element references (exact IDs present in your file) ---
   const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card row button
@@ -1929,11 +1959,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
    // --- Counter setup (key bound to email) ---
   const maxDownloads = 8;
-
+  const currentEmail = localStorage.getItem("userEmail") || null;
+  const keyName = currentEmail ? `downloadCount_${currentEmail}` : "downloadCount";
   // Get current user email (from your Firebase login or stored name)
-  const currentEmail =
-    localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail") || "guest";
-
+  const currentEmail = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail") || "guest";
   // Use the email as part of the key
   const keyName = `downloadCount_${currentEmail}`;
 
@@ -1942,7 +1971,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function saveDownloadCount() {
     localStorage.setItem(keyName, String(downloadCount));
   }
-
 
   function syncDownloadUI() {
     const text = `${downloadCount} / ${maxDownloads}`;
@@ -1984,17 +2012,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Helper to bump counter after a successful save
    function bumpDownloadCount() {
-    downloadCount = Math.min(downloadCount + 1, maxDownloads);
-    saveDownloadCount();
-    syncDownloadUI();
+  downloadCount = Math.min(downloadCount + 1, maxDownloads);
+  localStorage.setItem(keyName, String(downloadCount));
+  saveDownloadCountToCloud(currentEmail, downloadCount); // 🔹 sync to Firestore
+  syncDownloadUI();
 
-    if (downloadCount >= maxDownloads && downloadBtn) {
-      downloadBtn.disabled = true;
-      downloadBtn.classList.add("disabled");
-    }
+  if (downloadCount >= maxDownloads && downloadBtn) {
+    downloadBtn.disabled = true;
+    downloadBtn.classList.add("disabled");
   }
+}
 
-
+  async function syncInitialDownloadCount() {
+  if (!currentEmail) return;
+  const cloudCount = await fetchDownloadCount(currentEmail);
+  if (cloudCount > downloadCount) {
+    downloadCount = cloudCount;
+    localStorage.setItem(keyName, String(downloadCount));
+  }
+  syncDownloadUI();
+}
   // Guard the real download: intercept BEFORE your existing handler
   if (downloadBtn) {
     downloadBtn.addEventListener(
@@ -2007,16 +2044,12 @@ document.addEventListener("DOMContentLoaded", () => {
           if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
           return;
         }
-
-        // Otherwise let the original click handler run and then bump the count.
-        // Use a microtask so we increment only if the handler didn’t prevent default.
         Promise.resolve().then(() => bumpDownloadCount());
       },
       true // <-- capture: our guard runs before the original listener that saves the file
     );
   }
-
-  // Initial paint
+  syncInitialDownloadCount(); // 🔹 pull initial value from Firestore
   syncDownloadUI();
 });
 </script>
