@@ -828,15 +828,16 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/></svg>
       </span> Personal Info
     </button>
-    <button class="menu-item" onclick="startResetPassword()">
+    <button class="menu-item" type="button">
       <span class="icon">
-              <!-- Download Icon -->
-       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-        <path d="M128 128C128 92.7 156.7 64 192 64L341.5 64C358.5 64 374.8 70.7 386.8 82.7L493.3 189.3C505.3 201.3 512 217.6 512 234.6L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 128zM336 122.5L336 216C336 229.3 346.7 240 360 240L453.5 240L336 122.5zM303 505C312.4 514.4 327.6 514.4 336.9 505L400.9 441C410.3 431.6 410.3 416.4 400.9 407.1C391.5 397.8 376.3 397.7 367 407.1L344 430.1L344 344C344 330.7 333.3 320 320 320C306.7 320 296 330.7 296 344L296 430.1L273 407.1C263.6 397.7 248.4 397.7 239.1 407.1C229.8 416.5 229.7 431.7 239.1 441L303.1 505z"/>
-      </svg>
-    </span>
-    <span>Remaining Downloads</span>
-    <span id="downloadCounter" style="margin-left:auto; font-weight:600;">0 / 8</span>
+        <!-- Download Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M128 128C128 92.7 156.7 64 192 64L341.5 64C358.5 64 374.8 70.7 386.8 82.7L493.3 189.3C505.3 201.3 512 217.6 512 234.6L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 128zM336 122.5L336 216C336 229.3 346.7 240 360 240L453.5 240L336 122.5zM303 505C312.4 514.4 327.6 514.4 336.9 505L400.9 441C410.3 431.6 410.3 416.4 400.9 407.1C391.5 397.8 376.3 397.7 367 407.1L344 430.1L344 344C344 330.7 333.3 320 320 320C306.7 320 296 330.7 296 344L296 430.1L273 407.1C263.6 397.7 248.4 397.7 239.1 407.1C229.8 416.5 229.7 431.7 239.1 441L303.1 505z"/>
+        </svg>
+      </span>
+      <span>Remaining Downloads</span>
+      <span id="downloadCounter" style="margin-left:auto;font-weight:600;">0 / 8</span>
+    </button>
   </div>
 
   <div class="user-menu-section">
@@ -1897,7 +1898,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Download Counter Logic ===
 let downloadCount = 0;
 const maxDownloads = 8;
-const downloadBtn = document.getElementById("downloadDraftBtn"); // adjust to your actual button ID
+const downloadBtn = document.getElementById("downloadBtn");
+const downloadCounterDisplay = document.getElementById("downloadCounter");
 
 function handleDownloadClick() {
   if (downloadCount >= maxDownloads) {
@@ -1905,15 +1907,24 @@ function handleDownloadClick() {
     return;
   }
 
-  // Normal download action here
+  // Trigger normal download action
   downloadCount++;
-  document.getElementById("downloadCount").textContent = downloadCount;
+  downloadCounterDisplay.textContent = `${downloadCount} / ${maxDownloads}`;
 
   if (downloadCount >= maxDownloads) {
     downloadBtn.disabled = true;
     downloadBtn.classList.add("disabled");
   }
+
+  // Persist for logged user or localStorage fallback
+  const user = auth.currentUser;
+  if (user) {
+    localStorage.setItem(`downloads_${user.uid}`, downloadCount);
+  } else {
+    localStorage.setItem("downloads_anonymous", downloadCount);
+  }
 }
+
 
 // === Upgrade Modal Control ===
 function openUpgradeModal() {
@@ -1922,6 +1933,30 @@ function openUpgradeModal() {
 function closeUpgradeModal() {
   document.getElementById("upgradeModal").setAttribute("aria-hidden", "true");
 }
+
+  // === Restore download count when page loads ===
+document.addEventListener("DOMContentLoaded", () => {
+  const downloadCounterDisplay = document.getElementById("downloadCounter");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const user = auth?.currentUser;
+  const saved = user
+    ? localStorage.getItem(`downloads_${user.uid}`)
+    : localStorage.getItem("downloads_anonymous");
+
+  if (saved) {
+    downloadCount = parseInt(saved, 10);
+    downloadCounterDisplay.textContent = `${downloadCount} / ${maxDownloads}`;
+    if (downloadCount >= maxDownloads) {
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add("disabled");
+    }
+  }
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", handleDownloadClick);
+  }
+});
+
 
 </script>
 
