@@ -739,7 +739,7 @@
   font-size: 0.9rem;
 }
 
-/* === User Menu popup === */
+/* === User Menu remaining downloads popup === */
 .download-popup {
   position: absolute;
   top: 70px;
@@ -786,62 +786,6 @@
   }
 }
     
-  /* === Upgrade Modal === */
-#upgradeModal[aria-hidden="true"] {
-  display: none;
-}
-#upgradeModal[aria-hidden="false"] {
-  display: flex;
-}
-
-#upgradeModal .modal__panel {
-  max-width: 400px;
-  width: 92%;
-  padding: 22px 20px;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  text-align: center;
-}
-#upgradeModal .modal__title {
-  font-size: 1.4rem;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-#upgradeModal .modal__subtitle {
-  color: #475569;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-#upgradeModal .modal__actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-primary:hover { background: #1e4ed8; }
-
-.btn-secondary {
-  background: #e5e7eb;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.btn-secondary:hover { background: #d1d5db; }
-
   </style>
 </head>
 
@@ -924,15 +868,17 @@
       </span> Log out
     </button>
   </div>
+  <!-- === Remaining Downloads Popup === -->
+<div id="downloadPopup" class="download-popup" aria-hidden="true">
+  <div class="download-popup__panel">
+    <p>You have <strong id="popupRemaining">0 / 8</strong> downloads remaining.</p>
+    <button id="goUpgradeFromPopup" class="download-popup__cta">Upgrade</button>
+  </div>
+</div>
 </div>
 
 <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
 
-<div id="downloadPopup" class="download-popup">
-  <p>Your free version has <strong><span id="popupRemaining">8</span></strong> remaining downloads.<br>
-  Upgrade to unlock unlimited downloads and Pro features.</p>
-  <button onclick="openUpgradeModal()">Upgrade</button>
-</div>
 
  <!-- === Free Limit Modal === -->
 <div id="upgradePopup" class="modal" aria-hidden="true">
