@@ -755,22 +755,25 @@
   transition: opacity 0.25s ease;
 }
 #upgradeModal.open {
-  display: flex !important;
-  opacity: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 4000;
 }
 
 /* === PANEL === */
 .upgrade-modal__panel {
-  position: relative;
-  width: 95%;
-  max-width: 920px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-  padding: 28px 36px;
-  display: flex;
-  flex-direction: column;
-  animation: fadeIn 0.25s ease;
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
 }
 
 /* === CLOSE / BACK === */
@@ -780,23 +783,22 @@
   right: 18px;
   background: none;
   border: none;
-  font-size: 22px;
-  color: #555;
+  font-size: 1.6rem;
   cursor: pointer;
-  transition: color 0.2s;
+  color: #475569;
 }
+    
 .upgrade-modal__close:hover { color: #000; }
 
 #backToPlansBtn {
-  position: absolute;
-  top: 14px;
-  left: 18px;
+  display: none;
   background: none;
   border: none;
-  font-size: 18px;
   color: #2563eb;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
   cursor: pointer;
-  display: none;
 }
 
 /* === CONTENT LAYOUT === */
@@ -908,12 +910,19 @@
   to { transform:translateY(0); opacity:1; }
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 768px){
-  .upgrade-step { flex-direction:column; }
-  .upgrade-left,.payment-left { flex:1 0 auto; }
+/* Responsive: full modal on phone */
+@media (max-width: 768px) {
+  #upgradeModal.open {
+    align-items: flex-start;
+  }
+  .upgrade-modal__panel {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    padding: 20px;
+    overflow-y: auto;
+  }
 }
-
     
   </style>
 </head>
@@ -2246,127 +2255,113 @@ function closeAllMenus() {
 </script>
 
 <script>
-/* === DOWNLOAD SYSTEM: COUNTER + UPGRADE MODAL === */
+/* === DOWNLOAD SYSTEM + UPGRADE MODAL === */
 document.addEventListener("DOMContentLoaded", () => {
-  // --- ELEMENT REFERENCES ---
+  /* === ELEMENTS === */
   const downloadBtn = document.getElementById("downloadBtn");
   const remainingBtn = document.getElementById("remainingDownloadsBtn");
+  const upgradePlanBtn = document.getElementById("upgradePlanBtn");
   const rowCounter = document.getElementById("downloadCounter");
-  const output = document.getElementById("output");
+  const upgradeModal = document.getElementById("upgradeModal");
+  const closeUpgradeBtn = document.querySelector(".upgrade-modal__close");
+  const continueBtn = document.getElementById("continueToPayment");
+  const backBtn = document.getElementById("backToPlansBtn");
+  const totalAmount = document.getElementById("totalAmount");
+  const discountInput = document.getElementById("discountCode");
+  const discountBtn = document.getElementById("applyDiscountBtn");
+  const discountMsg = document.getElementById("discountMessage");
 
-  // --- CONFIGURATION ---
+  /* === CONSTANTS === */
   const maxDownloads = 8;
   const currentEmail =
     localStorage.getItem("userEmail") ||
     sessionStorage.getItem("userEmail") ||
     "guest";
   const keyName = `downloadCount_${currentEmail}`;
-
-  // --- STATE ---
   let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
 
-  /* === UI SYNC === */
-  function syncDownloadUI() {
-    const text = `${downloadCount} / ${maxDownloads}`;
-    if (rowCounter) rowCounter.textContent = text;
-
-    // disable button visually at limit
-    if (downloadBtn && downloadCount >= maxDownloads) {
-      downloadBtn.disabled = true;
-      downloadBtn.classList.add("disabled");
-    }
-  }
-
-  /* === SAVE LOCAL + CLOUD === */
+  /* === HELPERS === */
   function saveDownloadCount() {
     localStorage.setItem(keyName, String(downloadCount));
-    saveDownloadCountToCloud?.(currentEmail, downloadCount); // optional cloud sync
   }
 
-  /* === INITIAL SYNC FROM CLOUD === */
-  async function syncInitialDownloadCount() {
-    if (!currentEmail || currentEmail === "guest") {
-      syncDownloadUI();
-      return;
-    }
-    try {
-      const cloudCount = await fetchDownloadCount?.(currentEmail);
-      if (cloudCount > downloadCount) {
-        downloadCount = cloudCount;
-        localStorage.setItem(keyName, String(downloadCount));
-      }
-    } catch (err) {
-      console.warn("Could not sync from cloud:", err);
-    }
-    syncDownloadUI();
+  function syncDownloadUI() {
+    if (rowCounter) rowCounter.textContent = `${downloadCount} / ${maxDownloads}`;
   }
 
-  /* === UPGRADE MODAL === */
   function openUpgradeModal() {
-    const m = document.getElementById("upgradeModal");
-    if (!m) return;
-    m.classList.add("open");
-    m.setAttribute("aria-hidden", "false");
+    if (!upgradeModal) return;
+    upgradeModal.classList.add("open");
+    upgradeModal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
   }
 
   function closeUpgradeModal() {
-    const m = document.getElementById("upgradeModal");
-    if (!m) return;
-    m.classList.remove("open");
-    m.setAttribute("aria-hidden", "true");
+    if (!upgradeModal) return;
+    upgradeModal.classList.remove("open");
+    upgradeModal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
 
-  /* === STEP NAVIGATION INSIDE MODAL === */
-  function showUpgradeStep(step) {
-    const s1 = document.getElementById("upgradeStep1");
-    const s2 = document.getElementById("upgradeStep2");
-    const back = document.getElementById("backToPlansBtn");
-    if (!s1 || !s2) return;
-    if (step === 2) {
-      s1.classList.add("hidden");
-      s2.classList.remove("hidden");
-      if (back) back.style.display = "block";
-    } else {
-      s1.classList.remove("hidden");
-      s2.classList.add("hidden");
-      if (back) back.style.display = "none";
-    }
-  }
+  /* === BUTTON TRIGGERS === */
+  if (remainingBtn) remainingBtn.addEventListener("click", openUpgradeModal);
+  if (upgradePlanBtn) upgradePlanBtn.addEventListener("click", openUpgradeModal);
+  if (closeUpgradeBtn) closeUpgradeBtn.addEventListener("click", closeUpgradeModal);
 
-  /* === DISCOUNT HANDLING === */
-  function applyDiscount() {
-    const code = document.getElementById("discountCode")?.value.trim().toUpperCase();
-    const msg = document.getElementById("discountMessage");
-    const total = document.getElementById("totalAmount");
-    let price = 15;
+  // Close modal on backdrop click
+  document.addEventListener("click", (e) => {
+    if (!upgradeModal || !upgradeModal.classList.contains("open")) return;
+    const panel = upgradeModal.querySelector(".upgrade-modal__panel");
+    if (panel && !panel.contains(e.target)) closeUpgradeModal();
+  });
 
-    if (!msg || !total) return;
+  /* === BILLING LOGIC === */
+  let selectedPrice = 15;
+  let selectedPeriod = "monthly";
 
-    if (code === "SYMPO10") {
-      msg.textContent = "✅ 10% discount applied!";
-      price *= 0.9;
-    } else if (code) {
-      msg.textContent = "❌ Invalid code.";
-    } else {
-      msg.textContent = "";
-    }
+  document.querySelectorAll("input[name='billing']").forEach((opt) => {
+    opt.addEventListener("change", (e) => {
+      selectedPeriod = e.target.dataset.label || "monthly";
+      selectedPrice = parseFloat(e.target.value);
+    });
+  });
 
-    total.textContent = `€${price.toFixed(2)}`;
-  }
-
-  /* === EVENT: UPGRADE BUTTONS === */
-  if (remainingBtn) {
-    remainingBtn.addEventListener("click", () => {
-      openUpgradeModal();
+  if (continueBtn) {
+    continueBtn.addEventListener("click", () => {
+      document.getElementById("upgradeStep1").classList.add("hidden");
+      document.getElementById("upgradeStep2").classList.remove("hidden");
+      if (backBtn) backBtn.style.display = "inline-block";
+      if (totalAmount)
+        totalAmount.textContent = `€${selectedPrice.toFixed(2)} (${selectedPeriod})`;
     });
   }
 
-  const upgradePlanBtn = document.getElementById("upgradePlanBtn");
-  if (upgradePlanBtn) {
-    upgradePlanBtn.addEventListener("click", () => {
-      openUpgradeModal();
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      document.getElementById("upgradeStep2").classList.add("hidden");
+      document.getElementById("upgradeStep1").classList.remove("hidden");
+      backBtn.style.display = "none";
+    });
+  }
+
+  /* === DISCOUNT LOGIC === */
+  if (discountBtn) {
+    discountBtn.addEventListener("click", () => {
+      const code = discountInput.value.trim().toLowerCase();
+      let discount = 0;
+
+      if (code === "symposia10") discount = 0.1;
+      else if (code === "symposia25") discount = 0.25;
+      else {
+        discountMsg.textContent = "❌ Invalid code.";
+        discountMsg.style.color = "#dc2626";
+        return;
+      }
+
+      const discountedPrice = selectedPrice * (1 - discount);
+      totalAmount.textContent = `€${discountedPrice.toFixed(2)} (${selectedPeriod})`;
+      discountMsg.textContent = `✅ ${Math.round(discount * 100)}% discount applied!`;
+      discountMsg.style.color = "#2563eb";
     });
   }
 
@@ -2375,24 +2370,15 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadBtn.addEventListener(
       "click",
       (e) => {
-        const content = output?.textContent?.trim() || "";
-
-        // Nothing to download
-        if (!content) {
-          alert("No draft available to download.");
-          e.preventDefault();
-          return;
-        }
-
-        // 🔒 Not logged in → open login modal
+        // If user not logged in → open login/register modal
         if (!currentEmail || currentEmail === "guest") {
           e.preventDefault();
           e.stopImmediatePropagation();
-          toggleAuthModal(true); // your existing login/register modal
+          toggleAuthModal(true);
           return;
         }
 
-        // ⛔ Limit reached → open upgrade modal
+        // If limit reached → show upgrade modal
         if (downloadCount >= maxDownloads) {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -2400,39 +2386,24 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // ✅ Normal download flow
-        const blob = new Blob(["\ufeff", content], { type: "application/msword" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "symposia_draft.docx";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        // Increment counter
+        // Otherwise allow download and increment counter
         downloadCount = Math.min(downloadCount + 1, maxDownloads);
         saveDownloadCount();
         syncDownloadUI();
+
+        if (downloadCount >= maxDownloads && downloadBtn) {
+          downloadBtn.disabled = true;
+          downloadBtn.classList.add("disabled");
+        }
       },
-      true // capture phase
+      true
     );
   }
 
-  /* === UNIVERSAL CLICKS (close modal when clicking backdrop) === */
-  document.addEventListener("click", (e) => {
-    const modal = document.getElementById("upgradeModal");
-    if (modal?.classList.contains("open") && !e.target.closest(".upgrade-modal__panel")) {
-      closeUpgradeModal();
-    }
-  });
-
-  /* === INIT === */
-  syncInitialDownloadCount();
+  /* === INITIAL LOAD === */
+  syncDownloadUI();
 });
 </script>
-
 
 <script type="module">
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
