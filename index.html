@@ -1909,20 +1909,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 
- <script>
+<script>
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Element references (exact IDs from your HTML) ---
-  const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card button
-  const downloadPopup  = document.getElementById("downloadPopup");         // small popup
-  const popupRemaining = document.getElementById("popupRemaining");        // number inside popup
-  const rowCounter     = document.getElementById("downloadCounter");       // number inside card row
-  const upgradeBtn     = document.getElementById("goUpgradeFromPopup");    // button inside small popup
-  const upgradePopup   = document.getElementById("upgradePopup");          // big modal after limit
-  const downloadBtn    = document.getElementById("downloadDraftBtn");      // your draft download button
+  // --- Element references (exact IDs present in your file) ---
+  const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card row button
+  const downloadPopup  = document.getElementById("downloadPopup");         // small popup next to card
+  const popupRemaining = document.getElementById("popupRemaining");        // number inside small popup
+  const rowCounter     = document.getElementById("downloadCounter");       // number in the card row (e.g. "0 / 8")
+  const upgradePopup   = document.getElementById("upgradePopup");          // big “limit reached” modal
+  const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");    // button in small popup
+  const downloadBtn    = document.getElementById("downloadBtn");           // the real download button
 
-  // --- Counter setup ---
+  // --- Counter state ---
   const maxDownloads = 8;
   let downloadCount = parseInt(localStorage.getItem("downloadCount") || "0", 10);
 
@@ -1932,7 +1932,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (popupRemaining) popupRemaining.textContent = text;
   }
 
-  // --- Popup open/close ---
+  // Small popup open/close
   function openDownloadsPopup() {
     syncDownloadUI();
     if (downloadPopup) downloadPopup.classList.add("open");
@@ -1941,68 +1941,61 @@ document.addEventListener("DOMContentLoaded", () => {
     if (downloadPopup) downloadPopup.classList.remove("open");
   }
 
-  // --- Click handlers ---
+  // Open small popup from the “Remaining Downloads” row
   if (remainingBtn) {
     remainingBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       openDownloadsPopup();
     });
   }
-
-  // Close popup when clicking outside it
+  // Close small popup by clicking anywhere else
   document.addEventListener("click", (e) => {
     if (!downloadPopup) return;
-    const insidePopup = e.target.closest("#downloadPopup");
-    const isButton    = e.target.closest("#remainingDownloadsBtn");
-    if (!insidePopup && !isButton) closeDownloadsPopup();
+    const inside = e.target.closest("#downloadPopup");
+    const onBtn  = e.target.closest("#remainingDownloadsBtn");
+    if (!inside && !onBtn) closeDownloadsPopup();
   });
 
-  // Upgrade button inside small popup
-  if (upgradeBtn) {
-    upgradeBtn.addEventListener("click", () => {
+  // “Upgrade” from small popup → open the big modal
+  if (goUpgradeBtn) {
+    goUpgradeBtn.addEventListener("click", () => {
       closeDownloadsPopup();
       if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
     });
   }
 
-  // --- Download logic ---
-  function handleDownloadClick() {
-    if (downloadCount >= maxDownloads) {
-      // open big modal if limit reached
-      if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
-      return;
-    }
-
-    // (your real download code goes here)
-    // ↓ Count download only when it actually starts
-    bumpDownloadCount();
-  }
-
-  // --- Update counter + disable button when limit reached ---
+  // Helper to bump counter after a successful save
   function bumpDownloadCount() {
     downloadCount = Math.min(downloadCount + 1, maxDownloads);
     localStorage.setItem("downloadCount", String(downloadCount));
     syncDownloadUI();
-
-    if (downloadCount >= maxDownloads && downloadBtn) {
-      downloadBtn.disabled = true;
-      downloadBtn.classList.add("disabled");
-    }
   }
 
-  // --- Attach the click event to your main download button ---
+  // Guard the real download: intercept BEFORE your existing handler
   if (downloadBtn) {
-    downloadBtn.addEventListener("click", handleDownloadClick);
+    downloadBtn.addEventListener(
+      "click",
+      (e) => {
+        // If limit reached → block the download and show big modal
+        if (downloadCount >= maxDownloads) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
+          return;
+        }
+
+        // Otherwise let the original click handler run and then bump the count.
+        // Use a microtask so we increment only if the handler didn’t prevent default.
+        Promise.resolve().then(() => bumpDownloadCount());
+      },
+      true // <-- capture: our guard runs before the original listener that saves the file
+    );
   }
 
-  // --- Initialize on page load ---
+  // Initial paint
   syncDownloadUI();
-
-  // Expose for manual use if needed
-  window.bumpDownloadCount = bumpDownloadCount;
 });
 </script>
-
 
 
 </body>
