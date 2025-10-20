@@ -2255,9 +2255,8 @@ function closeAllMenus() {
 </script>
 
 <script>
-/* === DOWNLOAD SYSTEM + UPGRADE MODAL === */
 document.addEventListener("DOMContentLoaded", () => {
-  /* === ELEMENTS === */
+  /* === ELEMENT REFERENCES === */
   const downloadBtn = document.getElementById("downloadBtn");
   const remainingBtn = document.getElementById("remainingDownloadsBtn");
   const upgradePlanBtn = document.getElementById("upgradePlanBtn");
@@ -2271,7 +2270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const discountBtn = document.getElementById("applyDiscountBtn");
   const discountMsg = document.getElementById("discountMessage");
 
-  /* === CONSTANTS === */
+  /* === COUNTER CONFIG === */
   const maxDownloads = 8;
   const currentEmail =
     localStorage.getItem("userEmail") ||
@@ -2280,7 +2279,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const keyName = `downloadCount_${currentEmail}`;
   let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
 
-  /* === HELPERS === */
   function saveDownloadCount() {
     localStorage.setItem(keyName, String(downloadCount));
   }
@@ -2289,6 +2287,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rowCounter) rowCounter.textContent = `${downloadCount} / ${maxDownloads}`;
   }
 
+  /* === MODAL OPEN/CLOSE === */
   function openUpgradeModal() {
     if (!upgradeModal) return;
     upgradeModal.classList.add("open");
@@ -2303,26 +2302,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "";
   }
 
-  /* === BUTTON TRIGGERS === */
+  /* === TRIGGERS === */
   if (remainingBtn) remainingBtn.addEventListener("click", openUpgradeModal);
   if (upgradePlanBtn) upgradePlanBtn.addEventListener("click", openUpgradeModal);
   if (closeUpgradeBtn) closeUpgradeBtn.addEventListener("click", closeUpgradeModal);
 
-  // Close modal on backdrop click
+  // Close modal when clicking outside
   document.addEventListener("click", (e) => {
     if (!upgradeModal || !upgradeModal.classList.contains("open")) return;
     const panel = upgradeModal.querySelector(".upgrade-modal__panel");
     if (panel && !panel.contains(e.target)) closeUpgradeModal();
   });
 
-  /* === BILLING LOGIC === */
+  /* === BILLING OPTIONS === */
   let selectedPrice = 15;
   let selectedPeriod = "monthly";
 
   document.querySelectorAll("input[name='billing']").forEach((opt) => {
     opt.addEventListener("change", (e) => {
-      selectedPeriod = e.target.dataset.label || "monthly";
       selectedPrice = parseFloat(e.target.value);
+      selectedPeriod = e.target.dataset.label || "monthly";
     });
   });
 
@@ -2370,15 +2369,16 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadBtn.addEventListener(
       "click",
       (e) => {
-        // If user not logged in → open login/register modal
+        // Not logged in → open login modal
         if (!currentEmail || currentEmail === "guest") {
           e.preventDefault();
           e.stopImmediatePropagation();
-          toggleAuthModal(true);
+          if (typeof toggleAuthModal === "function") toggleAuthModal(true);
+          else alert("Please log in or register to download drafts.");
           return;
         }
 
-        // If limit reached → show upgrade modal
+        // Limit reached → open upgrade modal
         if (downloadCount >= maxDownloads) {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -2386,7 +2386,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Otherwise allow download and increment counter
+        // Otherwise increment count
         downloadCount = Math.min(downloadCount + 1, maxDownloads);
         saveDownloadCount();
         syncDownloadUI();
@@ -2400,10 +2400,11 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  /* === INITIAL LOAD === */
+  /* === INIT === */
   syncDownloadUI();
 });
 </script>
+
 
 <script type="module">
 /* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
