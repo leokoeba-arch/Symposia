@@ -2,7 +2,11 @@
   "name": "symposia",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "build": "echo 'Static build for Vercel' && exit 0"
-  }
+    "vercel-build": "echo 'Static build complete for Symposia'"
+  },
+  "dependencies": {}
 }
