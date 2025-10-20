@@ -5,6 +5,6 @@
     "vercel-build": "mkdir -p public && cp index.html public/index.html && echo 'Static build complete for Symposia'"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }
