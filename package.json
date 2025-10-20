@@ -1,0 +1,8 @@
+{
+  "name": "symposia",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'Static build for Vercel' && exit 0"
+  }
+}
