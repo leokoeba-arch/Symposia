@@ -2,7 +2,7 @@
   "name": "symposia",
   "version": "1.0.0",
   "scripts": {
-    "vercel-build": "mkdir -p public && cp index.html public/index.html && echo 'Static build complete for Symposia'"
+    "vercel-build": "echo 'Static build complete for Symposia'"
   },
   "engines": {
     "node": "22.x"
