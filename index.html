@@ -1347,10 +1347,8 @@ downloadBtn.addEventListener('click', () => {
     return;
   }
 
-  // 👉 HARD IF: open the upgrade modal from the 9th click onward
-  const count = _getDL();
-  if (count >= 8) {
-    // uses your existing big modal
+   // 👉 Trigger upgrade modal starting from the 9th attempt
+  if (count >= 9) {
     const m = document.getElementById('upgradeModal');
     if (m) {
       m.classList.add('open');
@@ -1361,8 +1359,8 @@ downloadBtn.addEventListener('click', () => {
 
   // proceed with the download
   const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
   a.download = 'symposia_draft.docx';
   document.body.appendChild(a);
