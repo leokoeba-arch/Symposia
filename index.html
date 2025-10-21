@@ -1337,35 +1337,43 @@ function _setDL(n) {
   if (c) c.textContent = `${n} / 8`;
 }
 // init badge on load
-_setDL(_getDL());
+(function(){
+  const n = parseInt(localStorage.getItem('symposia_dl_count') || '0', 10);
+  const badge = document.getElementById('downloadCounter');
+  if (badge) badge.textContent = `${Math.min(n, 8)} / 8`;
+})();
+
 
 // Download Word (.doc) with limit
 downloadBtn.addEventListener('click', () => {
-  const content = output.textContent || '';
-  if (!content.trim()) {
+  const content = (document.getElementById('output')?.textContent || '').trim();
+  if (!content) {
     alert('No draft available to download.');
     return;
   }
 
-  // ✅ Get current count each time
-  let count = parseInt(localStorage.getItem('symposia_dl_count') || '0', 10);
+  const prev = parseInt(localStorage.getItem('symposia_dl_count') || '0', 10);
+  const attempt = prev + 1; // 1..9...
 
-  // ✅ If already 8, block the 9th and show upgrade modal
-  if (count >= 8) {
-    const upgradeModal = document.getElementById('upgradeModal');
-    if (upgradeModal) {
-      upgradeModal.classList.add('open');
-      upgradeModal.setAttribute('aria-hidden', 'false');
+  // 👉 On the 9th attempt, block and open upgrade
+  if (attempt >= 9) {
+    const m = document.getElementById('upgradeModal');
+    if (m) {
+      // ensure no inline style blocks it
+      m.style.display = '';              // let CSS control visibility
+      m.classList.add('open');           // .modal.open { display:block }
+      m.setAttribute('aria-hidden', 'false');
     } else {
+      console.warn('upgradeModal not found');
       alert('Upgrade modal not found.');
     }
     return;
   }
 
-  // ✅ Proceed with the download
+  // ✅ Attempts 1..8: proceed with download
   const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url;
   a.download = 'symposia_draft.docx';
   document.body.appendChild(a);
@@ -1373,14 +1381,15 @@ downloadBtn.addEventListener('click', () => {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  // ✅ Increment and store the new count
-  count += 1;
-  localStorage.setItem('symposia_dl_count', count);
+  // increment AFTER a successful download
+  const next = prev + 1; // max 8 in free
+  localStorage.setItem('symposia_dl_count', String(next));
 
-  // ✅ Update the counter badge
-  const counter = document.getElementById('downloadCounter');
-  if (counter) counter.textContent = `${Math.min(count, 8)} / 8`;
+  // keep badge capped at 8/8
+  const badge = document.getElementById('downloadCounter');
+  if (badge) badge.textContent = `${Math.min(next, 8)} / 8`;
 });
+
 
    // Image Slots 
     const imageSlots = document.getElementById('imageSlots');
