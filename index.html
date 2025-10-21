@@ -1998,14 +1998,19 @@ function logoutUser() {
     });
 }
 
-// === DOWNLOAD COUNTER + UPGRADE MODAL (fixed logic) ===
+// === ENSURE DOWNLOAD BUTTON ALWAYS WORKS AND COUNTS SYNC ===
 async function updateDownloadCounterUI(count) {
   const counter = document.getElementById("downloadCounter");
   if (counter) counter.textContent = `${count} / 8`;
 }
 
-const downloadBtn = document.getElementById("downloadBtn");
-if (downloadBtn) {
+// Attach listener every time the button (re)appears
+function bindDownloadButton() {
+  const downloadBtn = document.getElementById("downloadBtn");
+  if (!downloadBtn || downloadBtn.dataset.bound === "true") return;
+
+  downloadBtn.dataset.bound = "true"; // avoid double binding
+
   downloadBtn.addEventListener("click", async () => {
     const content = document.getElementById("output")?.textContent || "";
     if (!content.trim()) {
@@ -2019,10 +2024,9 @@ if (downloadBtn) {
       return;
     }
 
-    // 🔹 Get latest count from Firestore (fresh)
     let count = await fetchDownloadCount(user.email);
 
-    // 🔹 If about to exceed limit (on 9th attempt)
+    // limit check before proceeding
     if (count >= 8) {
       if (typeof openUpgradeModal === "function") openUpgradeModal();
       return;
@@ -2039,19 +2043,24 @@ if (downloadBtn) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    // 🔹 Increment + persist + update UI
+    // increment and sync
     count += 1;
     await saveDownloadCountToCloud(user.email, count);
     updateDownloadCounterUI(count);
 
-    // 🔹 Show upgrade modal exactly on the 9th click
-    if (count >= 9 && typeof openUpgradeModal === "function") {
-      openUpgradeModal();
-    }
+    // show modal exactly on 9th attempt
+    if (count >= 9 && typeof openUpgradeModal === "function") openUpgradeModal();
   });
 }
 
-// 🔹 Fetch and show current count on login
+// Observe DOM for changes (if UI regenerates after draft generation)
+const observer = new MutationObserver(() => bindDownloadButton());
+observer.observe(document.body, { childList: true, subtree: true });
+
+// initial bind on load
+bindDownloadButton();
+
+// Fetch count after login (sync across devices)
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const count = await fetchDownloadCount(user.email);
