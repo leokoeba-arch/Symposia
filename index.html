@@ -1327,23 +1327,53 @@ if (draftText.trim()) downloadBtn.style.display = 'block';
 }
     });
 
-    // Download Word (.doc)
-    downloadBtn.addEventListener('click', () => {
-      const content = output.textContent || '';
-      if (!content.trim()) {
-        alert('No draft available to download.');
-        return;
-      }
-      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url;
-      a.download = 'symposia_draft.docx';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
+   // ---- simple local counter + hard limit check ----
+function _getDL() {
+  return parseInt(localStorage.getItem('symposia_dl_count') || '0', 10);
+}
+function _setDL(n) {
+  localStorage.setItem('symposia_dl_count', String(n));
+  const c = document.getElementById('downloadCounter');
+  if (c) c.textContent = `${n} / 8`;
+}
+// init badge on load
+_setDL(_getDL());
+
+// Download Word (.doc) with limit
+downloadBtn.addEventListener('click', () => {
+  const content = output.textContent || '';
+  if (!content.trim()) {
+    alert('No draft available to download.');
+    return;
+  }
+
+  // 👉 HARD IF: open the upgrade modal from the 9th click onward
+  const count = _getDL();
+  if (count >= 8) {
+    // uses your existing big modal
+    const m = document.getElementById('upgradeModal');
+    if (m) {
+      m.classList.add('open');
+      m.setAttribute('aria-hidden', 'false');
+    }
+    return; // block further downloads
+  }
+
+  // proceed with the download
+  const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'symposia_draft.docx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // increment local counter and refresh badge
+  _setDL(count + 1);
+});
+
    // Image Slots 
     const imageSlots = document.getElementById('imageSlots');
     const imageList = [];
