@@ -1260,22 +1260,43 @@ if (draftText.trim()) downloadBtn.style.display = 'block';
     });
 
     // Download Word (.doc)
-    downloadBtn.addEventListener('click', () => {
-      const content = output.textContent || '';
-      if (!content.trim()) {
-        alert('No draft available to download.');
-        return;
-      }
-      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url;
-      a.download = 'symposia_draft.docx';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
+    downloadBtn.addEventListener('click', async () => {
+  const content = output.textContent || '';
+  if (!content.trim()) {
+    alert('No draft available to download.');
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert('Please log in to download drafts.');
+    return;
+  }
+
+  // Get current count
+  const currentCount = await getUserDownloadCount(user.uid);
+
+  if (currentCount >= 8) {
+    openUpgradeModal();
+    return;
+  }
+
+  // Proceed with download
+  const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'symposia_draft.docx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // Increment and update UI
+  const newCount = await incrementDownloadCount(user.uid);
+  updateDownloadCounterUI(newCount);
+});
+
    // Image Slots 
     const imageSlots = document.getElementById('imageSlots');
     const imageList = [];
@@ -1713,8 +1734,35 @@ const auth = getAuth(app);
     if (loginBtn)  { loginBtn.style.display = 'inline-block'; loginBtn.style.visibility = 'visible'; }
     toggleSideMenu(false);
   }
+   getUserDownloadCount(user.uid).then(count => {
+  updateDownloadCounterUI(count);
 });
-   
+
+    // === DOWNLOAD COUNTER FUNCTIONS ===
+async function getUserDownloadCount(uid) {
+  const userRef = doc(db, "users", uid);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) {
+    await setDoc(userRef, { downloads: 0, plan: "Free" });
+    return 0;
+  }
+  return snap.data().downloads || 0;
+}
+
+async function incrementDownloadCount(uid) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, { downloads: increment(1) });
+  return await getUserDownloadCount(uid);
+}
+
+function updateDownloadCounterUI(count) {
+  const counterEl = document.getElementById("downloadCounter");
+  if (counterEl) counterEl.textContent = `${count} / 8`;
+
+  // Optional popup alert
+  if (count >= 8) openUpgradeModal();
+}
+
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -1923,6 +1971,17 @@ function updateUserUI(user) {
     handlePrimaryAuth();
   }
 });
+
+    import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  increment
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
 
 </script>
   
