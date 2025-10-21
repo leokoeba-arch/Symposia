@@ -738,192 +738,110 @@
   color: #1e293b;
   font-size: 0.9rem;
 }
+
+/* === User Menu popup === */
+.download-popup {
+  position: absolute;
+  top: 70px;
+  right: 320px; /* positions next to the menu */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.15);
+  padding: 14px 16px;
+  width: 240px;
+  z-index: 3500;
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.download-popup.open {
+  display: block;
+}
+
+.download-popup p {
+  font-size: 0.9rem;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.download-popup button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-popup button:hover {
+  background: #1d4ed8;
+}
+
 /* === Slightly larger card on desktop === */
 @media (min-width: 769px) {
-  .user-menu {width: 320px;}}
-
-/* === UPGRADE MODAL (centered, crisp & responsive) === */
-#upgradeModal {
-  position: fixed;
-  inset: 0;
+  .user-menu {
+    width: 320px;
+  }
+}
+    
+  /* === Upgrade Modal === */
+#upgradeModal[aria-hidden="true"] {
   display: none;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  z-index: 9999;
-  transition: opacity 0.25s ease;
 }
-#upgradeModal.open {
+#upgradeModal[aria-hidden="false"] {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 4000;
 }
 
-/* === PANEL === */
-.upgrade-modal__panel {
+#upgradeModal .modal__panel {
+  max-width: 400px;
+  width: 92%;
+  padding: 22px 20px;
+  border-radius: 14px;
   background: #fff;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 900px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
-  padding: 28px;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
 }
-
-/* === CLOSE / BACK === */
-.upgrade-modal__close {
-  position: absolute;
-  top: 14px;
-  right: 18px;
-  background: none;
-  border: none;
-  font-size: 1.6rem;
-  cursor: pointer;
+#upgradeModal .modal__title {
+  font-size: 1.4rem;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+#upgradeModal .modal__subtitle {
   color: #475569;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
-    
-.upgrade-modal__close:hover { color: #000; }
 
-#backToPlansBtn {
-  display: none;
-  background: none;
+#upgradeModal .modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
   border: none;
-  color: #2563eb;
+  border-radius: 8px;
+  padding: 10px 16px;
   font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 10px;
   cursor: pointer;
 }
+.btn-primary:hover { background: #1e4ed8; }
 
-/* === CONTENT LAYOUT === */
-.upgrade-step {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-}
-.upgrade-step.hidden { display: none; }
-
-.upgrade-left, .payment-left {
-  flex: 0 0 30%;
-  background: linear-gradient(160deg,#f4f7ff,#eef3ff);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.upgrade-right, .payment-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-/* === PLAN CARDS === */
-.plan-card {
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.25s;
 }
-.plan-card.active {
-  border-color:#2563eb;
-  background:#f3f8ff;
-}
-.plan-card.disabled { opacity:0.6; cursor:not-allowed; }
+.btn-secondary:hover { background: #d1d5db; }
 
-/* === BENEFITS / BILLING === */
-.benefits li { list-style:none; margin-bottom:6px; }
-.benefits li::before { content:"✔ "; color:#2563eb; }
-.billing-options label { display:block; margin:6px 0; }
-
-/* === DISCOUNT SECTION === */
-.discount-section {
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-}
-.discount-section input {
-  flex:1;
-  padding:7px;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-.discount-section button {
-  padding:7px 12px;
-  border:none;
-  border-radius:6px;
-  background:#2563eb;
-  color:#fff;
-  cursor:pointer;
-}
-#discountMessage {
-  margin-top:6px;
-  font-size:0.9em;
-  color:#2563eb;
-}
-
-/* === PAYMENT STEP === */
-.payment-methods {
-  display:flex;
-  justify-content:space-around;
-  margin-bottom:10px;
-}
-.payment-methods button {
-  background:#f6f6f6;
-  border:1px solid #ccc;
-  border-radius:6px;
-  padding:6px 10px;
-  cursor:pointer;
-}
-.total-line {
-  display:flex;
-  justify-content:space-between;
-  font-size:1rem;
-  margin-top:10px;
-}
-
-/* === BUTTONS === */
-.modal__btn-primary {
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  padding:10px 18px;
-  font-size:1rem;
-  font-weight:600;
-  cursor:pointer;
-  transition:background 0.2s ease;
-}
-.modal__btn-primary:hover { background:#1d4ed8; }
-
-/* === ANIMATION === */
-@keyframes fadeIn {
-  from { transform:translateY(15px); opacity:0; }
-  to { transform:translateY(0); opacity:1; }
-}
-
-/* Responsive: full modal on phone */
-@media (max-width: 768px) {
-  #upgradeModal.open {
-    align-items: flex-start;
-  }
-  .upgrade-modal__panel {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    padding: 20px;
-    overflow-y: auto;
-  }
-}
-    
   </style>
 </head>
 
@@ -957,7 +875,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/></svg>
       </span> Personal Info
     </button>
-   <button class="menu-item" id="remainingDownloadsBtn" type="button" onclick="openUpgradeModal()">
+   <button class="menu-item" id="remainingDownloadsBtn" type="button">
       <span class="icon" aria-hidden="true">
         <!-- Download icon -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -977,7 +895,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M142 66.2C150.5 62.3 160.5 63.7 167.6 69.8L208 104.4L248.4 69.8C257.4 62.1 270.7 62.1 279.6 69.8L320 104.4L360.4 69.8C369.4 62.1 382.6 62.1 391.6 69.8L432 104.4L472.4 69.8C479.5 63.7 489.5 62.3 498 66.2C506.5 70.1 512 78.6 512 88L512 552C512 561.4 506.5 569.9 498 573.8C489.5 577.7 479.5 576.3 472.4 570.2L432 535.6L391.6 570.2C382.6 577.9 369.4 577.9 360.4 570.2L320 535.6L279.6 570.2C270.6 577.9 257.3 577.9 248.4 570.2L208 535.6L167.6 570.2C160.5 576.3 150.5 577.7 142 573.8C133.5 569.9 128 561.4 128 552L128 88C128 78.6 133.5 70.1 142 66.2zM232 200C218.7 200 208 210.7 208 224C208 237.3 218.7 248 232 248L408 248C421.3 248 432 237.3 432 224C432 210.7 421.3 200 408 200L232 200zM208 416C208 429.3 218.7 440 232 440L408 440C421.3 440 432 429.3 432 416C432 402.7 421.3 392 408 392L232 392C208 402.7 218.7 416 232 416zM232 296C218.7 296 208 306.7 208 320C208 333.3 218.7 344 232 344L408 344C421.3 344 432 333.3 432 320C432 306.7 421.3 296 408 296L232 296z"/></svg>
       </span> Billing Info
     </button>
-    <button  id="upgradePlanBtn" class="menu-item" >
+    <button class="menu-item" onclick="openUpgradePlan()">
       <span class="icon">
         <!-- Upgrade (replace this later with better SVG) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M372.2 116C372.2 136.9 359.8 155 342 163.2L448 256L552.4 235.1C547.1 227.4 544 218 544 208C544 181.5 565.5 160 592 160C618.5 160 640 181.5 640 208C640 234 619.4 255.1 593.6 256L481 506.3C470.7 529.3 447.8 544 422.6 544L217.4 544C192.2 544 169.4 529.2 159 506.3L46.4 256C20.6 255.1 0 234 0 208C0 181.5 21.5 160 48 160C74.5 160 96 181.5 96 208C96 218.1 92.9 227.4 87.6 235.1L192 256L298.1 163.1C280.4 154.8 268.1 136.8 268.1 116C268.1 87.3 291.4 64 320.1 64C348.8 64 372.1 87.3 372.1 116z"/></svg>     
@@ -1009,6 +927,26 @@
 </div>
 
 <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
+
+<div id="downloadPopup" class="download-popup">
+  <p>Your free version has <strong><span id="popupRemaining">8</span></strong> remaining downloads.<br>
+  Upgrade to unlock unlimited downloads and Pro features.</p>
+  <button onclick="openUpgradeModal()">Upgrade</button>
+</div>
+
+ <!-- === Free Limit Modal === -->
+<div id="upgradePopup" class="modal" aria-hidden="true">
+  <div class="modal__panel small" role="dialog" aria-modal="true" aria-labelledby="upgradePopupTitle">
+    <h3 id="upgradePopupTitle" class="modal__title">Your free trial is over</h3>
+    <p class="modal__subtitle">
+      You’ve reached your download limit of 8 drafts.<br>
+      Upgrade to unlock unlimited downloads and Pro features.
+    </p>
+    <button class="modal__btn-primary" onclick="openUpgradeModal()">Upgrade</button>
+  </div>
+</div>
+
+
 
 <!-- ===== LOGIN / REGISTER MODAL ===== -->
 <div id="authModal" class="modal" aria-hidden="true">
@@ -1163,98 +1101,22 @@
     <button id="downloadBtn">Download Draft</button>
   </div>
 
-<!-- === UPGRADE MODAL (Symposia Pro) === -->
-<div id="upgradeModal" class="upgrade-modal" aria-hidden="true">
-  <div class="upgrade-modal__panel" role="dialog" aria-modal="true" aria-labelledby="upgradeModalTitle">
+  <!-- ===== UPGRADE MODAL ===== -->
+<div id="upgradeModal" class="modal" aria-hidden="true">
+  <div class="modal__backdrop" onclick="closeUpgradeModal()"></div>
+  <div class="modal__panel">
+    <h2 class="modal__title">Free Limit Reached</h2>
+    <p class="modal__subtitle">
+      You’ve reached your <strong>8-draft limit</strong> on the Free plan.
+      Upgrade now to continue downloading your Symposia drafts without limits.
+    </p>
 
-    <!-- Close Button -->
-    <button class="upgrade-modal__close" onclick="closeUpgradeModal()">✕</button>
-
-    <!-- Back Button (shown only during payment step) -->
-    <button class="back-btn" id="backToPlansBtn" onclick="showUpgradeStep(1)" style="display:none;">← Back</button>
-
-    <!-- STEP 1: Choose Plan -->
-    <div id="upgradeStep1" class="upgrade-step">
-      <div class="upgrade-left">
-        <h2 id="upgradeModalTitle">Choose Your Plan</h2>
-
-        <div class="plan-card active" id="planPro" onclick="selectPlan('Pro')">
-          <h3>Pro</h3>
-          <p>Unlimited downloads, premium speed, and advanced tools.</p>
-        </div>
-
-        <div class="plan-card disabled" id="planNobel">
-          <h3>Nobel</h3>
-          <p>Coming soon — lifetime access to all features.</p>
-        </div>
-      </div>
-
-      <div class="upgrade-right">
-        <h2>Pro Benefits</h2>
-        <ul class="benefits">
-          <li>Unlimited draft downloads</li>
-          <li>Priority AI generation</li>
-          <li>Exclusive export formats (Word, PDF, PPTX)</li>
-          <li>Custom image placement</li>
-        </ul>
-
-        <div class="billing-options">
-          <label><input type="radio" name="billing" value="15" checked> Monthly — €15</label>
-          <label><input type="radio" name="billing" value="36"> Quarterly — €12/month (billed €36)</label>
-          <label><input type="radio" name="billing" value="107.88"> Annual — €8.99/month (billed €107.88)</label>
-        </div>
-
-        <div class="discount-section">
-          <input type="text" id="discountCode" placeholder="Discount code">
-          <button onclick="applyDiscount()">Apply</button>
-        </div>
-        <div id="discountMessage"></div>
-
-        <button class="modal__btn-primary" onclick="showUpgradeStep(2)">Continue</button>
-      </div>
+    <div class="modal__actions">
+      <button class="btn-primary" onclick="openBillingInfo()">Upgrade Plan</button>
+      <button class="btn-secondary" onclick="closeUpgradeModal()">Cancel</button>
     </div>
-
-    <!-- STEP 2: Payment Details -->
-    <div id="upgradeStep2" class="upgrade-step hidden">
-      <div class="payment-left">
-        <h2>Payment Details</h2>
-
-        <div class="card-stack">
-          <div class="card visa"></div>
-          <div class="card master"></div>
-          <div class="card amex"></div>
-        </div>
-      </div>
-
-      <div class="payment-right">
-        <div class="payment-methods">
-          <button>Google Pay</button>
-          <button>Apple Pay</button>
-          <button>PayPal</button>
-        </div>
-
-        <p style="text-align:center; margin:10px 0;">or pay with card</p>
-
-        <div class="payment-form">
-          <input type="text" placeholder="Card Number" style="width:48%; margin-right:4%;">
-          <input type="text" placeholder="Card Holder Name" style="width:48%;"><br><br>
-          <input type="text" placeholder="MM / YY" style="width:30%; margin-right:4%;">
-          <input type="text" placeholder="CVV" style="width:30%;">
-        </div>
-
-        <div class="total-line">
-          <span>Total:</span>
-          <strong id="totalAmount">€15</strong>
-        </div>
-
-        <button class="modal__btn-primary" style="margin-top:12px;">Pay Now</button>
-      </div>
-    </div>
-
   </div>
 </div>
-
-
 
   <script>
     const generateBtn   = document.getElementById('generateBtn');
@@ -1825,14 +1687,6 @@ import {
   getAdditionalUserInfo
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
@@ -1845,7 +1699,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app); // 🔹 added line for Firestore
  onAuthStateChanged(auth, (user) => {
   const loginBtn = document.querySelector('.login-btn');
   const drNameEl = document.getElementById('drName');
@@ -1861,29 +1714,7 @@ const db   = getFirestore(app); // 🔹 added line for Firestore
     toggleSideMenu(false);
   }
 });
-
-// === 🔹 FIRESTORE SYNC HELPERS ===
-async function fetchDownloadCount(userEmail) {
-  if (!userEmail) return 0;
-  try {
-    const ref = doc(db, "userDownloads", userEmail);
-    const snap = await getDoc(ref);
-    return snap.exists() ? snap.data().count || 0 : 0;
-  } catch (err) {
-    console.error("Error fetching download count:", err);
-    return 0;
-  }
-}
-
-async function saveDownloadCountToCloud(userEmail, count) {
-  if (!userEmail) return;
-  try {
-    const ref = doc(db, "userDownloads", userEmail);
-    await setDoc(ref, { count }, { merge: true });
-  } catch (err) {
-    console.error("Error saving download count:", err);
-  }
-}
+   
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -1905,8 +1736,7 @@ async function handlePrimaryAuth() {
       // Persist locally too (so we can fall back if displayName is missing)
       localStorage.setItem('userFirstName', first);
       localStorage.setItem('userLastName',  last);
-      localStorage.setItem('userEmail', user.email);
-
+    
       alert(`✅ Registered as ${user.email}`);
       document.getElementById('authModal').style.display = 'none';
       document.querySelector('.login-btn').style.display = 'none';
@@ -1914,7 +1744,6 @@ async function handlePrimaryAuth() {
 
     } else {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
-  localStorage.setItem('userEmail', user.email);
 
   // Try to populate localStorage from displayName (if available)
   if (user.displayName) {
@@ -1959,7 +1788,6 @@ async function handlePrimaryAuth() {
       if (last)  localStorage.setItem('userLastName',  last);
 
       alert(`Signed in with Google: ${user.email}`);
-      localStorage.setItem('userEmail', user.email);
 
       const modal = document.getElementById('authModal');
       if (modal) modal.style.display = 'none';
@@ -2073,8 +1901,6 @@ function updateUserUI(user) {
         drName.textContent = '';
         drName.style.display = 'none';
       }
-        // 🔹 clear stored email to reset the bound counter
-      localStorage.removeItem("userEmail");
       toggleSideMenu(false);
     })
     .catch((error) => {
@@ -2136,560 +1962,50 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
-<script>
-/* ===========================
-   UNIVERSAL UPGRADE MODAL LOGIC
-   =========================== */
 
-// ---- Modal open / close ----
-function openUpgradeModal() {
-  const modal = document.getElementById("upgradeModal");
-  if (!modal) return;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-}
+  <script>
+const remainingBtn   = document.getElementById('remainingDownloadsBtn');
+const downloadPopup  = document.getElementById('downloadPopup');
+const popupRemaining = document.getElementById('popupRemaining');
+const rowCounter     = document.getElementById('downloadCounter');
+const upgradeBtn     = document.getElementById('goUpgradeFromPopup');
 
-function closeUpgradeModal() {
-  const modal = document.getElementById("upgradeModal");
-  if (!modal) return;
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-  // reset to first step
-  showUpgradeStep(1);
-}
-
-// ---- Step navigation ----
-function showUpgradeStep(step) {
-  const step1 = document.getElementById("upgradeStep1");
-  const step2 = document.getElementById("upgradeStep2");
-  const backBtn = document.getElementById("backToPlansBtn");
-  if (!step1 || !step2) return;
-
-  if (step === 2) {
-    step1.classList.add("hidden");
-    step2.classList.remove("hidden");
-    backBtn.style.display = "block";
-  } else {
-    step1.classList.remove("hidden");
-    step2.classList.add("hidden");
-    backBtn.style.display = "none";
-  }
-}
-
-// ---- Plan selection ----
-function selectPlan(plan) {
-  document.getElementById("planPro")?.classList.toggle("active", plan === "Pro");
-}
-
-// ---- Discount ----
-function applyDiscount() {
-  const code = document.getElementById("discountCode")?.value.trim().toUpperCase();
-  const msg = document.getElementById("discountMessage");
-  const total = document.getElementById("totalAmount");
-  let price = 15;
-
-  if (!msg || !total) return;
-
-  if (code === "SYMPO10") {
-    msg.textContent = "✅ 10% discount applied!";
-    price *= 0.9;
-  } else if (code) {
-    msg.textContent = "❌ Invalid code.";
-  } else {
-    msg.textContent = "";
-  }
-
-  total.textContent = `€${price.toFixed(2)}`;
-}
-
-// ---- Smart global listener ----
-document.addEventListener("click", (e) => {
-  const t = e.target;
-
-  // 1️⃣ “Upgrade Plan” button or menu item
-  if (t.closest("#upgradePlanBtn") || t.closest(".menu-item-upgrade")) {
-    e.preventDefault();
-    closeAllMenus();
-    openUpgradeModal();
-    return;
-  }
-
-  // 2️⃣ “Remaining Downloads” click (when at limit)
-  if (t.closest("#remainingDownloadsBtn")) {
-    const count = window.downloadCount || 0;
-    const max = window.maxDownloads || 8;
-    if (count >= max) {
-      e.preventDefault();
-      closeAllMenus();
-      openUpgradeModal();
-    }
-    return;
-  }
-
-  // 3️⃣ 9th download protection (same as your download limit guard)
-  if (t.closest("#downloadBtn")) {
-    const count = window.downloadCount || 0;
-    const max = window.maxDownloads || 8;
-    if (count >= max) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      openUpgradeModal();
-    }
-    return;
-  }
-
-  // 4️⃣ Close modal when clicking outside
-  const modal = document.getElementById("upgradeModal");
-  if (modal?.classList.contains("open") && !t.closest(".upgrade-modal__panel")) {
-    closeUpgradeModal();
-  }
-});
-
-// ---- Optional helper to close your account side menu ----
-function closeAllMenus() {
-  const cardMenu = document.querySelector(".account-card.open, .menu.open");
-  if (cardMenu) cardMenu.classList.remove("open");
-}
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  /* === ELEMENT REFERENCES === */
-  const downloadBtn = document.getElementById("downloadBtn");
-  const remainingBtn = document.getElementById("remainingDownloadsBtn");
-  const upgradePlanBtn = document.getElementById("upgradePlanBtn");
-  const rowCounter = document.getElementById("downloadCounter");
-  const upgradeModal = document.getElementById("upgradeModal");
-  const closeUpgradeBtn = document.querySelector(".upgrade-modal__close");
-  const continueBtn = document.getElementById("continueToPayment");
-  const backBtn = document.getElementById("backToPlansBtn");
-  const totalAmount = document.getElementById("totalAmount");
-  const discountInput = document.getElementById("discountCode");
-  const discountBtn = document.getElementById("applyDiscountBtn");
-  const discountMsg = document.getElementById("discountMessage");
-
-  /* === COUNTER CONFIG === */
-  const maxDownloads = 8;
-  const currentEmail =
-    localStorage.getItem("userEmail") ||
-    sessionStorage.getItem("userEmail") ||
-    "guest";
-  const keyName = `downloadCount_${currentEmail}`;
-  let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
-
-  function saveDownloadCount() {
-    localStorage.setItem(keyName, String(downloadCount));
-  }
-
-  function syncDownloadUI() {
-    if (rowCounter) rowCounter.textContent = `${downloadCount} / ${maxDownloads}`;
-  }
-
-  /* === MODAL OPEN/CLOSE === */
-  function openUpgradeModal() {
-    if (!upgradeModal) return;
-    upgradeModal.classList.add("open");
-    upgradeModal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeUpgradeModal() {
-    if (!upgradeModal) return;
-    upgradeModal.classList.remove("open");
-    upgradeModal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-  }
-
-  /* === TRIGGERS === */
-  if (remainingBtn) remainingBtn.addEventListener("click", openUpgradeModal);
-  if (upgradePlanBtn) upgradePlanBtn.addEventListener("click", openUpgradeModal);
-  if (closeUpgradeBtn) closeUpgradeBtn.addEventListener("click", closeUpgradeModal);
-
-  // Close modal when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!upgradeModal || !upgradeModal.classList.contains("open")) return;
-    const panel = upgradeModal.querySelector(".upgrade-modal__panel");
-    if (panel && !panel.contains(e.target)) closeUpgradeModal();
-  });
-
-  /* === BILLING OPTIONS === */
-  let selectedPrice = 15;
-  let selectedPeriod = "monthly";
-
-  document.querySelectorAll("input[name='billing']").forEach((opt) => {
-    opt.addEventListener("change", (e) => {
-      selectedPrice = parseFloat(e.target.value);
-      selectedPeriod = e.target.dataset.label || "monthly";
-    });
-  });
-
-  if (continueBtn) {
-    continueBtn.addEventListener("click", () => {
-      document.getElementById("upgradeStep1").classList.add("hidden");
-      document.getElementById("upgradeStep2").classList.remove("hidden");
-      if (backBtn) backBtn.style.display = "inline-block";
-      if (totalAmount)
-        totalAmount.textContent = `€${selectedPrice.toFixed(2)} (${selectedPeriod})`;
-    });
-  }
-
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      document.getElementById("upgradeStep2").classList.add("hidden");
-      document.getElementById("upgradeStep1").classList.remove("hidden");
-      backBtn.style.display = "none";
-    });
-  }
-
-  /* === DISCOUNT LOGIC === */
-  if (discountBtn) {
-    discountBtn.addEventListener("click", () => {
-      const code = discountInput.value.trim().toLowerCase();
-      let discount = 0;
-
-      if (code === "symposia10") discount = 0.1;
-      else if (code === "symposia25") discount = 0.25;
-      else {
-        discountMsg.textContent = "❌ Invalid code.";
-        discountMsg.style.color = "#dc2626";
-        return;
-      }
-
-      const discountedPrice = selectedPrice * (1 - discount);
-      totalAmount.textContent = `€${discountedPrice.toFixed(2)} (${selectedPeriod})`;
-      discountMsg.textContent = `✅ ${Math.round(discount * 100)}% discount applied!`;
-      discountMsg.style.color = "#2563eb";
-    });
-  }
-
-  /* === DOWNLOAD GUARD === */
-  if (downloadBtn) {
-    downloadBtn.addEventListener(
-      "click",
-      (e) => {
-        // Not logged in → open login modal
-        if (!currentEmail || currentEmail === "guest") {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          if (typeof toggleAuthModal === "function") toggleAuthModal(true);
-          else alert("Please log in or register to download drafts.");
-          return;
-        }
-
-        // Limit reached → open upgrade modal
-        if (downloadCount >= maxDownloads) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          openUpgradeModal();
-          return;
-        }
-
-        // Otherwise increment count
-        downloadCount = Math.min(downloadCount + 1, maxDownloads);
-        saveDownloadCount();
-        syncDownloadUI();
-
-        if (downloadCount >= maxDownloads && downloadBtn) {
-          downloadBtn.disabled = true;
-          downloadBtn.classList.add("disabled");
-        }
-      },
-      true
-    );
-  }
-
-  /* === INIT === */
-  syncDownloadUI();
-});
-</script>
-
-
-<script type="module">
-/* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
-
-// Ensure Firebase Auth and Firestore already exist (imported earlier)
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const auth = getAuth();
-const db   = getFirestore();
-
-const remainingBtn   = document.getElementById("remainingDownloadsBtn");
-const downloadPopup  = document.getElementById("downloadPopup");
-const popupRemaining = document.getElementById("popupRemaining");
-const rowCounter     = document.getElementById("downloadCounter");
-const upgradePopup   = document.getElementById("upgradePopup");
-const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");
-const downloadBtn    = document.getElementById("downloadBtn");
-
-const maxDownloads = 8;
-let downloadCount = 0;
-let currentEmail  = null;
-let keyName       = "downloadCount_guest";
-
-// --- Firestore helpers ---
-async function fetchDownloadCount(userEmail) {
-  if (!userEmail) return 0;
-  try {
-    const ref = doc(db, "userDownloads", userEmail);
-    const snap = await getDoc(ref);
-    return snap.exists() ? snap.data().count || 0 : 0;
-  } catch (err) {
-    console.error("Error fetching count:", err);
-    return 0;
-  }
-}
-
-async function saveDownloadCountToCloud(userEmail, count) {
-  if (!userEmail) return;
-  try {
-    const ref = doc(db, "userDownloads", userEmail);
-    await setDoc(ref, { count }, { merge: true });
-  } catch (err) {
-    console.error("Error saving count:", err);
-  }
-}
-
-// --- UI helpers ---
-function syncDownloadUI() {
+function syncDownloadCountUI() {
   const text = `${downloadCount} / ${maxDownloads}`;
   if (rowCounter) rowCounter.textContent = text;
   if (popupRemaining) popupRemaining.textContent = text;
 }
 
 function openDownloadsPopup() {
-  syncDownloadUI();
-  downloadPopup?.classList.add("open");
+  syncDownloadCountUI();
+  if (downloadPopup) downloadPopup.classList.add('open');
 }
+
 function closeDownloadsPopup() {
-  downloadPopup?.classList.remove("open");
+  if (downloadPopup) downloadPopup.classList.remove('open');
 }
 
-// --- Popup and upgrade button ---
-remainingBtn?.addEventListener("click", (e) => {
-  e.stopPropagation();
-  openDownloadsPopup();
-});
-document.addEventListener("click", (e) => {
+if (remainingBtn) {
+  remainingBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    openDownloadsPopup();
+  });
+}
+
+document.addEventListener('click', e => {
   if (!downloadPopup) return;
-  const inside = e.target.closest("#downloadPopup");
-  const onBtn  = e.target.closest("#remainingDownloadsBtn");
-  if (!inside && !onBtn) closeDownloadsPopup();
-});
-goUpgradeBtn?.addEventListener("click", () => {
-  closeDownloadsPopup();
-  upgradePopup?.setAttribute("aria-hidden", "false");
+  const isInsidePopup = downloadPopup.contains(e.target);
+  const isButton = e.target === remainingBtn;
+  if (!isInsidePopup && !isButton) closeDownloadsPopup();
 });
 
-// --- Counter bump logic ---
-function bumpDownloadCount() {
-  downloadCount = Math.min(downloadCount + 1, maxDownloads);
-  localStorage.setItem(keyName, String(downloadCount));
-  if (currentEmail) saveDownloadCountToCloud(currentEmail, downloadCount);
-  syncDownloadUI();
-
-  if (downloadCount >= maxDownloads && downloadBtn) {
-    downloadBtn.disabled = true;
-    downloadBtn.classList.add("disabled");
-  }
-}
-
-// --- Guard actual download click ---
-downloadBtn?.addEventListener(
-  "click",
-  (e) => {
-    if (downloadCount >= maxDownloads) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      upgradePopup?.setAttribute("aria-hidden", "false");
-      return;
-    }
-    Promise.resolve().then(() => bumpDownloadCount());
-  },
-  true
-);
-
-// --- Auth-based sync ---
-onAuthStateChanged(auth, async (user) => {
-  if (user && user.email) {
-    currentEmail = user.email;
-    keyName = `downloadCount_${currentEmail}`;
-    const local = parseInt(localStorage.getItem(keyName) || "0", 10);
-    const cloud = await fetchDownloadCount(currentEmail);
-    downloadCount = Math.max(local, cloud);
-    localStorage.setItem(keyName, String(downloadCount));
-  } else {
-    currentEmail = null;
-    keyName = "downloadCount_guest";
-    downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
-  }
-  syncDownloadUI();
-});
-</script>
-
-  <script>
-/* === UPGRADE MODAL CONTROL === */
-
-const upgradeModal = document.getElementById("upgradeModal");
-const upgradePlanBtn = document.getElementById("upgradePlanBtn");
-const downloadCounter = document.getElementById("downloadCounter");
-let currentDownloads = 0; // <-- track user downloads
-
-// ✅ Function: Open upgrade modal
-function openUpgradeModal() {
-  if (upgradeModal) {
-    upgradeModal.classList.add("open");
-  }
-}
-
-// ✅ Function: Close upgrade modal
-function closeUpgradeModal() {
-  if (upgradeModal) {
-    upgradeModal.classList.remove("open");
-  }
-}
-
-// ✅ Event: “Upgrade Plan” button click (in user menu)
-if (upgradePlanBtn) {
-  upgradePlanBtn.addEventListener("click", () => {
+if (upgradeBtn) {
+  upgradeBtn.addEventListener('click', () => {
+    closeDownloadsPopup();
     openUpgradeModal();
   });
 }
-
-// ✅ Event: Click outside the panel closes modal
-if (upgradeModal) {
-  upgradeModal.addEventListener("click", (e) => {
-    if (e.target.id === "upgradeModal") closeUpgradeModal();
-  });
-}
-
-/* === DOWNLOAD LIMIT LOGIC ===
-   Called after each successful download.
-   You can increment currentDownloads manually
-   wherever the download action happens. */
-
-function incrementDownloadCount() {
-  currentDownloads++;
-  if (downloadCounter) {
-    downloadCounter.textContent = `${currentDownloads} / 8`;
-  }
-
-  // 🚨 If user exceeds free limit, open upgrade popup
-  if (currentDownloads > 8) {
-    openUpgradeModal();
-  }
-}
-
-/* === HOOK INTO EXISTING DOWNLOAD BUTTON === */
-const downloadBtn = document.getElementById("downloadBtn");
-if (downloadBtn) {
-  downloadBtn.addEventListener("click", () => {
-    // existing download logic already defined above this script
-    incrementDownloadCount();
-  });
-}
 </script>
-  
-<script type="module">
-import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-
-// Initialize Firestore + Auth (Firebase is already initialized earlier in your project)
-const db = getFirestore();
-const auth = getAuth();
-
-// Elements
-const upgradeModal = document.getElementById("upgradeModal");
-const upgradePlanBtn = document.getElementById("upgradePlanBtn");
-const downloadCounter = document.getElementById("downloadCounter");
-const downloadBtn = document.getElementById("downloadBtn");
-
-let currentDownloads = parseInt(localStorage.getItem("downloads") || "0");
-let currentUser = null;
-
-// === OPEN / CLOSE MODAL ===
-function openUpgradeModal() {
-  if (upgradeModal) upgradeModal.classList.add("open");
-}
-function closeUpgradeModal() {
-  if (upgradeModal) upgradeModal.classList.remove("open");
-}
-
-// Upgrade Plan button
-if (upgradePlanBtn) {
-  upgradePlanBtn.addEventListener("click", openUpgradeModal);
-}
-
-// Close modal by clicking outside panel
-if (upgradeModal) {
-  upgradeModal.addEventListener("click", (e) => {
-    if (e.target.id === "upgradeModal") closeUpgradeModal();
-  });
-}
-
-// === UPDATE COUNTER DISPLAY ===
-function updateCounterDisplay() {
-  if (downloadCounter) downloadCounter.textContent = `${currentDownloads} / 8`;
-}
-
-// === INCREMENT LOGIC (HYBRID) ===
-async function incrementDownloadCount() {
-  if (currentUser) {
-    // 🔹 Logged-in → sync with Firestore
-    const ref = doc(db, "users", currentUser.uid);
-    try {
-      await updateDoc(ref, { downloads: increment(1) });
-    } catch {
-      // If doc doesn't exist yet, create it
-      await setDoc(ref, { downloads: 1 });
-    }
-
-    const snap = await getDoc(ref);
-    currentDownloads = snap.exists() ? snap.data().downloads || 0 : 0;
-  } else {
-    // 🔸 Guest → use localStorage
-    currentDownloads++;
-    localStorage.setItem("downloads", currentDownloads);
-  }
-
-  updateCounterDisplay();
-
-  // 🚨 Trigger modal when limit exceeded
-  if (currentDownloads > 8) openUpgradeModal();
-}
-
-// === FIREBASE AUTH LISTENER ===
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-
-  if (user) {
-    // 🔹 Logged in → Load count from Firestore
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      currentDownloads = snap.data().downloads || 0;
-    } else {
-      await setDoc(ref, { downloads: 0 });
-      currentDownloads = 0;
-    }
-  } else {
-    // 🔸 Guest → load from localStorage
-    currentDownloads = parseInt(localStorage.getItem("downloads") || "0");
-  }
-
-  updateCounterDisplay();
-});
-
-// === HOOK INTO EXISTING DOWNLOAD BUTTON ===
-if (downloadBtn) {
-  downloadBtn.addEventListener("click", () => {
-    incrementDownloadCount();
-  });
-}
-</script>
-
 
 
 </body>
