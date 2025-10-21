@@ -739,29 +739,41 @@
   font-size: 0.9rem;
 }
 
-/* === User Menu popup === */
-.download-popup {
+/* === User Menu remaining downloads popup === */
+.download-popup { 
+  display: none; 
   position: absolute;
-  top: 70px;
-  right: 320px; /* positions next to the menu */
+  top: 52px; /* right below the Remaining Downloads button */
+  left: 0;
+  right: 0;
   background: #fff;
-  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   box-shadow: 0 4px 18px rgba(0,0,0,.15);
   padding: 14px 16px;
-  width: 240px;
-  z-index: 3500;
-  display: none;
-  animation: fadeIn 0.2s ease;
+  width: calc(100% - 28px); /* full width minus padding */
+  margin: 0 auto;
+  z-index: 4000;
 }
 
-.download-popup.open {
-  display: block;
+.download-popup.open { display: block; }
+
+.download-popup__close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
 }
+.download-popup__close:hover { color: #1e293b; }
 
 .download-popup p {
   font-size: 0.9rem;
   color: #334155;
-  margin-bottom: 10px;
+  margin: 0 0 10px;
 }
 
 .download-popup button {
@@ -774,10 +786,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-
-.download-popup button:hover {
-  background: #1d4ed8;
-}
+.download-popup button:hover { background: #1d4ed8; }
 
 /* === Slightly larger card on desktop === */
 @media (min-width: 769px) {
@@ -786,62 +795,6 @@
   }
 }
     
-  /* === Upgrade Modal === */
-#upgradeModal[aria-hidden="true"] {
-  display: none;
-}
-#upgradeModal[aria-hidden="false"] {
-  display: flex;
-}
-
-#upgradeModal .modal__panel {
-  max-width: 400px;
-  width: 92%;
-  padding: 22px 20px;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  text-align: center;
-}
-#upgradeModal .modal__title {
-  font-size: 1.4rem;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-#upgradeModal .modal__subtitle {
-  color: #475569;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-#upgradeModal .modal__actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-primary:hover { background: #1e4ed8; }
-
-.btn-secondary {
-  background: #e5e7eb;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.btn-secondary:hover { background: #d1d5db; }
-
   </style>
 </head>
 
@@ -924,15 +877,16 @@
       </span> Log out
     </button>
   </div>
+  <!-- === Remaining Downloads Popup === -->
+<div id="downloadPopup" class="download-popup">
+  <button class="download-popup__close" onclick="toggleDownloadPopup(false)">×</button>
+  <p>You have <strong id="popupRemaining">0 / 8</strong> downloads remaining.</p>
+  <button id="goUpgradeFromPopup" class="download-popup__cta">Upgrade</button>
+</div>
 </div>
 
 <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
 
-<div id="downloadPopup" class="download-popup">
-  <p>Your free version has <strong><span id="popupRemaining">8</span></strong> remaining downloads.<br>
-  Upgrade to unlock unlimited downloads and Pro features.</p>
-  <button onclick="openUpgradeModal()">Upgrade</button>
-</div>
 
  <!-- === Free Limit Modal === -->
 <div id="upgradePopup" class="modal" aria-hidden="true">
@@ -1260,43 +1214,22 @@ if (draftText.trim()) downloadBtn.style.display = 'block';
     });
 
     // Download Word (.doc)
-    downloadBtn.addEventListener('click', async () => {
-  const content = output.textContent || '';
-  if (!content.trim()) {
-    alert('No draft available to download.');
-    return;
-  }
-
-  const user = auth.currentUser;
-  if (!user) {
-    alert('Please log in to download drafts.');
-    return;
-  }
-
-  // Get current count
-  const currentCount = await getUserDownloadCount(user.uid);
-
-  if (currentCount >= 8) {
-    openUpgradeModal();
-    return;
-  }
-
-  // Proceed with download
-  const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = 'symposia_draft.docx';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  // Increment and update UI
-  const newCount = await incrementDownloadCount(user.uid);
-  updateDownloadCounterUI(newCount);
-});
-
+    downloadBtn.addEventListener('click', () => {
+      const content = output.textContent || '';
+      if (!content.trim()) {
+        alert('No draft available to download.');
+        return;
+      }
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'symposia_draft.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
    // Image Slots 
     const imageSlots = document.getElementById('imageSlots');
     const imageList = [];
@@ -1708,6 +1641,14 @@ import {
   getAdditionalUserInfo
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
@@ -1720,6 +1661,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db   = getFirestore(app); // 🔹 added line for Firestore
  onAuthStateChanged(auth, (user) => {
   const loginBtn = document.querySelector('.login-btn');
   const drNameEl = document.getElementById('drName');
@@ -1734,35 +1676,30 @@ const auth = getAuth(app);
     if (loginBtn)  { loginBtn.style.display = 'inline-block'; loginBtn.style.visibility = 'visible'; }
     toggleSideMenu(false);
   }
-   getUserDownloadCount(user.uid).then(count => {
-  updateDownloadCounterUI(count);
 });
 
-    // === DOWNLOAD COUNTER FUNCTIONS ===
-async function getUserDownloadCount(uid) {
-  const userRef = doc(db, "users", uid);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) {
-    await setDoc(userRef, { downloads: 0, plan: "Free" });
+// === 🔹 FIRESTORE SYNC HELPERS ===
+async function fetchDownloadCount(userEmail) {
+  if (!userEmail) return 0;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().count || 0 : 0;
+  } catch (err) {
+    console.error("Error fetching download count:", err);
     return 0;
   }
-  return snap.data().downloads || 0;
 }
 
-async function incrementDownloadCount(uid) {
-  const userRef = doc(db, "users", uid);
-  await updateDoc(userRef, { downloads: increment(1) });
-  return await getUserDownloadCount(uid);
+async function saveDownloadCountToCloud(userEmail, count) {
+  if (!userEmail) return;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    await setDoc(ref, { count }, { merge: true });
+  } catch (err) {
+    console.error("Error saving download count:", err);
+  }
 }
-
-function updateDownloadCounterUI(count) {
-  const counterEl = document.getElementById("downloadCounter");
-  if (counterEl) counterEl.textContent = `${count} / 8`;
-
-  // Optional popup alert
-  if (count >= 8) openUpgradeModal();
-}
-
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -1784,7 +1721,8 @@ async function handlePrimaryAuth() {
       // Persist locally too (so we can fall back if displayName is missing)
       localStorage.setItem('userFirstName', first);
       localStorage.setItem('userLastName',  last);
-    
+      localStorage.setItem('userEmail', user.email);
+
       alert(`✅ Registered as ${user.email}`);
       document.getElementById('authModal').style.display = 'none';
       document.querySelector('.login-btn').style.display = 'none';
@@ -1792,6 +1730,7 @@ async function handlePrimaryAuth() {
 
     } else {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
+  localStorage.setItem('userEmail', user.email);
 
   // Try to populate localStorage from displayName (if available)
   if (user.displayName) {
@@ -1836,6 +1775,7 @@ async function handlePrimaryAuth() {
       if (last)  localStorage.setItem('userLastName',  last);
 
       alert(`Signed in with Google: ${user.email}`);
+      localStorage.setItem('userEmail', user.email);
 
       const modal = document.getElementById('authModal');
       if (modal) modal.style.display = 'none';
@@ -1949,6 +1889,8 @@ function updateUserUI(user) {
         drName.textContent = '';
         drName.style.display = 'none';
       }
+        // 🔹 clear stored email to reset the bound counter
+      localStorage.removeItem("userEmail");
       toggleSideMenu(false);
     })
     .catch((error) => {
@@ -1971,17 +1913,6 @@ function updateUserUI(user) {
     handlePrimaryAuth();
   }
 });
-
-    import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  increment
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore(app);
 
 </script>
   
@@ -2022,48 +1953,251 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 
-  <script>
-const remainingBtn   = document.getElementById('remainingDownloadsBtn');
-const downloadPopup  = document.getElementById('downloadPopup');
-const popupRemaining = document.getElementById('popupRemaining');
-const rowCounter     = document.getElementById('downloadCounter');
-const upgradeBtn     = document.getElementById('goUpgradeFromPopup');
+<script>
+/* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Element references (exact IDs present in your file) ---
+  const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card row button
+  const downloadPopup  = document.getElementById("downloadPopup");         // small popup next to card
+  const popupRemaining = document.getElementById("popupRemaining");        // number inside small popup
+  const rowCounter     = document.getElementById("downloadCounter");       // number in the card row (e.g. "0 / 8")
+  const upgradePopup   = document.getElementById("upgradePopup");          // big “limit reached” modal
+  const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");    // button in small popup
+  const downloadBtn    = document.getElementById("downloadBtn");           // the real download button
 
-function syncDownloadCountUI() {
+   // --- Counter setup (key bound to email) ---
+  const maxDownloads = 8;
+  const currentEmail = localStorage.getItem("userEmail") || null;
+  const keyName = currentEmail ? `downloadCount_${currentEmail}` : "downloadCount";
+  // Get current user email (from your Firebase login or stored name)
+  const currentEmail = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail") || "guest";
+  // Use the email as part of the key
+  const keyName = `downloadCount_${currentEmail}`;
+
+  let downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
+
+  function saveDownloadCount() {
+    localStorage.setItem(keyName, String(downloadCount));
+  }
+
+  function syncDownloadUI() {
+    const text = `${downloadCount} / ${maxDownloads}`;
+    if (rowCounter)     rowCounter.textContent     = text;
+    if (popupRemaining) popupRemaining.textContent = text;
+  }
+  
+// ====== DOWNLOAD LIMIT GUARD + UPGRADE MODAL ======
+if (downloadBtn) {
+  downloadBtn.addEventListener(
+    "click",
+    (e) => {
+      // If limit reached → block download and show the big upgrade modal
+      if (downloadCount >= maxDownloads) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+
+        const upgradePopup = document.getElementById("upgradePopup");
+        if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
+        return;
+      }
+
+      // Otherwise allow download, then bump count
+      Promise.resolve().then(() => {
+        downloadCount = Math.min(downloadCount + 1, maxDownloads);
+        saveDownloadCount();
+        syncDownloadUI();
+
+        if (downloadCount >= maxDownloads) {
+          downloadBtn.disabled = true;
+          downloadBtn.classList.add("disabled");
+        }
+      });
+    },
+    true // capture phase → ensures this runs before the native download handler
+  );
+}
+
+// ====== SMALL POPUP TOGGLER (Remaining Downloads) ======
+function toggleDownloadPopup(show) {
+  const popup = document.getElementById("downloadPopup");
+  if (!popup) return;
+  if (show) popup.classList.add("open");
+  else popup.classList.remove("open");
+}
+
+// open when clicking on “Remaining Downloads”
+document.getElementById("remainingDownloadsBtn")?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleDownloadPopup(true);
+});
+
+// close when clicking outside the popup
+document.addEventListener("click", (e) => {
+  const popup = document.getElementById("downloadPopup");
+  if (popup && !popup.contains(e.target) && !e.target.closest("#remainingDownloadsBtn")) {
+    toggleDownloadPopup(false);
+  }
+});
+
+// “Upgrade” button inside the small popup
+if (goUpgradeBtn) {
+  goUpgradeBtn.addEventListener("click", () => {
+    toggleDownloadPopup(false);
+    const upgradePopup = document.getElementById("upgradePopup");
+    if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
+  });
+}
+
+// ====== CLOUD SYNC FUNCTIONS ======
+function bumpDownloadCount() {
+  downloadCount = Math.min(downloadCount + 1, maxDownloads);
+  localStorage.setItem(keyName, String(downloadCount));
+  saveDownloadCountToCloud(currentEmail, downloadCount); // 🔹 sync to Firestore
+  syncDownloadUI();
+
+  if (downloadCount >= maxDownloads && downloadBtn) {
+    downloadBtn.disabled = true;
+    downloadBtn.classList.add("disabled");
+  }
+}
+
+async function syncInitialDownloadCount() {
+  if (!currentEmail) return;
+  const cloudCount = await fetchDownloadCount(currentEmail);
+  if (cloudCount > downloadCount) {
+    downloadCount = cloudCount;
+    localStorage.setItem(keyName, String(downloadCount));
+  }
+  syncDownloadUI();
+}
+
+// ====== INITIALIZATION ======
+syncInitialDownloadCount(); // 🔹 pull initial value from Firestore
+syncDownloadUI();
+});
+</script>
+
+<script type="module">
+/* === DOWNLOAD SYSTEM: COUNTER + POPUPS === */
+
+// Ensure Firebase Auth and Firestore already exist (imported earlier)
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const auth = getAuth();
+const db   = getFirestore();
+
+const remainingBtn   = document.getElementById("remainingDownloadsBtn");
+const downloadPopup  = document.getElementById("downloadPopup");
+const popupRemaining = document.getElementById("popupRemaining");
+const rowCounter     = document.getElementById("downloadCounter");
+const upgradePopup   = document.getElementById("upgradePopup");
+const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");
+const downloadBtn    = document.getElementById("downloadBtn");
+
+const maxDownloads = 8;
+let downloadCount = 0;
+let currentEmail  = null;
+let keyName       = "downloadCount_guest";
+
+// --- Firestore helpers ---
+async function fetchDownloadCount(userEmail) {
+  if (!userEmail) return 0;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().count || 0 : 0;
+  } catch (err) {
+    console.error("Error fetching count:", err);
+    return 0;
+  }
+}
+
+async function saveDownloadCountToCloud(userEmail, count) {
+  if (!userEmail) return;
+  try {
+    const ref = doc(db, "userDownloads", userEmail);
+    await setDoc(ref, { count }, { merge: true });
+  } catch (err) {
+    console.error("Error saving count:", err);
+  }
+}
+
+// --- UI helpers ---
+function syncDownloadUI() {
   const text = `${downloadCount} / ${maxDownloads}`;
   if (rowCounter) rowCounter.textContent = text;
   if (popupRemaining) popupRemaining.textContent = text;
 }
 
 function openDownloadsPopup() {
-  syncDownloadCountUI();
-  if (downloadPopup) downloadPopup.classList.add('open');
+  syncDownloadUI();
+  downloadPopup?.classList.add("open");
 }
-
 function closeDownloadsPopup() {
-  if (downloadPopup) downloadPopup.classList.remove('open');
+  downloadPopup?.classList.remove("open");
 }
 
-if (remainingBtn) {
-  remainingBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    openDownloadsPopup();
-  });
-}
-
-document.addEventListener('click', e => {
+// --- Popup and upgrade button ---
+remainingBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openDownloadsPopup();
+});
+document.addEventListener("click", (e) => {
   if (!downloadPopup) return;
-  const isInsidePopup = downloadPopup.contains(e.target);
-  const isButton = e.target === remainingBtn;
-  if (!isInsidePopup && !isButton) closeDownloadsPopup();
+  const inside = e.target.closest("#downloadPopup");
+  const onBtn  = e.target.closest("#remainingDownloadsBtn");
+  if (!inside && !onBtn) closeDownloadsPopup();
+});
+goUpgradeBtn?.addEventListener("click", () => {
+  closeDownloadsPopup();
+  upgradePopup?.setAttribute("aria-hidden", "false");
 });
 
-if (upgradeBtn) {
-  upgradeBtn.addEventListener('click', () => {
-    closeDownloadsPopup();
-    openUpgradeModal();
-  });
+// --- Counter bump logic ---
+function bumpDownloadCount() {
+  downloadCount = Math.min(downloadCount + 1, maxDownloads);
+  localStorage.setItem(keyName, String(downloadCount));
+  if (currentEmail) saveDownloadCountToCloud(currentEmail, downloadCount);
+  syncDownloadUI();
+
+  if (downloadCount >= maxDownloads && downloadBtn) {
+    downloadBtn.disabled = true;
+    downloadBtn.classList.add("disabled");
+  }
 }
+
+// --- Guard actual download click ---
+downloadBtn?.addEventListener(
+  "click",
+  (e) => {
+    if (downloadCount >= maxDownloads) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      upgradePopup?.setAttribute("aria-hidden", "false");
+      return;
+    }
+    Promise.resolve().then(() => bumpDownloadCount());
+  },
+  true
+);
+
+// --- Auth-based sync ---
+onAuthStateChanged(auth, async (user) => {
+  if (user && user.email) {
+    currentEmail = user.email;
+    keyName = `downloadCount_${currentEmail}`;
+    const local = parseInt(localStorage.getItem(keyName) || "0", 10);
+    const cloud = await fetchDownloadCount(currentEmail);
+    downloadCount = Math.max(local, cloud);
+    localStorage.setItem(keyName, String(downloadCount));
+  } else {
+    currentEmail = null;
+    keyName = "downloadCount_guest";
+    downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
+  }
+  syncDownloadUI();
+});
 </script>
 
 
