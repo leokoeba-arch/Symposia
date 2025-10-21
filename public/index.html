@@ -2529,6 +2529,167 @@ onAuthStateChanged(auth, async (user) => {
 });
 </script>
 
+  <script>
+/* === UPGRADE MODAL CONTROL === */
+
+const upgradeModal = document.getElementById("upgradeModal");
+const upgradePlanBtn = document.getElementById("upgradePlanBtn");
+const downloadCounter = document.getElementById("downloadCounter");
+let currentDownloads = 0; // <-- track user downloads
+
+// ✅ Function: Open upgrade modal
+function openUpgradeModal() {
+  if (upgradeModal) {
+    upgradeModal.classList.add("open");
+  }
+}
+
+// ✅ Function: Close upgrade modal
+function closeUpgradeModal() {
+  if (upgradeModal) {
+    upgradeModal.classList.remove("open");
+  }
+}
+
+// ✅ Event: “Upgrade Plan” button click (in user menu)
+if (upgradePlanBtn) {
+  upgradePlanBtn.addEventListener("click", () => {
+    openUpgradeModal();
+  });
+}
+
+// ✅ Event: Click outside the panel closes modal
+if (upgradeModal) {
+  upgradeModal.addEventListener("click", (e) => {
+    if (e.target.id === "upgradeModal") closeUpgradeModal();
+  });
+}
+
+/* === DOWNLOAD LIMIT LOGIC ===
+   Called after each successful download.
+   You can increment currentDownloads manually
+   wherever the download action happens. */
+
+function incrementDownloadCount() {
+  currentDownloads++;
+  if (downloadCounter) {
+    downloadCounter.textContent = `${currentDownloads} / 8`;
+  }
+
+  // 🚨 If user exceeds free limit, open upgrade popup
+  if (currentDownloads > 8) {
+    openUpgradeModal();
+  }
+}
+
+/* === HOOK INTO EXISTING DOWNLOAD BUTTON === */
+const downloadBtn = document.getElementById("downloadBtn");
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", () => {
+    // existing download logic already defined above this script
+    incrementDownloadCount();
+  });
+}
+</script>
+  
+<script type="module">
+import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+// Initialize Firestore + Auth (Firebase is already initialized earlier in your project)
+const db = getFirestore();
+const auth = getAuth();
+
+// Elements
+const upgradeModal = document.getElementById("upgradeModal");
+const upgradePlanBtn = document.getElementById("upgradePlanBtn");
+const downloadCounter = document.getElementById("downloadCounter");
+const downloadBtn = document.getElementById("downloadBtn");
+
+let currentDownloads = parseInt(localStorage.getItem("downloads") || "0");
+let currentUser = null;
+
+// === OPEN / CLOSE MODAL ===
+function openUpgradeModal() {
+  if (upgradeModal) upgradeModal.classList.add("open");
+}
+function closeUpgradeModal() {
+  if (upgradeModal) upgradeModal.classList.remove("open");
+}
+
+// Upgrade Plan button
+if (upgradePlanBtn) {
+  upgradePlanBtn.addEventListener("click", openUpgradeModal);
+}
+
+// Close modal by clicking outside panel
+if (upgradeModal) {
+  upgradeModal.addEventListener("click", (e) => {
+    if (e.target.id === "upgradeModal") closeUpgradeModal();
+  });
+}
+
+// === UPDATE COUNTER DISPLAY ===
+function updateCounterDisplay() {
+  if (downloadCounter) downloadCounter.textContent = `${currentDownloads} / 8`;
+}
+
+// === INCREMENT LOGIC (HYBRID) ===
+async function incrementDownloadCount() {
+  if (currentUser) {
+    // 🔹 Logged-in → sync with Firestore
+    const ref = doc(db, "users", currentUser.uid);
+    try {
+      await updateDoc(ref, { downloads: increment(1) });
+    } catch {
+      // If doc doesn't exist yet, create it
+      await setDoc(ref, { downloads: 1 });
+    }
+
+    const snap = await getDoc(ref);
+    currentDownloads = snap.exists() ? snap.data().downloads || 0 : 0;
+  } else {
+    // 🔸 Guest → use localStorage
+    currentDownloads++;
+    localStorage.setItem("downloads", currentDownloads);
+  }
+
+  updateCounterDisplay();
+
+  // 🚨 Trigger modal when limit exceeded
+  if (currentDownloads > 8) openUpgradeModal();
+}
+
+// === FIREBASE AUTH LISTENER ===
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+
+  if (user) {
+    // 🔹 Logged in → Load count from Firestore
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      currentDownloads = snap.data().downloads || 0;
+    } else {
+      await setDoc(ref, { downloads: 0 });
+      currentDownloads = 0;
+    }
+  } else {
+    // 🔸 Guest → load from localStorage
+    currentDownloads = parseInt(localStorage.getItem("downloads") || "0");
+  }
+
+  updateCounterDisplay();
+});
+
+// === HOOK INTO EXISTING DOWNLOAD BUTTON ===
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", () => {
+    incrementDownloadCount();
+  });
+}
+</script>
+
 
 
 </body>
