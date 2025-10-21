@@ -2,10 +2,10 @@
   "name": "symposia",
   "version": "1.0.0",
   "scripts": {
-    "start": "node api/generate.js"
+    "vercel-build": "echo 'build complete for symposia'"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "dependencies": {
     "openai": "^4.0.0",
