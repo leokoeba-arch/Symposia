@@ -2215,37 +2215,6 @@ if (downloadBtn) {
   );
 }
 
-// ====== SMALL POPUP TOGGLER (Remaining Downloads) ======
-function toggleDownloadPopup(show) {
-  const popup = document.getElementById("downloadPopup");
-  if (!popup) return;
-  if (show) popup.classList.add("open");
-  else popup.classList.remove("open");
-}
-
-// open when clicking on “Remaining Downloads”
-document.getElementById("remainingDownloadsBtn")?.addEventListener("click", (e) => {
-  e.stopPropagation();
-  toggleDownloadPopup(true);
-});
-
-// close when clicking outside the popup
-document.addEventListener("click", (e) => {
-  const popup = document.getElementById("downloadPopup");
-  if (popup && !popup.contains(e.target) && !e.target.closest("#remainingDownloadsBtn")) {
-    toggleDownloadPopup(false);
-  }
-});
-
-// “Upgrade” button inside the small popup
-if (goUpgradeBtn) {
-  goUpgradeBtn.addEventListener("click", () => {
-    toggleDownloadPopup(false);
-    const upgradePopup = document.getElementById("upgradePopup");
-    if (upgradePopup) upgradePopup.setAttribute("aria-hidden", "false");
-  });
-}
-
 // ====== CLOUD SYNC FUNCTIONS ======
 function bumpDownloadCount() {
   downloadCount = Math.min(downloadCount + 1, maxDownloads);
