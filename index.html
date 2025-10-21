@@ -1738,9 +1738,9 @@ window.openTerms = openTerms;
 
 </script>
 
-  <script type="module">
+<script type="module">
 
-  // ===== Firebase SDK Setup =====
+// ===== Firebase SDK Setup =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -1759,11 +1759,12 @@ import {
   getFirestore,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
-
+// ===== Firebase Config =====
 const firebaseConfig = {
   apiKey: "AIzaSyAcjqnPesz2gb_tChRePmQs_Z7g_TiknUE",
   authDomain: "symposia-6411a.firebaseapp.com",
@@ -1773,18 +1774,24 @@ const firebaseConfig = {
   appId: "1:764049033413:web:a14022bac19894322dc8ac"
 };
 
-const app = initializeApp(firebaseConfig);
+// ===== Initialize Firebase =====
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app); // 🔹 added line for Firestore
- onAuthStateChanged(auth, (user) => {
+const db   = getFirestore(app); // Firestore instance
+
+// ===== Auth State Listener =====
+onAuthStateChanged(auth, (user) => {
   const loginBtn = document.querySelector('.login-btn');
   const drNameEl = document.getElementById('drName');
 
   if (user) {
     updateUserUI(user);
-    // final reveal (no flash)
     if (loginBtn) { loginBtn.style.display = 'none'; loginBtn.style.visibility = 'visible'; }
     if (drNameEl) { drNameEl.style.display = 'inline-block'; drNameEl.style.visibility = 'visible'; }
+
+    // 🔹 Sync download count on login
+    fetchDownloadCount(user.email).then((count) => updateDownloadCounterUI(count));
+
   } else {
     if (drNameEl) { drNameEl.textContent = ''; drNameEl.style.display = 'none'; drNameEl.style.visibility = 'visible'; }
     if (loginBtn)  { loginBtn.style.display = 'inline-block'; loginBtn.style.visibility = 'visible'; }
@@ -1815,24 +1822,22 @@ async function saveDownloadCountToCloud(userEmail, count) {
   }
 }
 
+// ===== Google Provider =====
 const googleProvider = new GoogleAuthProvider();
 
-  // Primary action Firebase
+// ===== Primary Auth Action =====
 async function handlePrimaryAuth() {
   const email = document.getElementById('authEmail')?.value.trim();
   const password = document.getElementById('authPassword')?.value.trim();
   if (!email || !password) return alert('Please enter email and password.');
 
   try {
-       if (isRegisterMode) {
+    if (isRegisterMode) {
       const first = document.getElementById('firstName')?.value.trim() || '';
       const last  = document.getElementById('lastName')?.value.trim() || '';
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    
-      // Save displayName with the modular API
       await updateProfile(user, { displayName: `${first} ${last}` });
-    
-      // Persist locally too (so we can fall back if displayName is missing)
+
       localStorage.setItem('userFirstName', first);
       localStorage.setItem('userLastName',  last);
       localStorage.setItem('userEmail', user.email);
@@ -1841,55 +1846,50 @@ async function handlePrimaryAuth() {
       document.getElementById('authModal').style.display = 'none';
       document.querySelector('.login-btn').style.display = 'none';
       updateUserUI(user);
-
     } else {
-  const { user } = await signInWithEmailAndPassword(auth, email, password);
-  localStorage.setItem('userEmail', user.email);
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem('userEmail', user.email);
 
-  // Try to populate localStorage from displayName (if available)
-  if (user.displayName) {
-    const parts = user.displayName.trim().split(/\s+/);
-    const first = parts[0] || '';
-    const last  = parts.length > 1 ? parts[parts.length - 1] : '';
-    if (first) localStorage.setItem('userFirstName', first);
-    if (last)  localStorage.setItem('userLastName',  last);
-  }
+      if (user.displayName) {
+        const parts = user.displayName.trim().split(/\s+/);
+        const first = parts[0] || '';
+        const last  = parts.length > 1 ? parts[parts.length - 1] : '';
+        if (first) localStorage.setItem('userFirstName', first);
+        if (last)  localStorage.setItem('userLastName',  last);
+      }
 
-    alert(`✅ Logged in as ${user.email}`);
-    document.getElementById('authModal').style.display = 'none';
-    document.querySelector('.login-btn').style.display = 'none';
-    updateUserUI(user);
-  }
+      alert(`✅ Logged in as ${user.email}`);
+      document.getElementById('authModal').style.display = 'none';
+      document.querySelector('.login-btn').style.display = 'none';
+      updateUserUI(user);
+    }
   } catch (err) {
     alert(`❌ ${err.message}`);
   }
 }
 
-  // Log in with Google
- function continueWithGoogle() {
+// ===== Google Sign-In =====
+function continueWithGoogle() {
   signInWithPopup(auth, googleProvider)
     .then((result) => {
       const user = result.user;
       const info = getAdditionalUserInfo(result);
       const profile = info?.profile || {};
 
-      // Try best-effort name extraction from Google profile
       let first = profile.given_name || profile.givenName || profile.first_name || '';
       let last  = profile.family_name || profile.familyName || profile.last_name || '';
 
-      // If still missing, try displayName
       if ((!first && !last) && user.displayName) {
         const parts = user.displayName.trim().split(/\s+/);
         if (parts.length === 1) first = parts[0];
         else { first = parts[0]; last = parts[parts.length - 1]; }
       }
 
-      // Persist locally for banner + side menu
       if (first) localStorage.setItem('userFirstName', first);
       if (last)  localStorage.setItem('userLastName',  last);
+      localStorage.setItem('userEmail', user.email);
 
       alert(`Signed in with Google: ${user.email}`);
-      localStorage.setItem('userEmail', user.email);
 
       const modal = document.getElementById('authModal');
       if (modal) modal.style.display = 'none';
@@ -1905,7 +1905,7 @@ async function handlePrimaryAuth() {
     });
 }
 
-
+// ===== Update User UI =====
 function updateUserUI(user) {
   const loginBtn  = document.querySelector('.login-btn');
   const drNameEl  = document.getElementById('drName');
@@ -1918,15 +1918,12 @@ function updateUserUI(user) {
 
   const isMobile = window.innerWidth <= 768;
 
-  // Prefer locally stored names
   let first = (localStorage.getItem('userFirstName') || '').trim();
   let last  = (localStorage.getItem('userLastName')  || '').trim();
 
-  // If not stored, try from user.displayName
   if ((!first && !last) && user.displayName) {
     const parts = user.displayName.trim().split(/\s+/);
     if (parts.length === 1) {
-      // Single token -> assume it's FIRST
       first = parts[0];
     } else {
       first = parts[0];
@@ -1934,10 +1931,8 @@ function updateUserUI(user) {
     }
   }
 
-  // Final fallback from email (username)
   if (!first && user.email) first = user.email.split('@')[0];
 
-  // Build label (prefer surname if present)
   const surname = last || first || '';
   const label = surname
     ? (isMobile ? `Dr. ${surname.charAt(0).toUpperCase()}.` : `Dr. ${surname}`)
@@ -1948,47 +1943,38 @@ function updateUserUI(user) {
   drNameEl.style.visibility = 'visible';
   drNameEl.onclick = () => toggleSideMenu(true);
 
-  // Side menu header
   if (sideName)  sideName.textContent  = `Dr. ${last || first || ''}`;
   if (sideEmail) sideEmail.textContent = user.email || '';
   if (avatarEl)  avatarEl.textContent  = (first?.[0] || 'D').toUpperCase();
 }
-    
-    function updatePlanBadge(plan) {
+
+// ===== Update Plan Badge =====
+function updatePlanBadge(plan) {
   const badge = document.getElementById('planBadge');
   if (!badge) return;
-
   badge.textContent = plan;
-
   badge.classList.remove('plan-free', 'plan-pro', 'plan-nobel');
-
   switch (plan.toLowerCase()) {
-    case 'pro':
-      badge.classList.add('plan-pro');
-      break;
-    case 'nobel':
-      badge.classList.add('plan-nobel');
-      break;
-    default:
-      badge.classList.add('plan-free');
-      break;
+    case 'pro':   badge.classList.add('plan-pro'); break;
+    case 'nobel': badge.classList.add('plan-nobel'); break;
+    default:      badge.classList.add('plan-free'); break;
   }
 }
 
-    function startResetPassword() {
+// ===== Password Reset =====
+function startResetPassword() {
   const email = document.getElementById('authEmail')?.value.trim();
   if (!email) return alert('Enter your email first.');
   sendPasswordResetEmail(auth, email)
-    .then(() => {
-      alert(`Password reset email sent to: ${email}`);
-    })
+    .then(() => alert(`Password reset email sent to: ${email}`))
     .catch((error) => {
       console.error(error);
       alert(`Error:\n${error.message}`);
     });
 }
 
-  function logoutUser() {
+// ===== Logout =====
+function logoutUser() {
   signOut(auth)
     .then(() => {
       alert("🚪 Logged out successfully!");
@@ -1997,13 +1983,12 @@ function updateUserUI(user) {
       if (loginBtn) {
         loginBtn.style.display = 'inline-block';
         loginBtn.style.visibility = 'visible';
-        loginBtn.onclick = () => toggleAuthModal(true); // rebind
+        loginBtn.onclick = () => toggleAuthModal(true);
       }
       if (drName) {
         drName.textContent = '';
         drName.style.display = 'none';
       }
-        // 🔹 clear stored email to reset the bound counter
       localStorage.removeItem("userEmail");
       toggleSideMenu(false);
     })
@@ -2013,15 +1998,62 @@ function updateUserUI(user) {
     });
 }
 
-   // Expose to global scope for inline onclick=""
-  window.toggleAuthModal = toggleAuthModal;
-  window.switchAuthMode = switchAuthMode;
-  window.handlePrimaryAuth = handlePrimaryAuth;
-  window.continueWithGoogle = continueWithGoogle;
-  window.startResetPassword = startResetPassword;
-  window.logoutUser = logoutUser;
+// === DOWNLOAD COUNTER + UPGRADE MODAL ===
+async function updateDownloadCounterUI(count) {
+  const counter = document.getElementById("downloadCounter");
+  if (counter) counter.textContent = `${count} / 8`;
+  if (count >= 9 && typeof openUpgradeModal === "function") {
+    openUpgradeModal();
+  }
+}
 
-   document.getElementById('authModal').addEventListener('keydown', function(e) {
+const downloadBtn = document.getElementById("downloadBtn");
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", async () => {
+    const content = document.getElementById("output")?.textContent || "";
+    if (!content.trim()) {
+      alert("No draft available to download.");
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please log in to download drafts.");
+      return;
+    }
+
+    let count = await fetchDownloadCount(user.email);
+    if (count >= 8) {
+      openUpgradeModal();
+      return;
+    }
+
+    // proceed with download
+    const blob = new Blob(["\ufeff", content], { type: "application/msword" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "symposia_draft.docx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    count += 1;
+    await saveDownloadCountToCloud(user.email, count);
+    updateDownloadCounterUI(count);
+  });
+}
+
+// ===== Global Exposure =====
+window.toggleAuthModal = toggleAuthModal;
+window.switchAuthMode = switchAuthMode;
+window.handlePrimaryAuth = handlePrimaryAuth;
+window.continueWithGoogle = continueWithGoogle;
+window.startResetPassword = startResetPassword;
+window.logoutUser = logoutUser;
+
+document.getElementById('authModal').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && this.style.display !== 'none') {
     e.preventDefault();
     handlePrimaryAuth();
@@ -2029,6 +2061,7 @@ function updateUserUI(user) {
 });
 
 </script>
+
   
 <script>
 document.addEventListener("DOMContentLoaded", () => {
