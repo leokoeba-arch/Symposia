@@ -1998,13 +1998,10 @@ function logoutUser() {
     });
 }
 
-// === DOWNLOAD COUNTER + UPGRADE MODAL ===
+// === DOWNLOAD COUNTER + UPGRADE MODAL (fixed logic) ===
 async function updateDownloadCounterUI(count) {
   const counter = document.getElementById("downloadCounter");
   if (counter) counter.textContent = `${count} / 8`;
-  if (count >= 9 && typeof openUpgradeModal === "function") {
-    openUpgradeModal();
-  }
 }
 
 const downloadBtn = document.getElementById("downloadBtn");
@@ -2022,9 +2019,12 @@ if (downloadBtn) {
       return;
     }
 
+    // 🔹 Get latest count from Firestore (fresh)
     let count = await fetchDownloadCount(user.email);
+
+    // 🔹 If about to exceed limit (on 9th attempt)
     if (count >= 8) {
-      openUpgradeModal();
+      if (typeof openUpgradeModal === "function") openUpgradeModal();
       return;
     }
 
@@ -2039,11 +2039,25 @@ if (downloadBtn) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
+    // 🔹 Increment + persist + update UI
     count += 1;
     await saveDownloadCountToCloud(user.email, count);
     updateDownloadCounterUI(count);
+
+    // 🔹 Show upgrade modal exactly on the 9th click
+    if (count >= 9 && typeof openUpgradeModal === "function") {
+      openUpgradeModal();
+    }
   });
 }
+
+// 🔹 Fetch and show current count on login
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const count = await fetchDownloadCount(user.email);
+    updateDownloadCounterUI(count);
+  }
+});
 
 // ===== Global Exposure =====
 window.toggleAuthModal = toggleAuthModal;
