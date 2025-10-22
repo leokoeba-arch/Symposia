@@ -1386,7 +1386,7 @@
  <button id="continueToPayment" class="btn btn-primary">Continue</button>
 </div>
    <!-- STEP 2: Payment -->
-<div class="upgrade-step hidden" id="Paymentpage">
+<div class="upgrade-step hidden" id="upgradeStep2">
   <div class="payment-header">
     <button id="backToPlan" class="back-btn" aria-label="Back to plans">
       ←
@@ -2053,7 +2053,7 @@ planCards.forEach(card => {
 // Continue → show Payment step and display price
 const continueBtn = document.getElementById('continueToPayment');
 const step1 = document.getElementById('upgradeStep1');    // Plan selection step
-const step2 = document.getElementById('Paymentpage');     // Payment step
+const step2 = document.getElementById('upgradeStep2');     // Payment step
 const totalEl = document.getElementById('totalAmount');   // Price label in payment
 
 if (continueBtn) {
