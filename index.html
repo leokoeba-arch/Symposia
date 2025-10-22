@@ -966,6 +966,42 @@
   margin: 18px 0;
 }
 
+    /* === Fix alignment for plan cards and notes === */
+.plan-option {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+
+.plan-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1 1 200px;
+  max-width: 220px;
+}
+
+/* override the earlier .plan-option .note margin */
+.plan-item .note {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 8px;
+  text-align: center;
+  pointer-events: none; /* prevents clicks on note */
+}
+
+@media (max-width: 700px) {
+  .plan-option {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+}
+
 
 .discount-section {
   display: flex;
@@ -1356,34 +1392,39 @@
           <li>Custom image placement</li>
         </ul>
 <!--Plan Options - Month, Quarter, Annual-->
- <div class="plan-option">
-  <!-- MONTHLY -->
-  <div class="plan-month active" data-plan="monthly" data-price="15">
-    <div class="price-line">
-      <span class="price">15</span><span class="euro">€</span>
-    </div>
-    <p class="period">/month</p>
-  </div>
-  <p class="note">15€ billed every month</p>
+<div class="plan-option">
 
-  <!-- QUARTERLY -->
-  <div class="plan-quarter" data-plan="quarterly" data-price="36">
-    <div class="price-line">
-      <span class="price">12</span><span class="euro">€</span>
+  <div class="plan-item">
+    <div class="plan-month active" data-plan="monthly" data-price="15">
+      <div class="price-line">
+        <span class="price">15</span><span class="euro">€</span>
+      </div>
+      <p class="period">/month</p>
     </div>
-    <p class="period">/month</p>
+    <p class="note">15€ billed every month</p>
   </div>
-  <p class="note">36€ billed every 3 months</p>
 
-  <!-- YEARLY -->
-  <div class="plan-year" data-plan="annual" data-price="108">
-    <div class="price-line">
-      <span class="price">9</span><span class="euro">€</span>
+  <div class="plan-item">
+    <div class="plan-quarter" data-plan="quarterly" data-price="36">
+      <div class="price-line">
+        <span class="price">12</span><span class="euro">€</span>
+      </div>
+      <p class="period">/month</p>
     </div>
-    <p class="period">/month</p>
+    <p class="note">36€ billed every 3 months</p>
   </div>
-  <p class="note">108€ billed yearly</p>
+
+  <div class="plan-item">
+    <div class="plan-year" data-plan="annual" data-price="108">
+      <div class="price-line">
+        <span class="price">9</span><span class="euro">€</span>
+      </div>
+      <p class="period">/month</p>
+    </div>
+    <p class="note">108€ billed yearly</p>
+  </div>
 </div>
+
 
 
 <div class="discount-section">
