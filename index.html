@@ -867,15 +867,15 @@
   font-weight: bold;
 }
 
-/* === Billing options: 3 bubble-like boxes === */
-.billing-options {
+/* === Plan options: 3 bubble-like boxes === */
+.plan-option {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin: 18px 0;
 }
 
-.billing-options label.billing-card {
+.plan-option > div {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -889,40 +889,37 @@
   transition: all 0.25s ease;
 }
 
-.billing-card-content h4 {
+.plan-option > div h4 {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
 }
 
-.billing-card-content p {
+.plan-option > div p {
   margin: 4px 0 0;
   color: #475569;
   font-size: 0.9rem;
 }
 
-.billing-options label.billing-card:hover {
+.plan-option > div:hover {
   border-color: #2563eb;
   background: #f0f6ff;
 }
 
-.billing-options label.billing-card.active {
+.plan-option > div.active {
   border-color: #2563eb;
   background: linear-gradient(180deg, #f0f7ff, #e5efff);
   box-shadow: 0 3px 8px rgba(37, 99, 235, 0.15);
 }
 
-.billing-options input {
-  display: none; /* hide the radios */
-}
-
 /* Stack vertically on narrow screens */
 @media (max-width: 700px) {
-  .billing-options {
+  .plan-option {
     grid-template-columns: 1fr;
   }
 }
+
 
 .discount-section {
   display: flex;
@@ -1313,7 +1310,7 @@
           <li>Custom image placement</li>
         </ul>
 
-        <div class="billing-options">
+        <div class="plan-option">
         <div class="plan-option active" data-plan="monthly">
           <h4>Monthly</h4>
           <p>€15 billed every month</p>
@@ -2652,14 +2649,33 @@ document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", open
 document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
 
 // === Billing option card selection ===
-document.querySelectorAll('.billing-options .billing-card').forEach(card => {
+document.querySelectorAll('.plan-option .plan-card').forEach(card => {
   card.addEventListener('click', () => {
-    document.querySelectorAll('.billing-options .billing-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.plan-option .plan-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     card.querySelector('input').checked = true;
   });
 });
+// === Billing option selection + price update ===
+const planOption = document.querySelectorAll('.plan-option');
+const totalAmountDisplay = document.getElementById('totalAmount');
 
+planOption.forEach(opt => {
+  opt.addEventListener('click', () => {
+    // Remove active from all, set on clicked one
+    planOption.forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+
+    // Update total price
+    const plan = opt.dataset.plan;
+    let price = 15; // default
+    if (plan === 'quarterly') price = 36;
+    if (plan === 'annual') price = 107.88;
+
+    if (totalAmountDisplay)
+      totalAmountDisplay.textContent = `€${price.toFixed(2).replace('.00', '')}`;
+  });
+});
 </script>
 
 
