@@ -858,32 +858,17 @@
   font-weight: bold;
 }
 
-/* === Plan options: pricing cards === */
+/* === Plan Options: Pricing Cards === */
 .plan-option {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  justify-items: center;
+  gap: 6px 20px; /* vertical + horizontal spacing */
   margin: 20px 0;
   text-align: center;
 }
 
-.plan-option > div {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: #fff;
-  border: 2px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 28px 0 16px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-}
-
- /* Individual cards */
+/* Individual plan cards */
 .plan-month,
 .plan-quarter,
 .plan-year {
@@ -892,31 +877,35 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f0f5ff;             /* ✅ Light blue background (like your image) */
-  border: 2px solid #d0dcff;       /* ✅ Soft blue border */
+  background: #f0f5ff;        /* light blue background */
+  border: 2px solid #d0dcff;  /* soft blue border */
   border-radius: 14px;
   padding: 26px 0 14px;
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  max-width: 220px;
 }
-    
+
+/* Hover and Active states */
 .plan-month:hover,
 .plan-quarter:hover,
 .plan-year:hover {
-  background: #e4edff;            
-  border-color: #b5caff;           
+  background: #e4edff;
+  border-color: #b5caff;
   transform: translateY(-2px);
 }
 
 .plan-month.active,
 .plan-quarter.active,
 .plan-year.active {
- background: #dce6ff;             
-  border-color: #2563eb;          
+  background: #dce6ff;
+  border-color: #2563eb;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
-/* --- Price line --- */
+
+/* --- Inside each plan --- */
 .plan-option .price-line {
   display: flex;
   justify-content: center;
@@ -944,13 +933,15 @@
   color: #475569;
 }
 
+/* --- Note below each card --- */
 .plan-option .note {
   font-size: 0.8rem;
   color: #64748b;
-  margin-top: -4px;
+  margin-top: 4px;
   text-align: center;
+  pointer-events: none;
 }
-    
+
 /* --- Responsive --- */
 @media (max-width: 700px) {
   .plan-option {
@@ -959,48 +950,13 @@
   }
 }
 
-.upgrade-right .plan-option {              
-  display: grid;
+/* --- Upgrade context override (if used elsewhere) --- */
+.upgrade-right .plan-option {
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin: 18px 0;
 }
 
-    /* === Fix alignment for plan cards and notes === */
-.plan-option {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin: 24px 0;
-}
-
-.plan-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  flex: 1 1 200px;
-  max-width: 220px;
-}
-
-/* override the earlier .plan-option .note margin */
-.plan-item .note {
-  font-size: 0.82rem;
-  color: #64748b;
-  margin-top: 8px;
-  text-align: center;
-  pointer-events: none; /* prevents clicks on note */
-}
-
-@media (max-width: 700px) {
-  .plan-option {
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-}
 
 
 .discount-section {
@@ -1391,41 +1347,32 @@
           <li>Exclusive export formats (Word, PDF, PPTX)</li>
           <li>Custom image placement</li>
         </ul>
-<!--Plan Options - Month, Quarter, Annual-->
+<!-- Plan Options - Month, Quarter, Annual -->
 <div class="plan-option">
-
-  <div class="plan-item">
-    <div class="plan-month active" data-plan="monthly" data-price="15">
-      <div class="price-line">
-        <span class="price">15</span><span class="euro">€</span>
-      </div>
-      <p class="period">/month</p>
+  <div class="plan-month active" data-plan="monthly" data-price="15">
+    <div class="price-line">
+      <span class="price">15</span><span class="euro">€</span>
     </div>
-    <p class="note">15€ billed every month</p>
+    <p class="period">/month</p>
   </div>
+  <p class="note">15€ billed every month</p>
 
-  <div class="plan-item">
-    <div class="plan-quarter" data-plan="quarterly" data-price="36">
-      <div class="price-line">
-        <span class="price">12</span><span class="euro">€</span>
-      </div>
-      <p class="period">/month</p>
+  <div class="plan-quarter" data-plan="quarterly" data-price="36">
+    <div class="price-line">
+      <span class="price">12</span><span class="euro">€</span>
     </div>
-    <p class="note">36€ billed every 3 months</p>
+    <p class="period">/month</p>
   </div>
+  <p class="note">36€ billed every 3 months</p>
 
-  <div class="plan-item">
-    <div class="plan-year" data-plan="annual" data-price="108">
-      <div class="price-line">
-        <span class="price">9</span><span class="euro">€</span>
-      </div>
-      <p class="period">/month</p>
+  <div class="plan-year" data-plan="annual" data-price="108">
+    <div class="price-line">
+      <span class="price">9</span><span class="euro">€</span>
     </div>
-    <p class="note">108€ billed yearly</p>
+    <p class="period">/month</p>
   </div>
+  <p class="note">108€ billed yearly</p>
 </div>
-
-
 
 <div class="discount-section">
   <input type="text" id="discountCode" placeholder="Discount code">
