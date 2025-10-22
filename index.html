@@ -867,29 +867,26 @@
   font-weight: bold;
 }
 
-/* === Billing options redesigned as cards === */
+/* === Billing options: 3 bubble-like boxes === */
 .billing-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 16px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
 }
 
 .billing-options label.billing-card {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 16px 18px;
+  border-radius: 14px;
+  padding: 18px 0;
   background: #fff;
   cursor: pointer;
   transition: all 0.25s ease;
-}
-
-.billing-card-content {
-  text-align: center;
-  flex: 1;
 }
 
 .billing-card-content h4 {
@@ -900,14 +897,14 @@
 }
 
 .billing-card-content p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #475569;
   font-size: 0.9rem;
 }
 
 .billing-options label.billing-card:hover {
   border-color: #2563eb;
-  background: #f1f6ff;
+  background: #f0f6ff;
 }
 
 .billing-options label.billing-card.active {
@@ -917,11 +914,15 @@
 }
 
 .billing-options input {
-  margin-left: 10px;
-  accent-color: #2563eb;
-  transform: scale(1.2);
+  display: none; /* hide the radios */
 }
 
+/* Stack vertically on narrow screens */
+@media (max-width: 700px) {
+  .billing-options {
+    grid-template-columns: 1fr;
+  }
+}
 
 .discount-section {
   display: flex;
@@ -2633,6 +2634,18 @@ document.getElementById("applyDiscountBtn").addEventListener("click", () => {
     msg.textContent = "Invalid code.";
   }
 });
+
+  // === Back arrow in Payment step ===
+const backBtn = document.getElementById('backToPlan');
+if (backBtn) {
+  backBtn.addEventListener('click', () => {
+    const step1 = document.getElementById('upgradeStep1');
+    const step2 = document.getElementById('upgradeStep2');
+    step2.classList.add('hidden');
+    step1.classList.remove('hidden');
+    step1.scrollIntoView({ behavior: 'smooth' });
+  });
+}
 
 // === Connect all triggers ===
 document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
