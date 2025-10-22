@@ -933,21 +933,6 @@
 
 <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
 
-
- <!-- === Free Limit Modal === -->
-<div id="upgradePopup" class="modal" aria-hidden="true">
-  <div class="modal__panel small" role="dialog" aria-modal="true" aria-labelledby="upgradePopupTitle">
-    <h3 id="upgradePopupTitle" class="modal__title">Your free trial is over</h3>
-    <p class="modal__subtitle">
-      You’ve reached your download limit of 8 drafts.<br>
-      Upgrade to unlock unlimited downloads and Pro features.
-    </p>
-    <button class="modal__btn-primary" onclick="openUpgradeModal()">Upgrade</button>
-  </div>
-</div>
-
-
-
 <!-- ===== LOGIN / REGISTER MODAL ===== -->
 <div id="authModal" class="modal" aria-hidden="true">
   <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -2176,7 +2161,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Element references (exact IDs present in your file) ---
   const remainingBtn   = document.getElementById("remainingDownloadsBtn"); // user-card row button
   const rowCounter     = document.getElementById("downloadCounter");       // number in the card row (e.g. "0 / 8")
-  const upgradePopup   = document.getElementById("upgradePopup");          // big “limit reached” modal
   const downloadBtn    = document.getElementById("downloadBtn");           // the real download button
 
    // --- Counter setup (key bound to email) ---
@@ -2272,11 +2256,8 @@ const auth = getAuth();
 const db   = getFirestore();
 
 const remainingBtn   = document.getElementById("remainingDownloadsBtn");
-const downloadPopup  = document.getElementById("downloadPopup");
 const popupRemaining = document.getElementById("popupRemaining");
 const rowCounter     = document.getElementById("downloadCounter");
-const upgradePopup   = document.getElementById("upgradePopup");
-const goUpgradeBtn   = document.getElementById("goUpgradeFromPopup");
 const downloadBtn    = document.getElementById("downloadBtn");
 
 const maxDownloads = 8;
@@ -2322,22 +2303,6 @@ function closeDownloadsPopup() {
   downloadPopup?.classList.remove("open");
 }
 
-// --- Popup and upgrade button ---
-remainingBtn?.addEventListener("click", (e) => {
-  e.stopPropagation();
-  openDownloadsPopup();
-});
-document.addEventListener("click", (e) => {
-  if (!downloadPopup) return;
-  const inside = e.target.closest("#downloadPopup");
-  const onBtn  = e.target.closest("#remainingDownloadsBtn");
-  if (!inside && !onBtn) closeDownloadsPopup();
-});
-goUpgradeBtn?.addEventListener("click", () => {
-  closeDownloadsPopup();
-  upgradePopup?.setAttribute("aria-hidden", "false");
-});
-
 // --- Counter bump logic ---
 function bumpDownloadCount() {
   downloadCount = Math.min(downloadCount + 1, maxDownloads);
@@ -2350,22 +2315,6 @@ function bumpDownloadCount() {
     downloadBtn.classList.add("disabled");
   }
 }
-
-// --- Guard actual download click ---
-downloadBtn?.addEventListener(
-  "click",
-  (e) => {
-    if (downloadCount >= maxDownloads) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      upgradePopup?.setAttribute("aria-hidden", "false");
-      return;
-    }
-    Promise.resolve().then(() => bumpDownloadCount());
-  },
-  true
-);
-
 // --- Auth-based sync ---
 onAuthStateChanged(auth, async (user) => {
   if (user && user.email) {
