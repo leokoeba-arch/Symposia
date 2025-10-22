@@ -864,6 +864,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin: 20px 0;
+  text-align: center;
 }
 
 .plan-option > div {
@@ -882,18 +883,39 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
-.plan-option > div:hover {
-  border-color: #2563eb;
-  background: #f7faff;
+ /* Individual cards */
+.plan-month,
+.plan-quarter,
+.plan-year {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f0f5ff;             /* ✅ Light blue background (like your image) */
+  border: 2px solid #d0dcff;       /* ✅ Soft blue border */
+  border-radius: 14px;
+  padding: 26px 0 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+    
+.plan-month:hover,
+.plan-quarter:hover,
+.plan-year:hover {
+  background: #e4edff;            
+  border-color: #b5caff;           
   transform: translateY(-2px);
 }
 
-.plan-option > div.active {
-  border-color: #2563eb;
-  background: linear-gradient(180deg, #f0f7ff, #e5efff);
+.plan-month.active,
+.plan-quarter.active,
+.plan-year.active {
+ background: #dce6ff;             
+  border-color: #2563eb;          
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
-
 /* --- Price line --- */
 .plan-option .price-line {
   display: flex;
@@ -923,11 +945,12 @@
 }
 
 .plan-option .note {
-  margin: 0;
   font-size: 0.8rem;
   color: #64748b;
+  margin-top: -4px;
+  text-align: center;
 }
-
+    
 /* --- Responsive --- */
 @media (max-width: 700px) {
   .plan-option {
@@ -1333,31 +1356,35 @@
           <li>Custom image placement</li>
         </ul>
 <!--Plan Options - Month, Quarter, Annual-->
-  <div class="plan-option">
-  <div class="plan-option active" data-plan="monthly" data-price="15">
+ <div class="plan-option">
+  <!-- MONTHLY -->
+  <div class="plan-month active" data-plan="monthly" data-price="15">
     <div class="price-line">
       <span class="price">15</span><span class="euro">€</span>
     </div>
     <p class="period">/month</p>
-    <p class="note">15€ billed every month</p>
   </div>
+  <p class="note">15€ billed every month</p>
 
-  <div class="plan-option" data-plan="quarterly" data-price="36">
+  <!-- QUARTERLY -->
+  <div class="plan-quarter" data-plan="quarterly" data-price="36">
     <div class="price-line">
       <span class="price">12</span><span class="euro">€</span>
     </div>
     <p class="period">/month</p>
-    <p class="note">36€ billed every 3 months</p>
   </div>
+  <p class="note">36€ billed every 3 months</p>
 
-  <div class="plan-option" data-plan="annual" data-price="108">
+  <!-- YEARLY -->
+  <div class="plan-year" data-plan="annual" data-price="108">
     <div class="price-line">
       <span class="price">9</span><span class="euro">€</span>
     </div>
     <p class="period">/month</p>
-    <p class="note">108€ billed yearly</p>
   </div>
+  <p class="note">108€ billed yearly</p>
 </div>
+
 
 <div class="discount-section">
   <input type="text" id="discountCode" placeholder="Discount code">
@@ -2012,12 +2039,12 @@ window.openTerms = openTerms;
 
 // === PLAN SELECTION + CARRY TO PAYMENT (Step 1 -> Step 2) ===
 
-// All selectable cards (children with data-plan)
-const planCards = document.querySelectorAll('.plan-option[data-plan]');
+// All selectable plan boxes
+const planCards = document.querySelectorAll('.plan-month, .plan-quarter, .plan-year');
 
-// Read initial selection if one is preset with .active
-let selectedPlan  = (document.querySelector('.plan-option[data-plan].active')?.getAttribute('data-plan')) || 'monthly';
-let selectedPrice = (document.querySelector('.plan-option[data-plan].active')?.getAttribute('data-price')) || '15';
+// Default selected (monthly)
+let selectedPlan  = 'monthly';
+let selectedPrice = '15';
 
 // Helper: apply selection UI + remember values
 function selectPlan(card) {
@@ -2027,24 +2054,28 @@ function selectPlan(card) {
   selectedPrice = card.getAttribute('data-price');  // "15", "36", or "108"
 }
 
-// Click to select plan
+// Attach click handlers
 planCards.forEach(card => {
-  card.addEventListener('click', () => {
-    selectPlan(card);
-  });
+  card.addEventListener('click', () => selectPlan(card));
 });
 
-// When continuing to payment, push price into the payment total
+// Continue → show Payment step + carry selected price
 const continueBtn = document.getElementById('continueToPayment');
 if (continueBtn) {
   continueBtn.addEventListener('click', () => {
-    const totalEl = document.getElementById('totalAmount'); // existing element in Step 2
+    const totalEl = document.getElementById('totalAmount');
     if (totalEl && selectedPrice != null) {
-      // keep formatting simple: €X or €X.YY if needed
       const n = Number(selectedPrice);
       totalEl.textContent = isFinite(n) && Math.floor(n) !== n ? `€${n.toFixed(2)}` : `€${n}`;
     }
-    // (Your existing code will handle switching steps visibility)
+
+    // Switch steps: hide Step 1, show Step 2
+    const step1 = document.getElementById('upgradeStep1');
+    const step2 = document.getElementById('Paymentpage');
+    if (step1 && step2) {
+      step1.classList.add('hidden');
+      step2.classList.remove('hidden');
+    }
   });
 }
 
