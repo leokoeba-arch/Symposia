@@ -786,11 +786,6 @@
   padding: 24px;
 }
 
-.upgrade-right {
-  background: #fafafa;
-  border: 1px solid #e2e8f0;
-}
-
 .upgrade-left h2,
 .upgrade-right h2 {
   font-size: 1.4rem;
@@ -799,14 +794,9 @@
   margin-bottom: 14px;
 }
 
-.plan-card {
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 18px 20px;
-  margin-bottom: 14px;
-  cursor: pointer;
-  background: #fff;
-  transition: all 0.25s ease;
+.upgrade-right {
+  background: #fafafa;
+  border: 1px solid #e2e8f0;
 }
 
 .plan-card {
@@ -819,6 +809,7 @@
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   padding: 18px 20px;
+  margin-bottom: 14px;
   cursor: pointer;
   background: #fff;
   transition: all 0.25s ease;
@@ -867,57 +858,89 @@
   font-weight: bold;
 }
 
-/* === Plan options: 3 bubble-like boxes === */
+/* === Plan options: pricing cards === */
 .plan-option {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 18px 0;
+  gap: 16px;
+  margin: 20px 0;
 }
 
 .plan-option > div {
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-align: center;
+  background: #fff;
   border: 2px solid #e2e8f0;
   border-radius: 14px;
-  padding: 18px 0;
-  background: #fff;
+  padding: 28px 0 16px;
   cursor: pointer;
   transition: all 0.25s ease;
-}
-
-.plan-option > div h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.plan-option > div p {
-  margin: 4px 0 0;
-  color: #475569;
-  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
 .plan-option > div:hover {
   border-color: #2563eb;
-  background: #f0f6ff;
+  background: #f7faff;
+  transform: translateY(-2px);
 }
 
 .plan-option > div.active {
   border-color: #2563eb;
   background: linear-gradient(180deg, #f0f7ff, #e5efff);
-  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
 
-/* Stack vertically on narrow screens */
+/* --- Price line --- */
+.plan-option .price-line {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1;
+}
+
+.plan-option .price-line .price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.plan-option .price-line .euro {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #334155;
+}
+
+.plan-option .period {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.plan-option .note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* --- Responsive --- */
 @media (max-width: 700px) {
   .plan-option {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
+}
+
+.upgrade-right .plan-option {              
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
 }
 
 
@@ -1309,35 +1332,43 @@
           <li>Exclusive export formats (Word, PDF, PPTX)</li>
           <li>Custom image placement</li>
         </ul>
-
-        <div class="plan-option">
-        <div class="plan-option active" data-plan="monthly">
-          <h4>Monthly</h4>
-          <p>€15 billed every month</p>
-        </div>
-        <div class="plan-option" data-plan="quarterly">
-          <h4>Quarterly</h4>
-          <p>€12/month — billed €36</p>
-        </div>
-        <div class="plan-option" data-plan="annual">
-          <h4>Annual</h4>
-          <p>€8.99/month — billed €107.88</p>
-      </div>
+<!--Plan Options - Month, Quarter, Annual-->
+  <div class="plan-option">
+  <div class="plan-option active" data-plan="monthly" data-price="15">
+    <div class="price-line">
+      <span class="price">15</span><span class="euro">€</span>
     </div>
+    <p class="period">/month</p>
+    <p class="note">15€ billed every month</p>
+  </div>
 
-
-        <div class="discount-section">
-          <input type="text" id="discountCode" placeholder="Discount code">
-          <button id="applyDiscountBtn">Apply</button>
-          <p id="discountMessage"></p>
-        </div>
-
-        <button id="continueToPayment" class="btn btn-primary">Continue</button>
-      </div>
+  <div class="plan-option" data-plan="quarterly" data-price="36">
+    <div class="price-line">
+      <span class="price">12</span><span class="euro">€</span>
     </div>
+    <p class="period">/month</p>
+    <p class="note">36€ billed every 3 months</p>
+  </div>
+
+  <div class="plan-option" data-plan="annual" data-price="108">
+    <div class="price-line">
+      <span class="price">9</span><span class="euro">€</span>
+    </div>
+    <p class="period">/month</p>
+    <p class="note">108€ billed yearly</p>
+  </div>
+</div>
+
+<div class="discount-section">
+  <input type="text" id="discountCode" placeholder="Discount code">
+  <button id="applyDiscountBtn">Apply</button>
+    <p id="discountMessage"></p>
+</div>
+
+ <button id="continueToPayment" class="btn btn-primary">Continue</button>
 
    <!-- STEP 2: Payment -->
-<div class="upgrade-step hidden" id="upgradeStep2">
+<div class="upgrade-step hidden" id="Paymentpage">
   <div class="payment-header">
     <button id="backToPlan" class="back-btn" aria-label="Back to plans">
       ←
@@ -1978,6 +2009,45 @@ window.openHelp = openHelp;
 window.contactSupport = contactSupport;
 window.openPrivacy = openPrivacy;
 window.openTerms = openTerms;
+
+// === PLAN SELECTION + CARRY TO PAYMENT (Step 1 -> Step 2) ===
+
+// All selectable cards (children with data-plan)
+const planCards = document.querySelectorAll('.plan-option[data-plan]');
+
+// Read initial selection if one is preset with .active
+let selectedPlan  = (document.querySelector('.plan-option[data-plan].active')?.getAttribute('data-plan')) || 'monthly';
+let selectedPrice = (document.querySelector('.plan-option[data-plan].active')?.getAttribute('data-price')) || '15';
+
+// Helper: apply selection UI + remember values
+function selectPlan(card) {
+  planCards.forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  selectedPlan  = card.getAttribute('data-plan');   // monthly | quarterly | annual
+  selectedPrice = card.getAttribute('data-price');  // "15", "36", or "108"
+}
+
+// Click to select plan
+planCards.forEach(card => {
+  card.addEventListener('click', () => {
+    selectPlan(card);
+  });
+});
+
+// When continuing to payment, push price into the payment total
+const continueBtn = document.getElementById('continueToPayment');
+if (continueBtn) {
+  continueBtn.addEventListener('click', () => {
+    const totalEl = document.getElementById('totalAmount'); // existing element in Step 2
+    if (totalEl && selectedPrice != null) {
+      // keep formatting simple: €X or €X.YY if needed
+      const n = Number(selectedPrice);
+      totalEl.textContent = isFinite(n) && Math.floor(n) !== n ? `€${n.toFixed(2)}` : `€${n}`;
+    }
+    // (Your existing code will handle switching steps visibility)
+  });
+}
+
 
 </script>
 
