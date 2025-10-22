@@ -2029,15 +2029,11 @@ window.openPrivacy = openPrivacy;
 window.openTerms = openTerms;
 
 // === PLAN SELECTION + CARRY TO PAYMENT (Step 1 → Step 2) ===
-
-// Select all plan boxes
 const planCards = document.querySelectorAll('.plan-month, .plan-quarter, .plan-year');
-
-// Default selection (if any preset exists)
 let selectedPlan  = document.querySelector('.plan-month.active, .plan-quarter.active, .plan-year.active')?.dataset.plan || 'monthly';
 let selectedPrice = document.querySelector('.plan-month.active, .plan-quarter.active, .plan-year.active')?.dataset.price || '15';
 
-// Helper: apply selection UI + store values
+// Plan selection
 function selectPlan(card) {
   planCards.forEach(c => c.classList.remove('active'));
   card.classList.add('active');
@@ -2045,33 +2041,26 @@ function selectPlan(card) {
   selectedPrice = card.dataset.price;
 }
 
-// Attach click handlers for plan selection
-planCards.forEach(card => {
-  card.addEventListener('click', () => selectPlan(card));
-});
+planCards.forEach(card => card.addEventListener('click', () => selectPlan(card)));
 
-// Continue → show Payment step and display price
+// Step handling
 const continueBtn = document.getElementById('continueToPayment');
-const step1 = document.getElementById('upgradeStep1');    // Plan selection step
-const step2 = document.getElementById('upgradeStep2');     // Payment step
-const totalEl = document.getElementById('totalAmount');   // Price label in payment
+const step1 = document.getElementById('upgradeStep1');
+const step2 = document.getElementById('upgradeStep2');
+const totalEl = document.getElementById('totalAmount');
+const backBtn = document.getElementById('backToPlan');
 
 if (continueBtn) {
   continueBtn.addEventListener('click', () => {
-    // Make sure user selected a plan
-    if (!selectedPlan || !selectedPrice) {
-      alert('Please select a plan before continuing.');
-      return;
-    }
+    console.log('Continue clicked'); // ✅ Debug log
 
-    // Update total amount display
-    if (totalEl) {
+    // Show total price
+    if (totalEl && selectedPrice) {
       const n = Number(selectedPrice);
-      const formatted = isFinite(n) && Math.floor(n) !== n ? `€${n.toFixed(2)}` : `€${n}`;
-      totalEl.textContent = formatted;
+      totalEl.textContent = isFinite(n) && Math.floor(n) !== n ? `€${n.toFixed(2)}` : `€${n}`;
     }
 
-    // Switch to payment step
+    // Switch steps
     if (step1 && step2) {
       step1.classList.add('hidden');
       step2.classList.remove('hidden');
@@ -2079,10 +2068,8 @@ if (continueBtn) {
   });
 }
 
-// Back button (Payment → Plan selection)
-const backToPlan = document.getElementById('backToPlan');
-if (backToPlan) {
-  backToPlan.addEventListener('click', () => {
+if (backBtn) {
+  backBtn.addEventListener('click', () => {
     if (step1 && step2) {
       step2.classList.add('hidden');
       step1.classList.remove('hidden');
