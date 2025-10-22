@@ -765,7 +765,7 @@
   gap: 32px;
   flex-wrap: wrap;
 }
-    .upgrade-step.hidden {
+.upgrade-step.hidden {
   display: none !important;
 }
 
@@ -776,8 +776,14 @@
 }
 
 .upgrade-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* evenly distribute the two plan cards */
+  gap: 16px;
   background: linear-gradient(145deg, #eef3ff, #f9fbff);
   border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 24px;
 }
 
 .upgrade-right {
@@ -803,6 +809,21 @@
   transition: all 0.25s ease;
 }
 
+.plan-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 120px; /* ensures equal height */
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.25s ease;
+}
+
 .plan-card.active {
   border-color: #2563eb;
   background: linear-gradient(180deg, #f8fbff, #ebf2ff);
@@ -810,7 +831,7 @@
 }
 
 .plan-card.disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
@@ -927,7 +948,44 @@
   margin-top: 12px;
   font-size: 1rem;
 }
+.payment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #2563eb;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: color 0.2s ease;
+}
+
+.back-btn:hover {
+  color: #1d4ed8;
+}
+
+.payment-body {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.payment-left {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.payment-right {
+  flex: 2;
+  min-width: 300px;
+}
     
   </style>
 </head>
@@ -1229,42 +1287,49 @@
       </div>
     </div>
 
-    <!-- STEP 2: Payment -->
-    <div class="upgrade-step hidden" id="upgradeStep2">
-      <div class="payment-left">
-        <h2 class="modal__title">Payment Details</h2>
-        <div class="card-stack">
-          <div class="card visa"></div>
-          <div class="card master"></div>
-          <div class="card amex"></div>
-        </div>
-      </div>
+   <!-- STEP 2: Payment -->
+<div class="upgrade-step hidden" id="upgradeStep2">
+  <div class="payment-header">
+    <button id="backToPlan" class="back-btn" aria-label="Back to plans">
+      ←
+    </button>
+    <h2 class="modal__title">Payment Details</h2>
+  </div>
 
-      <div class="payment-right">
-        <div class="payment-methods">
-          <button>Google Pay</button>
-          <button>Apple Pay</button>
-          <button>PayPal</button>
-        </div>
-
-        <p class="or">or pay with card</p>
-
-        <form id="paymentForm">
-          <input type="text" placeholder="Card Number" required>
-          <input type="text" placeholder="Card Holder Name" required>
-          <div class="card-details">
-            <input type="text" placeholder="MM / YY" required>
-            <input type="text" placeholder="CVV" required>
-          </div>
-          <div class="total-line">
-            <span>Total:</span>
-            <strong id="totalAmount">€15</strong>
-          </div>
-          <button type="submit" class="btn btn-primary">Pay Now</button>
-        </form>
+  <div class="payment-body">
+    <div class="payment-left">
+      <div class="card-stack">
+        <div class="card visa"></div>
+        <div class="card master"></div>
+        <div class="card amex"></div>
       </div>
     </div>
+
+    <div class="payment-right">
+      <div class="payment-methods">
+        <button>Google Pay</button>
+        <button>Apple Pay</button>
+        <button>PayPal</button>
+      </div>
+
+      <p class="or">or pay with card</p>
+
+      <form id="paymentForm">
+        <input type="text" placeholder="Card Number" required>
+        <input type="text" placeholder="Card Holder Name" required>
+        <div class="card-details">
+          <input type="text" placeholder="MM / YY" required>
+          <input type="text" placeholder="CVV" required>
+        </div>
+        <div class="total-line">
+          <span>Total:</span>
+          <strong id="totalAmount">€15</strong>
+        </div>
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+      </form>
+    </div>
   </div>
+</div>
 </div>
 
 
