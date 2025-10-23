@@ -1152,8 +1152,8 @@
 
     <div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="toggleSideMenu(false)"></div>
 
-    <!-- ===== LOGIN / REGISTER MODAL ===== -->
-    <div id="authModal" class="modal" aria-hidden="true">
+  <!-- ===== LOGIN / REGISTER MODAL ===== -->
+  <div id="authModal" class="modal" aria-hidden="true">
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <button class="modal__close" aria-label="Close" onclick="toggleAuthModal(false)">×</button>
 
@@ -1268,6 +1268,7 @@
     <!-- Single download button -->
     <button id="downloadBtn">Download Draft</button>
   </div>
+</div>
 
  <!-- === UPGRADE MODAL === -->
 <div id="upgradeModal" class="modal" aria-hidden="true">
@@ -1416,98 +1417,13 @@
     </div>
 
     <div class="output-wrapper">
-    <div id="output"></div>
-    <div id="overlayBlockCopy"></div>
+      <div id="output"></div>
+      <div id="overlayBlockCopy"></div>
     </div>
 
       <!-- Single download button -->
       <button id="downloadBtn">Download Draft</button>
     </div>
-
-    <!-- === UPGRADE MODAL === -->
-    <div id="upgradeModal" class="modal" aria-hidden="true">
-    <div class="modal__panel upgrade-modal">
-      <button class="modal__close" aria-label="Close" onclick="closeUpgradeModal()">×</button>
-
-      <!-- STEP 1: Plans -->
-      <div class="upgrade-step" id="upgradeStep1">
-        <div class="upgrade-left">
-          <h2 class="modal__title">Choose Your Plan</h2>
-
-          <div class="plan-card active" id="planPro" onclick="selectPlan('pro')">
-            <h3>Pro</h3>
-            <p>Unlimited downloads, premium speed, and advanced tools.</p>
-          </div>
-
-          <div class="plan-card disabled">
-            <h3>Nobel</h3>
-            <p>Coming soon — lifetime access to all features.</p>
-          </div>
-        </div>
-
-        <div class="upgrade-right">
-          <h2 class="modal__subtitle">Pro Benefits</h2>
-          <ul class="benefits">
-            <li>Unlimited draft downloads</li>
-            <li>Priority AI generation</li>
-            <li>Exclusive export formats (Word, PDF, PPTX)</li>
-            <li>Custom image placement</li>
-          </ul>
-
-          <div class="billing-options">
-            <label><input type="radio" name="billing" value="monthly" checked> Monthly — <span class="price">€15</span></label>
-            <label><input type="radio" name="billing" value="quarterly"> Quarterly — <span class="price">€12</span>/month (billed €36)</label>
-            <label><input type="radio" name="billing" value="annual"> Annual — <span class="price">€8.99</span>/month (billed €107.88)</label>
-          </div>
-
-          <div class="discount-section">
-            <input type="text" id="discountCode" placeholder="Discount code">
-            <button id="applyDiscountBtn">Apply</button>
-            <p id="discountMessage"></p>
-          </div>
-
-          <button id="continueToPayment" class="btn btn-primary">Continue</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: Payment -->
-      <div class="upgrade-step hidden" id="upgradeStep2">
-        <div class="payment-left">
-          <h2 class="modal__title">Payment Details</h2>
-          <div class="card-stack">
-            <div class="card visa"></div>
-            <div class="card master"></div>
-            <div class="card amex"></div>
-          </div>
-        </div>
-
-        <div class="payment-right">
-          <div class="payment-methods">
-            <button>Google Pay</button>
-            <button>Apple Pay</button>
-            <button>PayPal</button>
-          </div>
-
-          <p class="or">or pay with card</p>
-
-          <form id="paymentForm">
-            <input type="text" placeholder="Card Number" required>
-            <input type="text" placeholder="Card Holder Name" required>
-            <div class="card-details">
-              <input type="text" placeholder="MM / YY" required>
-              <input type="text" placeholder="CVV" required>
-            </div>
-            <div class="total-line">
-              <span>Total:</span>
-              <strong id="totalAmount">€15</strong>
-            </div>
-            <button type="submit" class="btn btn-primary">Pay Now</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    </div>
-
 
     <script>
       const generateBtn   = document.getElementById('generateBtn');
