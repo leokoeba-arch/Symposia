@@ -1519,6 +1519,8 @@
       draftText = draftText.replace(/(Recommended Additions)/gi, '🔷 <strong>$1</strong>');
       output.innerHTML = `<div style="font-family:'Times New Roman', Times, serif;">${draftText.trim()}</div>` || 'No draft returned.';
       output.style.display = 'block';
+      
+      bindDownloadButton();
       if (draftText.trim()) {
         downloadBtn.style.display = 'block';
       // Prevent text selection (disables copying)
@@ -1954,6 +1956,8 @@
     window.logoutUser = logoutUser;
     window.bindDownloadButton = window.bindDownloadButton || bindDownloadButton;
     window.updateDownloadButtonState = window.updateDownloadButtonState || updateDownloadButtonState;
+    window.openUpgradeModal = openUpgradeModal;
+    window.closeUpgradeModal = closeUpgradeModal;
 
     // ===== Auth State Listener =====
     onAuthStateChanged(auth, (user) => {
@@ -1983,14 +1987,35 @@
     // === 🔹 FIRESTORE SYNC HELPERS ===
     async function fetchDownloadCount(userEmail) {
     if (!userEmail) return 0;
+
+    let cloudCount = 0;
     try {
       const ref = doc(db, "userDownloads", userEmail);
       const snap = await getDoc(ref);
-      return snap.exists() ? snap.data().count || 0 : 0;
+      if (snap.exists()) {
+        const data = snap.data();
+        cloudCount = data.count || 0;
+        console.log("Fetched download count from cloud:", cloudCount);
+      } else {
+        console.log("No download count found in cloud for user.");
+      }
     } catch (err) {
       console.error("Error fetching download count:", err);
       return 0;
     }
+    const localCount = Number(localStorage.getItem('symposia_downloadCount') || '0');
+    const effectiveCount = Math.max(cloudCount, localCount);
+    localStorage.setItem('symposia_downloadCount', String(effectiveCount));
+    if (cloudCount < effectiveCount) {
+      try {
+        const docRef = doc(db, "userDownloads", userEmail);
+        await setDoc(docRef, { count: effectiveCount }, { merge: true });
+        console.log("Updated cloud download count to:", effectiveCount);
+      } catch (err) {
+        console.warn("Unable to resync cloud download count:", err);
+      }
+    }
+      return effectiveCount
     }
 
     async function saveDownloadCountToCloud(userEmail, count) {
@@ -2223,8 +2248,15 @@
       } catch (err) {
         console.error("Error fetching download count:", err);
       }
-      if (!count) {
-        count = Number.(localStorage.getItem("symposia_downloadCount") || "0");
+
+      const localCount = Number(localStorage.getItem("symposia_downloadCount") || "0");
+      if (count < localCount) {
+        count = localCount;
+        try {
+          await saveDownloadCountToCloud(user.email, count);
+        } catch (err) {
+          console.error('saveDownloadCountToCloud error', err);
+        }
       }
 
       // limit check before proceeding
@@ -2498,6 +2530,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
     document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
 
+    document.addEventListener('DOMContentLoaded', bindDownloadButton);
     </script>
   </body>
 </html>
