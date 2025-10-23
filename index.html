@@ -1520,7 +1520,7 @@
     if (!response.ok || data.error) {
       output.textContent = 'Error: ' + (data?.error?.message || data.error || JSON.stringify(data));
     } else {
-      let draftText = (data.draft || data.result || data.text || data.output || '').trim();
+      let draftText = data.draft || data.result || '';
       // Remove dangling empty "Recommended Additions"
       draftText = draftText.replace(/Recommended Additions\s*$/i, "");
       // Bold the main "Recommended Additions"
