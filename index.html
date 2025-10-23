@@ -2720,7 +2720,27 @@ document.addEventListener("DOMContentLoaded", () => {
         totalEl.textContent = `€${price.toFixed(2).replace(".00", "")}`;
     });
   });
+});
+  document.addEventListener("DOMContentLoaded", () => {
+  const step1 = document.getElementById("upgradeStep1");
+  const step2 = document.getElementById("upgradeStep2");
+  const continueBtn = document.getElementById("continueToPayment");
+  const backBtn = document.getElementById("backToPlan");
 
+  if (continueBtn && step1 && step2) {
+    continueBtn.addEventListener("click", () => {
+      console.log("✅ Continue clicked");
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+    });
+  }
+
+  if (backBtn && step1 && step2) {
+    backBtn.addEventListener("click", () => {
+      step2.classList.add("hidden");
+      step1.classList.remove("hidden");
+    });
+  }
 });
 </script>
 
