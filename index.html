@@ -2028,58 +2028,6 @@ window.contactSupport = contactSupport;
 window.openPrivacy = openPrivacy;
 window.openTerms = openTerms;
 
-document.addEventListener("DOMContentLoaded", () => {
-// === PLAN SELECTION + CARRY TO PAYMENT (Step 1 → Step 2) ===
-const planCards = document.querySelectorAll('.plan-month, .plan-quarter, .plan-year');
-let selectedPlan  = document.querySelector('.plan-month.active, .plan-quarter.active, .plan-year.active')?.dataset.plan || 'monthly';
-let selectedPrice = document.querySelector('.plan-month.active, .plan-quarter.active, .plan-year.active')?.dataset.price || '15';
-
-// Plan selection
-function selectPlan(card) {
-  planCards.forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  selectedPlan  = card.dataset.plan;
-  selectedPrice = card.dataset.price;
-}
-
-planCards.forEach(card => card.addEventListener('click', () => selectPlan(card)));
-
-// Step handling
-const continueBtn = document.getElementById('continueToPayment');
-const step1 = document.getElementById('upgradeStep1');
-const step2 = document.getElementById('upgradeStep2');
-const totalEl = document.getElementById('totalAmount');
-const backBtn = document.getElementById('backToPlan');
-
-if (continueBtn) {
-  continueBtn.addEventListener('click', () => {
-    console.log('Continue clicked'); // ✅ Debug log
-
-    // Show total price
-    if (totalEl && selectedPrice) {
-      const n = Number(selectedPrice);
-      totalEl.textContent = isFinite(n) && Math.floor(n) !== n ? `€${n.toFixed(2)}` : `€${n}`;
-    }
-
-    // Switch steps
-    if (step1 && step2) {
-      step1.classList.add('hidden');
-      step2.classList.remove('hidden');
-    }
-  });
-}
-
-if (backBtn) {
-  backBtn.addEventListener('click', () => {
-    if (step1 && step2) {
-      step2.classList.add('hidden');
-      step1.classList.remove('hidden');
-    }
-  });
-}
-});
-
-
 </script>
 
 <script type="module">
@@ -2681,101 +2629,98 @@ onAuthStateChanged(auth, async (user) => {
 });
 </script>
 <script>
-  function openUpgradeModal() {
-    const m = document.getElementById('upgradeModal');
-    if (!m) return;
-    m.style.display = '';              // clear inline if any
-    m.classList.add('open');           // your CSS uses `.modal.open { display:block }`
-    m.setAttribute('aria-hidden','false');
-  }
-  function closeUpgradeModal() {
-    const m = document.getElementById('upgradeModal');
-    if (!m) return;
-    m.classList.remove('open');
-    m.setAttribute('aria-hidden','true');
-  }
+document.addEventListener("DOMContentLoaded", () => {
+
   // === Upgrade Modal Logic ===
-function openUpgradeModal() {
-  const modal = document.getElementById("upgradeModal");
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-}
-function closeUpgradeModal() {
-  const modal = document.getElementById("upgradeModal");
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden", "true");
-}
-
-function selectPlan(plan) {
-  if (plan === "pro") {
-    document.getElementById("planPro").classList.add("active");
+  function openUpgradeModal() {
+    const modal = document.getElementById("upgradeModal");
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
   }
-}
 
-document.getElementById("continueToPayment").addEventListener("click", () => {
-  document.getElementById("upgradeStep1").classList.add("hidden");
-  document.getElementById("upgradeStep2").classList.remove("hidden");
-});
-
-document.getElementById("applyDiscountBtn").addEventListener("click", () => {
-  const code = document.getElementById("discountCode").value.trim().toLowerCase();
-  const msg = document.getElementById("discountMessage");
-  const total = document.getElementById("totalAmount");
-
-  if (code === "symposia10") {
-    msg.textContent = "10% discount applied!";
-    total.textContent = "€13.50";
-  } else if (code === "symposia25") {
-    msg.textContent = "25% discount applied!";
-    total.textContent = "€11.25";
-  } else {
-    msg.textContent = "Invalid code.";
+  function closeUpgradeModal() {
+    const modal = document.getElementById("upgradeModal");
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
   }
-});
+
+  // === Plan card selection (Pro, Nobel) ===
+  function selectPlan(plan) {
+    const planPro = document.getElementById("planPro");
+    if (plan === "pro" && planPro) {
+      planPro.classList.add("active");
+    }
+  }
+
+  // === Step navigation: Plan → Payment ===
+  const continueBtn = document.getElementById("continueToPayment");
+  const step1 = document.getElementById("upgradeStep1");
+  const step2 = document.getElementById("upgradeStep2");
+  const totalEl = document.getElementById("totalAmount");
+
+  if (continueBtn && step1 && step2) {
+    continueBtn.addEventListener("click", () => {
+      console.log("✅ Continue clicked");
+
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+      step2.scrollIntoView({ behavior: "smooth" });
+    });
+  }
 
   // === Back arrow in Payment step ===
-const backBtn = document.getElementById('backToPlan');
-if (backBtn) {
-  backBtn.addEventListener('click', () => {
-    const step1 = document.getElementById('upgradeStep1');
-    const step2 = document.getElementById('upgradeStep2');
-    step2.classList.add('hidden');
-    step1.classList.remove('hidden');
-    step1.scrollIntoView({ behavior: 'smooth' });
+  const backBtn = document.getElementById("backToPlan");
+  if (backBtn && step1 && step2) {
+    backBtn.addEventListener("click", () => {
+      step2.classList.add("hidden");
+      step1.classList.remove("hidden");
+      step1.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  // === Discount logic ===
+  const discountBtn = document.getElementById("applyDiscountBtn");
+  if (discountBtn) {
+    discountBtn.addEventListener("click", () => {
+      const code = document.getElementById("discountCode").value.trim().toLowerCase();
+      const msg = document.getElementById("discountMessage");
+      const total = document.getElementById("totalAmount");
+
+      if (code === "symposia10") {
+        msg.textContent = "10% discount applied!";
+        total.textContent = "€13.50";
+      } else if (code === "symposia25") {
+        msg.textContent = "25% discount applied!";
+        total.textContent = "€11.25";
+      } else {
+        msg.textContent = "Invalid code.";
+      }
+    });
+  }
+
+  // === Connect all modal triggers ===
+  document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
+  document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
+
+  // === Billing option selection + price update ===
+  const planOptions = document.querySelectorAll(".plan-month, .plan-quarter, .plan-year");
+  planOptions.forEach(opt => {
+    opt.addEventListener("click", () => {
+      planOptions.forEach(o => o.classList.remove("active"));
+      opt.classList.add("active");
+
+      const plan = opt.dataset.plan;
+      let price = 15;
+      if (plan === "quarterly") price = 36;
+      if (plan === "annual") price = 108;
+
+      if (totalEl)
+        totalEl.textContent = `€${price.toFixed(2).replace(".00", "")}`;
+    });
   });
-}
 
-// === Connect all triggers ===
-document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
-document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
-
-// === Billing option card selection ===
-document.querySelectorAll('.plan-option .plan-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.plan-option .plan-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    card.querySelector('input').checked = true;
-  });
-});
-// === Billing option selection + price update ===
-const planOption = document.querySelectorAll('.plan-option');
-const totalAmountDisplay = document.getElementById('totalAmount');
-
-planOption.forEach(opt => {
-  opt.addEventListener('click', () => {
-    // Remove active from all, set on clicked one
-    planOption.forEach(o => o.classList.remove('active'));
-    opt.classList.add('active');
-
-    // Update total price
-    const plan = opt.dataset.plan;
-    let price = 15; // default
-    if (plan === 'quarterly') price = 36;
-    if (plan === 'annual') price = 107.88;
-
-    if (totalAmountDisplay)
-      totalAmountDisplay.textContent = `€${price.toFixed(2).replace('.00', '')}`;
-  });
 });
 </script>
 
