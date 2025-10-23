@@ -1517,6 +1517,7 @@
     });
 
     const data = await response.json();
+    console.log('API response:', data);
     if (!response.ok || data.error) {
       output.textContent = 'Error: ' + (data?.error?.message || data.error || JSON.stringify(data));
     } else {
@@ -1544,7 +1545,6 @@
     } catch (err) {
       const statusText = document.getElementById('statusText'); 
       if (statusText) statusText.remove();
-
       output.textContent = 'Error generating draft: ' + (err?.message || String(err));
     } finally {
       loading.style.display = 'none';
