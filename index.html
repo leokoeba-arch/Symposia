@@ -1520,22 +1520,23 @@
     if (!response.ok || data.error) {
       output.textContent = 'Error: ' + (data?.error?.message || data.error || JSON.stringify(data));
     } else {
-      let draftText = (data.draft || data.result || '').trim();
+      let draftText = (data.draft || data.result || data.text || data.output || '').trim();
       // Remove dangling empty "Recommended Additions"
       draftText = draftText.replace(/Recommended Additions\s*$/i, "");
       // Bold the main "Recommended Additions"
       draftText = draftText.replace(/(Recommended Additions)/gi, '🔷 <strong>$1</strong>');
       output.innerHTML = `<div style="font-family:'Times New Roman', Times, serif;">${draftText.trim()}</div>` || 'No draft returned.';
+      output.style.display = 'block';
       if (draftText.trim()) {
         downloadBtn.style.display = 'block';
       // Prevent text selection (disables copying)
         document.getElementById('output').style.userSelect = 'none';
       }
       clearInterval(statusInterval);
-      if (statusText) statusText.remove();
-        if (typeof window.updateDownloadButtonState === 'function') {
-          window.updateDownloadButtonState(window.auth?.currentUser || null);
-        } else {
+      if (statusEl) statusEl.remove();
+      if (typeof window.updateDownloadButtonState === 'function') {
+        window.updateDownloadButtonState(window.auth?.currentUser || null);
+      } else {
         // ritenta brevemente se il module non è ancora pronto
         setTimeout(() => window.updateDownloadButtonState?.(window.auth?.currentUser || null), 150);
       }
