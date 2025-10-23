@@ -2219,9 +2219,12 @@
       let count = 0;
       try {
         count = await fetchDownloadCount(user.email);
+        console.log("Current download count: ", count);
       } catch (err) {
         console.error("Error fetching download count:", err);
-        alert("Error checking download limit. Please try again later.");
+      }
+      if (!count) {
+        count = Number.(localStorage.getItem("symposia_downloadCount") || "0");
       }
 
       // limit check before proceeding
@@ -2244,8 +2247,14 @@
 
       // increment and sync
       count += 1;
-      try { await saveDownloadCountToCloud(user.email, count); } catch (err) { console.error('saveDownloadCountToCloud error', err); }
-      if (typeof updateDownloadCounterUI === 'function') updateDownloadCounterUI(count);
+      localStorage.setItem("symposia_downloadCount", count);
+      try { 
+        await saveDownloadCountToCloud(user.email, count);
+      } catch (err) { 
+        console.error('saveDownloadCountToCloud error', err);
+      }
+      if (typeof updateDownloadCounterUI === 'function') 
+        updateDownloadCounterUI(count);
 
       updateDownloadButtonState(auth.currentUser);
     }, {capture : true});
