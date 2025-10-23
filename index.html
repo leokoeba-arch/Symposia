@@ -2028,6 +2028,7 @@ window.contactSupport = contactSupport;
 window.openPrivacy = openPrivacy;
 window.openTerms = openTerms;
 
+document.addEventListener("DOMContentLoaded", () => {
 // === PLAN SELECTION + CARRY TO PAYMENT (Step 1 → Step 2) ===
 const planCards = document.querySelectorAll('.plan-month, .plan-quarter, .plan-year');
 let selectedPlan  = document.querySelector('.plan-month.active, .plan-quarter.active, .plan-year.active')?.dataset.plan || 'monthly';
@@ -2076,6 +2077,7 @@ if (backBtn) {
     }
   });
 }
+});
 
 
 </script>
