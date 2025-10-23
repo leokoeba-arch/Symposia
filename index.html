@@ -1273,29 +1273,29 @@
     <button class="modal__close" aria-label="Close" onclick="closeUpgradeModal()">×</button>
 
     <!-- STEP 1: Plans -->
-    <div class="upgrade-step" id="upgradeStep1">
-      <div class="upgrade-left">
-        <h2 class="modal__title">Choose Your Plan</h2>
+<div class="upgrade-step" id="upgradeStep1">
+  <div class="upgrade-left">
+	<h2 class="modal__title">Choose Your Plan</h2>
 
-        <div class="plan-card active" id="planPro" onclick="selectPlan('pro')">
-          <h3>Pro</h3>
-          <p>Unlimited downloads, premium speed, and advanced tools.</p>
-        </div>
+	<div class="plan-card active" id="planPro" onclick="selectPlan('pro')">
+	  <h3>Pro</h3>
+	  <p>Unlimited downloads, premium speed, and advanced tools.</p>
+	</div>
 
-        <div class="plan-card disabled">
-          <h3>Nobel</h3>
-          <p>Coming soon — lifetime access to all features.</p>
-        </div>
-      </div>
+	<div class="plan-card disabled">
+	  <h3>Nobel</h3>
+	  <p>Coming soon — lifetime access to all features.</p>
+	</div>
+  </div>
 
-      <div class="upgrade-right">
-        <h2 class="modal__subtitle">Pro Benefits</h2>
-        <ul class="benefits">
-          <li>Unlimited draft downloads</li>
-          <li>Priority AI generation</li>
-          <li>Exclusive export formats (Word, PDF, PPTX)</li>
-          <li>Custom image placement</li>
-        </ul>
+<div class="upgrade-right">
+<h2 class="modal__subtitle">Pro Benefits</h2>
+<ul class="benefits">
+  <li>Unlimited draft downloads</li>
+  <li>Priority AI generation</li>
+  <li>Exclusive export formats (Word, PDF, PPTX)</li>
+  <li>Custom image placement</li>
+</ul>
 
 <!-- Plan Options - Month, Quarter, Annual -->
 <div class="plan-option">
@@ -1331,6 +1331,7 @@
 </div>
 
  <button id="continueToPayment" class="btn btn-primary">Continue</button>
+</div>
 </div>
    <!-- STEP 2: Payment -->
 <div class="upgrade-step hidden" id="upgradeStep2">
@@ -1374,7 +1375,6 @@
       </form>
     </div>
   </div>
-</div>
 </div>
 </div>
 </div>
@@ -2357,7 +2357,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === Step navigation: Plan → Payment ===
+  // === Step navigation: Plan → Payment ===OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
   const continueBtn = document.getElementById("continueToPayment");
   const step1 = document.getElementById("upgradeStep1");
   const step2 = document.getElementById("upgradeStep2");
@@ -2424,6 +2424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+	//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
   document.addEventListener("DOMContentLoaded", () => {
   const step1 = document.getElementById("upgradeStep1");
   const step2 = document.getElementById("upgradeStep2");
