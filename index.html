@@ -1003,12 +1003,6 @@
     border-radius: 10px;
     }
 
-    .card-stack { margin-top: 20px; }
-    .card { width: 200px; height: 120px; border-radius: 10px; margin-top: -40px; opacity: 0.9; }
-    .card.visa { background: linear-gradient(135deg, #2a52be, #547fff); }
-    .card.master { background: linear-gradient(135deg, #ff5f6d, #ffc371); }
-    .card.amex { background: linear-gradient(135deg, #00c6ff, #0072ff); }
-
     .payment-methods {
     display: flex;
     justify-content: space-around;
@@ -1361,21 +1355,14 @@
 	<div class="payment-header">
 	  <img id="paymentBackground" src="./symposia-web-app/src/images/Background.png" alt="" class="payment-bg">
       <div class="payment-content">
-    <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
     <h2 class="modal__title">Payment Details</h2>
   </div>  
   </div>
 </div>
+	 <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
 <div class="upgrade-right">
+  <h2 class="modal__subtitle">Payment Details</h2>
   <div class="payment-body">
-    <div class="payment-left">
-      <div class="card-stack">
-        <div class="card visa"></div>
-        <div class="card master"></div>
-        <div class="card amex"></div>
-      </div>
-    </div>
-
     <div class="payment-right">
       <div class="payment-methods">
         <button>Google Pay</button>
@@ -1394,7 +1381,7 @@
         </div>
         <div class="total-line">
           <span>Total:</span>
-          <strong id="totalAmount">€15</strong>
+          <strong id="totalAmount">€15</strong> <!--QUI DEVE RICHIAMARE IL VALORE DATA-PLAN MONTH, QUARTER, OR ANNUAL.-->
         </div>
         <button type="submit" class="btn btn-primary">Pay Now</button>
       </form>
