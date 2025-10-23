@@ -1260,7 +1260,13 @@
     <button id="primaryAuthBtn" class="btn btn-primary" type="button" onclick="handlePrimaryAuth()" disabled> Log in </button>
   </div>
 </div>
-
+ <!-- Footer: switch mode -->
+      <div class="modal__footer">
+        <span id="authModeText">Don’t have an account?</span>
+        <button id="switchAuthModeBtn" class="link" type="button" onclick="switchAuthMode(true)">Create one</button>
+      </div>
+    </div>
+    </div>
  <!-- === UPGRADE MODAL === -->
 <div id="upgradeModal" class="modal" aria-hidden="true">
   <div class="modal__panel upgrade-modal">
@@ -1370,15 +1376,7 @@
   </div>
 </div>
 </div>
-      <!-- Footer: switch mode -->
-      <div class="modal__footer">
-        <span id="authModeText">Don’t have an account?</span>
-        <button id="switchAuthModeBtn" class="link" type="button" onclick="switchAuthMode(true)">Create one</button>
-      </div>
-    </div>
-    </div>
-
-
+     
     <div class="container">
       <h1>Symposia</h1>
       <p class="subtitle">Turn your clinical notes into publishable drafts</p>
