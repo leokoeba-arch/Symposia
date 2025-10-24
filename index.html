@@ -1053,10 +1053,12 @@ gap: 10px;
 background: none;
 border: none;
 font-size: 1.3rem;
-color: #2563eb;
+font-weight: 600;
+color: #ffffff;
 cursor: pointer;
 margin-right: 10px;
 transition: color 0.2s ease;
+padding: 8px 12px;
 }
 
 .back-btn:hover {
@@ -1161,6 +1163,9 @@ flex-wrap: wrap;
   display: flex;
   gap: 10px;
 }
+.card-details input {
+  flex: 1;
+}
 
 .total {
   margin: 10px 0;
@@ -1183,6 +1188,20 @@ flex-wrap: wrap;
 
 .btn-primary:hover {
   background: #2563eb;
+}
+/* Link Billing Info */
+.billing-info {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.billing-info a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.billing-info a:hover {
+  text-decoration: underline;
 }
     
   </style>
@@ -1466,7 +1485,7 @@ flex-wrap: wrap;
   <div class="payment-body">
       <div class="payment-methods">
         <button class="pay-option google-pay">
-        <img src="/symposia-web-app/src/images/google-pay.svg" alt="Google Pay">
+        <img src="/symposia-web-app/src/images/google-pay.svg" alt="Google Pay">  <!--QUI DA AGGIUNGERE I LINK A GOOGLE PAY E PAYPAL-->
       </button>
       <button class="pay-option paypal">
         <img src="/symposia-web-app/src/images/paypal.svg" alt="PayPal">
@@ -1482,7 +1501,10 @@ flex-wrap: wrap;
           <input type="text" placeholder="MM / YY" required>
           <input type="text" placeholder="CVV" required>
         </div>
-        <div class="total-line">
+			<p class="billing-info">
+		<a href="#" id="billingInfoLink">See billing info</a>
+			</p>
+		<div class="total-line">
           <span>Total:</span>
           <strong id="totalAmount">€15</strong> <!--QUI DEVE RICHIAMARE IL VALORE DATA-PLAN MONTH, QUARTER, OR ANNUAL.-->
         </div>
