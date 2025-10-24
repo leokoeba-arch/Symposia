@@ -2632,6 +2632,7 @@ document.addEventListener("DOMContentLoaded", () => {
       opt.classList.add("active");
 
       const plan = opt.dataset.plan;
+	  if (plan === "monthly") basePrice = 15;	
       if (plan === "quarterly") basePrice = 36;
       if (plan === "annual") basePrice = 108;
 	  updateTotalDisplay();
