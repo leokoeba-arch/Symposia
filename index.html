@@ -2709,30 +2709,35 @@ document.addEventListener("DOMContentLoaded", () => {
       m.classList.add('open');           // your CSS uses `.modal.open { display:block }`
       m.setAttribute('aria-hidden','false');
     }
+    
     function closeUpgradeModal() {
       const m = document.getElementById('upgradeModal');
       if (!m) return;
       m.classList.remove('open');
       m.setAttribute('aria-hidden','true');
     }
-    // Chiudi la modale solo se si clicca FUORI dall'intera modale (non sull'overlay grigio)
+
     document.addEventListener('click', function (e) {
       const modal = document.getElementById('upgradeModal');
-      if (!modal) return;
+      if (!modal || !modal.classList.contains('open')) return;
 
-      // Procedi solo se la modale è aperta
-      if (modal.classList.contains('open')) {
-        const panel = modal.querySelector('.modal__panel.upgrade-modal');
+      const panel = modal.querySelector('.modal__panel.upgrade-modal');
+      if (!panel) return;
 
-        // Se il clic NON è dentro la modale né sull'overlay stesso, chiudi
-        if (
-          !panel.contains(e.target) &&   // non dentro il pannello
-          !modal.contains(e.target) &&   // non sull’overlay
-          !e.target.closest('#remainingDownloadsBtn') // non sul bottone che apre
-        ) {
-          closeUpgradeModal();
-        }
-      }
+      // Non chiudere se il click è dentro il pannello
+      if (panel.contains(e.target)) return;
+
+      // Non chiudere se il click è sull’overlay (che ora non prende eventi, ma per sicurezza)
+      if (e.target === modal) return;
+
+      // Non chiudere se si è cliccato il bottone che apre la modale
+      if (e.target.closest('#remainingDownloadsBtn')) return;
+
+      // (opzionale) se hai altri trigger, ignorali qui:
+      // if (e.target.closest('[data-open-upgrade]')) return;
+
+      // A questo punto il click è davvero "fuori": chiudi
+      closeUpgradeModal();
     });
 
     function selectPlan(plan) {
