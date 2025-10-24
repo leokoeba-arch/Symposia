@@ -1175,10 +1175,11 @@ flex-wrap: wrap;
 .card-row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
   margin-top: 8px;
+  width: 100%;
   max-width: 100%;
-  flex-wrap: nowrap;
   box-sizing: border-box;
 }
 
@@ -1192,8 +1193,12 @@ flex-wrap: wrap;
   border-radius: 6px;
   height: 38px;
   padding: 0 6px;
+  box-sizing: border-box;
 }
-
+/* MM/YY combo box */
+.mini-input.expiry {
+  width: 90px;
+}
 /* Inputs inside mini boxes */
 .mini-input input {
   width: 28px;
