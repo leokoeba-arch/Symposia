@@ -2591,6 +2591,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  let basePrice = 15;
+  let discountRate = 0;
+
+  // === Funzione per aggiornare il totale ===
+  function updateTotalDisplay() {
+    const total = document.getElementById("totalAmount");
+    if (!total) return;
+    const discounted = basePrice - basePrice * discountRate;
+    total.textContent = `€${discounted.toFixed(2).replace(".00", "")}`;
+  }
+
   // === Discount logic ===
   const discountBtn = document.getElementById("applyDiscountBtn");
   if (discountBtn) {
@@ -2600,16 +2611,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const total = document.getElementById("totalAmount");
 
       if (code === "symposia10" || code === "symposia25") {
-        const discountRate = code === "symposia10" ? 0.10 : 0.25;
+        discountRate = code === "symposia10" ? 0.10 : 0.25;
         msg.textContent = `${discountRate * 100}% discount applied!`;
-
-        let currentTotal = parseFloat(total.textContent.replace(/[^\d.]/g, "")) || 0;
-        const discountedTotal = currentTotal - currentTotal * discountRate;
-
-        total.textContent = `€${discountedTotal.toFixed(2).replace(".00", "")}`;
       } else {
         msg.textContent = "Invalid code.";
       }
+	  updateTotalDisplay();
     });
   }
 
@@ -2625,12 +2632,9 @@ document.addEventListener("DOMContentLoaded", () => {
       opt.classList.add("active");
 
       const plan = opt.dataset.plan;
-      let price = 15;
-      if (plan === "quarterly") price = 36;
-      if (plan === "annual") price = 108;
-
-      if (totalEl)
-        totalEl.textContent = `€${price.toFixed(2).replace(".00", "")}`;
+      if (plan === "quarterly") basePrice = 36;
+      if (plan === "annual") basePrice = 108;
+	  updateTotalDisplay();
     });
   });
 });
