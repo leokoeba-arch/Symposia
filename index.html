@@ -2721,18 +2721,21 @@ document.addEventListener("DOMContentLoaded", () => {
       m.setAttribute('aria-hidden','true');
     }
 
+    // Chiudi la modale se si clicca fuori dal pannello
     window.addEventListener('click', function (e) {
       const modal = document.getElementById('upgradeModal');
       if (!modal) return;
-      // Se la modale è aperta
+
+      // Controlla che la modale sia aperta
       if (modal.classList.contains('open')) {
-      const panel = modal.querySelector('.modal__panel');
-      // Se il clic non è dentro il pannello, chiudi
-      if (panel && !panel.contains(e.target)) {
-        closeUpgradeModal();
-    }
-  }
-});
+        const panel = modal.querySelector('.upgrade-modal'); // usa la classe giusta
+
+        // Se il clic non è dentro il pannello e non è il bottone che la apre, chiudi
+        if (panel && !panel.contains(e.target) && !e.target.closest('#remainingDownloadsBtn')) {
+          closeUpgradeModal();
+        }
+      }
+    });
 
     function selectPlan(plan) {
     if (plan === "pro") {
