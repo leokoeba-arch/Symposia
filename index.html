@@ -1169,16 +1169,25 @@ flex-wrap: wrap;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.95rem;
+}
 
+/* Layout details for card section */
 .card-details {
- display: flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-top: 10px;
 }
-.card-details input {
-  flex: 1;
+
+/* Row for MM/YY + CVV + billing link */
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
 }
+
+/* Shared small input style */
 .mini-input {
   display: flex;
   align-items: center;
@@ -1196,23 +1205,19 @@ flex-wrap: wrap;
   font-size: 0.95rem;
   outline: none;
 }
+
 /* Divider between MM and YY */
 .divider {
   margin: 0 6px;
   color: #6b7280;
   font-weight: 500;
 }
-/* CVV box same height but smaller width */
+
+/* CVV box same height but slightly wider */
 .mini-input.cvv input {
   width: 50px;
 }
-.cvv {
-  width: 70px;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  text-align: center;
-}
+
 /* Link Billing Info */
 .billing-link {
   margin-left: auto;
@@ -1225,40 +1230,29 @@ flex-wrap: wrap;
 .billing-link:hover {
   text-decoration: underline;
 }
+
+/* Total section */
 .total-line {
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 8px;
+  margin-top: 16px;
 }
+
 .total-label {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #1f2937; /* text-gray-800 */
 }
 
 .total-value {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #111827; /* darker */
 }
 
 /* Pay Now button */
-.btn-primary {
-  width: 100%;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 42px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-}
-
 .pay-now-btn {
   background-color: #4f6ef7;
   color: #fff;
@@ -1283,7 +1277,7 @@ flex-wrap: wrap;
   background-color: #2f47b9;
   transform: translateY(0);
 }
-    
+
   </style>
   </head>
   <body>
@@ -1582,7 +1576,7 @@ flex-wrap: wrap;
         <input type="text" placeholder="Card Number" required>
         <input type="text" placeholder="Card Holder Name" required>
         <div class="card-details">
-			<div class="mini-input expiry">
+			<div class="mini-input">
 			    <input type="text" maxlength="2" placeholder="MM">
 			    <span class="divider">/</span>
 			    <input type="text" maxlength="2" placeholder="YY">
