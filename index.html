@@ -2547,8 +2547,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("upgradeModal");
     const sideMenu = document.getElementById("sideMenu");
     if (sideMenu) {
-      sideMenu.classList.remove("open");
-      sideMenu.setAttribute("aria-hidden", "true");
+      classList.add("hidden");
     }
     if (!modal) return;
     modal.classList.add("open");
