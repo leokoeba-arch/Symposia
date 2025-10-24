@@ -1177,37 +1177,30 @@ flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 8px;
+  flex-wrap: wrap;
   width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 }
 
-/* Compact input boxes */
+/* Shared mini input base */
 .mini-input {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: white;
+  background: transparent;
+  border: none;
+  gap: 4px;
+  height: 40px;
+}
+/* MM / YY */
+.mini-input.expiry input {
+  width: 36px;              /* Fixed for 2 digits */
+  height: 40px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  height: 38px;
-  padding: 0 6px;
-  box-sizing: border-box;
-}
-/* MM/YY combo box */
-.mini-input.expiry {
-  width: 90px;
-}
-/* Inputs inside mini boxes */
-.mini-input input {
-  width: 28px;
-  border: none;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   outline: none;
+  background: white;
 }
-
 /* Divider between MM and YY */
 .divider {
   margin: 0 4px;
@@ -1215,17 +1208,16 @@ flex-wrap: wrap;
   font-weight: 500;
 }
 
-/* CVV box: same height but narrower width */
-.mini-input.cvv {
-  width: 60px;
-  justify-content: center;
-}
+/* CVV */
 .mini-input.cvv input {
-  width: 100%;
-  border: none;
+  width: 50px;              /* Fixed for 3 digits */
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   outline: none;
+  background: white;
 }
 
 /* Align billing link at the right end of the row */
@@ -1588,14 +1580,14 @@ flex-wrap: wrap;
         <input type="text" placeholder="Card Number" required>
         <input type="text" placeholder="Card Holder Name" required>
         <div class="card-row">
-			<div class="mini-input">
-			    <input type="text" maxlength="2" placeholder="MM">
-			    <span class="divider">/</span>
-			    <input type="text" maxlength="2" placeholder="YY">
-		    </div>
-			  <div class="mini-input cvv">
-			    <input type="text" maxlength="3" placeholder="CVV">
-			  </div>		 
+		 <div class="mini-input expiry">
+		    <input type="text" class="month" id="cardMonth" maxlength="2" placeholder="MM">
+		    <span class="divider">/</span>
+		    <input type="text" class="year" id="cardYear" maxlength="2" placeholder="YY">
+ 		 </div>
+		 <div class="mini-input cvv">
+   			<input type="text" class="cvv" id="cardCVV" maxlength="3" placeholder="CVV">
+ 		 </div>		 
 			<a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
 	    </div>
 			
