@@ -2720,18 +2720,21 @@ document.addEventListener("DOMContentLoaded", () => {
       m.classList.remove('open');
       m.setAttribute('aria-hidden','true');
     }
-
-    // Chiudi la modale se si clicca fuori dal pannello
-    window.addEventListener('click', function (e) {
+    // Chiudi la modale solo se si clicca FUORI dall'intera modale (non sull'overlay grigio)
+    document.addEventListener('click', function (e) {
       const modal = document.getElementById('upgradeModal');
       if (!modal) return;
 
-      // Controlla che la modale sia aperta
+      // Procedi solo se la modale è aperta
       if (modal.classList.contains('open')) {
-        const panel = modal.querySelector('.upgrade-modal'); // usa la classe giusta
+        const panel = modal.querySelector('.modal__panel.upgrade-modal');
 
-        // Se il clic non è dentro il pannello e non è il bottone che la apre, chiudi
-        if (panel && !panel.contains(e.target) && !e.target.closest('#remainingDownloadsBtn')) {
+        // Se il clic NON è dentro la modale né sull'overlay stesso, chiudi
+        if (
+          !panel.contains(e.target) &&   // non dentro il pannello
+          !modal.contains(e.target) &&   // non sull’overlay
+          !e.target.closest('#remainingDownloadsBtn') // non sul bottone che apre
+        ) {
           closeUpgradeModal();
         }
       }
