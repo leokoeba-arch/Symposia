@@ -312,7 +312,6 @@
     z-index: 2000;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    pointer-events: none;
     }
     .modal.open { display: block; }
 
@@ -325,7 +324,6 @@
     border-radius: 14px;
     padding: 26px 22px;
     box-shadow:0 16px 40px rgba(2, 6, 23, .24);
-    pointer-events: auto;
     }
 
     /* Close (×) */
@@ -2719,27 +2717,12 @@ document.addEventListener("DOMContentLoaded", () => {
       m.setAttribute('aria-hidden','true');
     }
 
-    document.addEventListener('click', function (e) {
-      const modal = document.getElementById('upgradeModal');
-      if (!modal || !modal.classList.contains('open')) return;
-
-      const panel = modal.querySelector('.modal__panel.upgrade-modal');
-      if (!panel) return;
-
-      // Non chiudere se il click è dentro il pannello
-      if (panel.contains(e.target)) return;
-
-      // Non chiudere se il click è sull’overlay (che ora non prende eventi, ma per sicurezza)
-      if (e.target === modal) return;
-
-      // Non chiudere se si è cliccato il bottone che apre la modale
-      if (e.target.closest('#remainingDownloadsBtn')) return;
-
-      // (opzionale) se hai altri trigger, ignorali qui:
-      // if (e.target.closest('[data-open-upgrade]')) return;
-
-      // A questo punto il click è davvero "fuori": chiudi
+    // Chiude la modale se si clicca sullo sfondo grigio (overlay)
+    document.getElementById('upgradeModal').addEventListener('click', function(e) {
+    // se clicco esattamente sullo sfondo (non dentro il pannello)
+    if (e.target === this) {
       closeUpgradeModal();
+    }
     });
 
     function selectPlan(plan) {
