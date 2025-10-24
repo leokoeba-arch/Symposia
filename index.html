@@ -2760,31 +2760,45 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
     <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=buttons,hosted-fields&enable-funding=paypal,card,googlepay&currency=EUR"></script>
     <script>
-      function initPayPalButtons() {
-        if (typeof paypal === "undefined") {
-          console.error("PayPal SDK not loaded.");
-          return;
-        }
-        paypal.Buttons({
-          style: { layout: 'horizontal', color: 'blue', shape: 'pill', label: 'pay' },
-          createOrder: (data, actions) => actions.order.create({
-            purchase_units: [{
-              amount: { value: '15.00', currency_code: 'EUR' },
-              description: 'Symposia Plan Upgrade'
-            }]
-          }),
-          onApprove: (data, actions) =>
-            actions.order.capture().then(details =>
-              alert('Payment completed by ' + details.payer.name.given_name)
-            ),
-          onError: err => console.error('PayPal error:', err)
-        }).render('#paypal-button-container');
+      function waitForPayPalSDK(callback) {
+        // Aspetta che window.paypal sia pronto
+        const interval = setInterval(() => {
+          if (window.paypal && typeof window.paypal.Buttons === "function") {
+            clearInterval(interval);
+            callback();
+          }
+        }, 200);
+
+        // Timeout dopo 10 secondi
+        setTimeout(() => clearInterval(interval), 10000);
       }
 
-      document.getElementById("continueToPayment").addEventListener("click", () => {
-        document.getElementById("upgradeStep1").classList.add("hidden");
-        document.getElementById("upgradeStep2").classList.remove("hidden");
-        setTimeout(initPayPalButtons, 0);
+      function initPayPalButtons() {
+        waitForPayPalSDK(() => {
+          console.log("✅ PayPal SDK loaded, initializing buttons...");
+          paypal.Buttons({
+            style: { layout: 'horizontal', color: 'blue', shape: 'pill', label: 'pay' },
+            createOrder: (data, actions) => actions.order.create({
+              purchase_units: [{
+                amount: { value: '15.00', currency_code: 'EUR' },
+                description: 'Symposia Plan Upgrade'
+              }]
+            }),
+            onApprove: (data, actions) =>
+              actions.order.capture().then(details =>
+                alert('Payment completed by ' + details.payer.name.given_name)
+              ),
+            onError: err => console.error('PayPal error:', err)
+          }).render('paypal-button-container');
+        });
+      }
+
+      document.getElementById("continueToPayment")?.addEventListener("click", () => {
+        document.getElementById("upgradeStep1")?.classList.add("hidden");
+        document.getElementById("upgradeStep2")?.classList.remove("hidden");
+
+        // Ora aspetta che PayPal sia pronto
+        initPayPalButtons();
       });
     </script>
   </body>
