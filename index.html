@@ -959,8 +959,6 @@
     margin: 18px 0;
     }
 
-
-
     .discount-section {
     display: flex;
     gap: 8px;
@@ -1050,19 +1048,27 @@ gap: 10px;
 }
 
 .back-btn {
-background: none;
-border: none;
-font-size: 1.3rem;
-font-weight: 600;
-color: #ffffff;
-cursor: pointer;
-margin-right: 10px;
-transition: color 0.2s ease;
-padding: 8px 12px;
+ display: flex;
+  align-items: left;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .back-btn:hover {
-color: #1d4ed8;
+ opacity: 0.9;
+  transform: translateX(-3px);
+}
+.back-icon {
+  width: 22px;
+  height: 22px;
+  fill: white;
 }
 
 .payment-body {
@@ -1160,13 +1166,44 @@ flex-wrap: wrap;
 
 
 .card-details {
-  display: flex;
-  gap: 10px;
+ display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 .card-details input {
   flex: 1;
 }
+.expiry {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 8px;
+  height: 42px;
+}
 
+.expiry input {
+  width: 36px;
+  border: none;
+  text-align: center;
+  font-size: 0.95rem;
+  outline: none;
+}
+.divider {
+  color: #6b7280;
+  font-weight: 600;
+  margin: 0 4px;
+}
+
+.cvv {
+  width: 70px;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+}
 .total {
   margin: 10px 0;
   font-weight: 600;
@@ -1201,6 +1238,16 @@ flex-wrap: wrap;
 }
 
 .billing-info a:hover {
+  text-decoration: underline;
+}
+.billing-link {
+  font-size: 0.9rem;
+  color: #2563eb;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.billing-link:hover {
   text-decoration: underline;
 }
     
@@ -1476,7 +1523,11 @@ flex-wrap: wrap;
    <div class="upgrade-left payment-left"> 
 	  <img id="paymentBackground" src="https://healthinformationtechnologysolutions.com/wp-content/uploads/2023/06/hero-home-bg.jpg" alt="" class="payment-bg">
 	<div class="back-wrapper">
-	      <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
+	      <button id="backToPlan" class="back-btn" aria-label="Back to plans">
+		    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="back-icon">
+     		<path d="M41.4 342.6C28.9 330.1 28.9 309.8 41.4 297.3L169.4 169.3C178.6 160.1 192.3 157.4 204.3 162.4C216.3 167.4 224 179.1 224 192L224 256L560 256C586.5 256 608 277.5 608 304L608 336C608 362.5 586.5 384 560 384L224 384L224 448C224 460.9 216.2 472.6 204.2 477.6C192.2 482.6 178.5 479.8 169.3 470.7L41.3 342.7z"/>
+    		</svg>
+		  </button>
     </div> 
    </div>
 	 
@@ -1498,12 +1549,15 @@ flex-wrap: wrap;
         <input type="text" placeholder="Card Number" required>
         <input type="text" placeholder="Card Holder Name" required>
         <div class="card-details">
-          <input type="text" placeholder="MM / YY" required>
-          <input type="text" placeholder="CVV" required>
-        </div>
-			<p class="billing-info">
-		<a href="#" id="billingInfoLink">See billing info</a>
-			</p>
+			<div class="expiry">
+			    <input type="text" maxlength="2" placeholder="MM">
+			    <span class="divider">/</span>
+			    <input type="text" maxlength="2" placeholder="YY">
+		    </div>
+		  <input type="text" class="cvv" placeholder="CVV">
+		  <a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
+	    </div>
+			
 		<div class="total-line">
           <span>Total:</span>
           <strong id="totalAmount">€15</strong> <!--QUI DEVE RICHIAMARE IL VALORE DATA-PLAN MONTH, QUARTER, OR ANNUAL.-->
