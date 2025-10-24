@@ -2546,7 +2546,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function openUpgradeModal() {
     const modal = document.getElementById("upgradeModal");
     const sideMenu = document.getElementById("sideMenu");
-    if (sideMenu) sideMenu.classList.remove("open");
+    if (sideMenu) {
+      sideMenu.classList.remove("open");
+      sideMenu.setAttribute("aria-hidden", "true");
+    }
     if (!modal) return;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
@@ -2567,7 +2570,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === Step navigation: Plan → Payment ===OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+  // === Step navigation: Plan → Payment ===
   const continueBtn = document.getElementById("continueToPayment");
   const step1 = document.getElementById("upgradeStep1");
   const step2 = document.getElementById("upgradeStep2");
@@ -2717,6 +2720,19 @@ document.addEventListener("DOMContentLoaded", () => {
       m.classList.remove('open');
       m.setAttribute('aria-hidden','true');
     }
+
+    window.addEventListener('click', function (e) {
+      const modal = document.getElementById('upgradeModal');
+      if (!modal) return;
+      // Se la modale è aperta
+      if (modal.classList.contains('open')) {
+      const panel = modal.querySelector('.modal__panel');
+      // Se il clic non è dentro il pannello, chiudi
+      if (panel && !panel.contains(e.target)) {
+        closeUpgradeModal();
+    }
+  }
+});
 
     function selectPlan(plan) {
     if (plan === "pro") {
