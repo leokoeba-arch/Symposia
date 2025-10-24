@@ -1076,47 +1076,70 @@ flex-wrap: wrap;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
+.back-wrapper {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
 
 .payment-right {
   flex: 1;
-  background: #f8faff;
-  border: 1px solid #e0e5f0;
+  background: rgba(233, 241, 255, 0.85); /* blu chiarissimo e offuscato */
+  border: 1px solid #d8e3f9;
   border-radius: 12px;
-  padding: 32px;
+  padding: 40px 48px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  justify-content: flex-start;
+  gap: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(4px); /* effetto glass */
 }
 
 .payment-right h2 {
-  margin-bottom: 20px;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
 }
 
 .payment-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
 }
-
+/* Bottoni Google Pay e PayPal */
 .payment-methods {
   display: flex;
-  gap: 10px;
+  gap: 16px;
+  justify-content: flex-start;
 }
 
-.pay-btn {
-  border: 1px solid #ccd3e1;
-  background: white;
-  border-radius: 6px;
-  padding: 8px 14px;
+.pay-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #d0d7e2;
+  border-radius: 8px;
+  width: 150px;
+  height: 44px;
   cursor: pointer;
-  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .pay-btn:hover {
   background: #eef2ff;
+}
+.pay-option:hover {
+  background: #f4f7ff;
+  transform: translateY(-1px);
+}
+
+.pay-option img {
+  height: 22px;
+  object-fit: contain;
 }
 
 .or {
@@ -1127,11 +1150,12 @@ flex-wrap: wrap;
 
 #paymentForm input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-}
+  font-size: 0.95rem;
+
 
 .card-details {
   display: flex;
@@ -1140,17 +1164,18 @@ flex-wrap: wrap;
 
 .total {
   margin: 10px 0;
-  font-weight: 500;
+  font-weight: 600;
+  color: #1e293b;
   text-align: right;
 }
-
+/* Pay Now button */
 .btn-primary {
   width: 100%;
   background: #3b82f6;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 12px;
+  padding: 42px;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -1430,7 +1455,7 @@ flex-wrap: wrap;
    <!-- STEP 2: Payment -->
 <div class="upgrade-step hidden" id="upgradeStep2">
    <div class="upgrade-left payment-left"> 
-	  <img id="paymentBackground" src="./symposia-web-app/src/images/Background.png" alt="" class="payment-bg">
+	  <img id="paymentBackground" src="https://healthinformationtechnologysolutions.com/wp-content/uploads/2023/06/hero-home-bg.jpg" alt="" class="payment-bg">
 	<div class="back-wrapper">
 	      <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
     </div> 
@@ -1440,8 +1465,12 @@ flex-wrap: wrap;
   <h2 class="modal__subtitle">Payment Details</h2>
   <div class="payment-body">
       <div class="payment-methods">
-        <button>Google Pay</button>
-        <button>PayPal</button>
+        <button class="pay-option google-pay">
+        <img src="/symposia-web-app/src/images/google-pay.svg" alt="Google Pay">
+      </button>
+      <button class="pay-option paypal">
+        <img src="/symposia-web-app/src/images/paypal.svg" alt="PayPal">
+      </button>
       </div>
 
       <p class="or">or pay with card</p>
