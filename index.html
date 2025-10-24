@@ -1566,7 +1566,7 @@ flex-wrap: wrap;
 		    <input type="text" class="year" id="cardYear" maxlength="2" placeholder="YY">
  		 </div>
 		 <div class="mini-input cvv">
-   			<input type="text" class="cvv" id="cardCVV" maxlength="3" placeholder="CVV">
+   			<input type="text" class="cvv" id="cardCVV" maxlength="4" placeholder="CVV">
  		 </div>		 
 			<a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
 	    </div>
@@ -2599,12 +2599,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const msg = document.getElementById("discountMessage");
       const total = document.getElementById("totalAmount");
 
-      if (code === "symposia10") {
-        msg.textContent = "10% discount applied!";
-        total.textContent = "€13.50";   //connect the discount to the actual selected price card. Search for : data-plan (monthly, quarterly, annually)
-      } else if (code === "symposia25") {
-        msg.textContent = "25% discount applied!";
-        total.textContent = "€11.25";
+      if (code === "symposia10" || code === "symposia25") {
+        const discountRate = code === "symposia10" ? 0.10 : 0.25;
+        msg.textContent = `${discountRate * 100}% discount applied!`;
+
+        let currentTotal = parseFloat(total.textContent.replace(/[^\d.]/g, "")) || 0;
+        const discountedTotal = currentTotal - currentTotal * discountRate;
+
+        total.textContent = `€${discountedTotal.toFixed(2).replace(".00", "")}`;
       } else {
         msg.textContent = "Invalid code.";
       }
