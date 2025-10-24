@@ -1028,59 +1028,137 @@
   	border-radius: 12px;
     }
 
-	.payment-bg {
-	  position: absolute;
-	  top: 0;
-	  left: 0;
-	  width: 100%;
-	  height: 100%;
-	  object-fit: cover;  /* Riempie tutto mantenendo le proporzioni */
-	  filter: brightness(0.6); /* Oscura leggermente per far risaltare il testo */
-	  z-index: 0;
-	}
+.payment-bg {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;  /* Riempie tutto mantenendo le proporzioni */
+filter: brightness(0.6); /* Oscura leggermente per far risaltare il testo */
+z-index: 0;
+}
 
-	  .payment-content {
-	  position: relative;
-	  z-index: 1;
-	  padding: 20px;
-	  color: white;  /* Testo leggibile sopra l’immagine */
-	  display: flex;
-	  align-items: center;
-	  gap: 10px;
-	}
+.payment-content {
+position: relative;
+z-index: 1;
+padding: 20px;
+color: white;  /* Testo leggibile sopra l’immagine */
+display: flex;
+align-items: center;
+gap: 10px;
+}
 
-    .back-btn {
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    color: #2563eb;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: color 0.2s ease;
-    }
+.back-btn {
+background: none;
+border: none;
+font-size: 1.3rem;
+color: #2563eb;
+cursor: pointer;
+margin-right: 10px;
+transition: color 0.2s ease;
+}
 
-    .back-btn:hover {
-    color: #1d4ed8;
-    }
+.back-btn:hover {
+color: #1d4ed8;
+}
 
-    .payment-body {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    }
+.payment-body {
+display: flex;
+gap: 24px;
+flex-wrap: wrap;
+}
 
-    .payment-left {
-    flex: 1;
-    min-width: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    }
+.payment-left {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
 
-    .payment-right {
-    flex: 2;
-    min-width: 300px;
-    }
+.payment-right {
+  flex: 1;
+  background: #f8faff;
+  border: 1px solid #e0e5f0;
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.payment-right h2 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.payment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 10px;
+}
+
+.pay-btn {
+  border: 1px solid #ccd3e1;
+  background: white;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pay-btn:hover {
+  background: #eef2ff;
+}
+
+.or {
+  text-align: center;
+  color: #6b7280;
+  margin: 10px 0;
+}
+
+#paymentForm input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.card-details {
+  display: flex;
+  gap: 10px;
+}
+
+.total {
+  margin: 10px 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.btn-primary {
+  width: 100%;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
     
   </style>
   </head>
@@ -1351,22 +1429,18 @@
 </div>
    <!-- STEP 2: Payment -->
 <div class="upgrade-step hidden" id="upgradeStep2">
-   <div class="upgrade-left"> 
-	<div class="payment-header">
+   <div class="upgrade-left payment-left"> 
 	  <img id="paymentBackground" src="./symposia-web-app/src/images/Background.png" alt="" class="payment-bg">
-      <div class="payment-content">
-    <h2 class="modal__title">Payment Details</h2>
-  </div>  
-  </div>
-</div>
-	 <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
-<div class="upgrade-right">
+	<div class="back-wrapper">
+	      <button id="backToPlan" class="back-btn" aria-label="Back to plans">←</button>
+    </div> 
+   </div>
+	 
+<div class="upgrade-right payment-right">
   <h2 class="modal__subtitle">Payment Details</h2>
   <div class="payment-body">
-    <div class="payment-right">
       <div class="payment-methods">
         <button>Google Pay</button>
-        <button>Apple Pay</button>
         <button>PayPal</button>
       </div>
 
@@ -1383,7 +1457,7 @@
           <span>Total:</span>
           <strong id="totalAmount">€15</strong> <!--QUI DEVE RICHIAMARE IL VALORE DATA-PLAN MONTH, QUARTER, OR ANNUAL.-->
         </div>
-        <button type="submit" class="btn btn-primary">Pay Now</button>
+        <button type="button" id="payNow" class="btn-primary">Pay Now</button>
       </form>
     </div>
   </div>
