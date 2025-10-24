@@ -1013,18 +1013,15 @@
     padding: 6px 10px;
     cursor: pointer;
     }
-    .total-line {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 12px;
-    font-size: 1rem;
-    }
+   
 	.payment-footer {
 	  display: flex;
-	  align-items: center;
-	  justify-content: space-between;
-	  margin-top: 24px;
-	  }
+	  flex-direction: column; 
+	  align-items: center; 
+	  margin-top: 20px;
+	  gap: 10px; 
+	  width: 100%;
+	}
     .payment-header {
     display: flex;
     position: relative;
@@ -1245,10 +1242,11 @@ flex-wrap: wrap;
 /* Total section */
 .total-line {
   display: flex;
+  justify-content: space-between; /* label left, value right */
   align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+  width: 100%; /* ensures both ends align with container edges */
   margin-top: 16px;
+  font-size: 1rem;
 }
 
 .total-label {
