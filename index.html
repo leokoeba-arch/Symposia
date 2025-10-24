@@ -6,6 +6,8 @@
     <title>Symposia</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather&display=swap" rel="stylesheet">
+    <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=buttons,hosted-fields,funding-eligibility&enable-funding=paypal,card,googlepay&currency=EUR"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -1546,12 +1548,7 @@ flex-wrap: wrap;
   <h2 class="modal__subtitle">Payment Details</h2>
   <div class="payment-body">
       <div class="payment-methods">
-        <button class="pay-option google-pay">
-        <img src="/symposia-web-app/src/images/google-pay.svg" alt="Google Pay">  <!--QUI DA AGGIUNGERE I LINK A GOOGLE PAY E PAYPAL-->
-      </button>
-      <button class="pay-option paypal">
-        <img src="/symposia-web-app/src/images/paypal.svg" alt="PayPal">
-      </button>
+        <div id="paypal-button-container"></div>
       </div>
 
       <p class="or">or pay with card</p>
@@ -2646,7 +2643,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-	//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
   document.addEventListener("DOMContentLoaded", () => {
   const step1 = document.getElementById("upgradeStep1");
   const step2 = document.getElementById("upgradeStep2");
@@ -2763,6 +2760,60 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
 
     document.addEventListener('DOMContentLoaded', bindDownloadButton);
+    </script>
+    <script>
+      paypal.Buttons({
+          style: {
+              layout: 'horizontal',
+              color: 'blue',
+              shape: 'pill',
+              label: 'pay'
+          },
+          createOrder: function(data, actions) {
+              return actions.order.create({
+                  purchase_units: [{
+                      amount: {
+                          value: '1.00', // dynamically set your total here
+                          currency_code: 'EUR'
+                      },
+                      description: 'Symposia Plan Upgrade'
+                  }]
+              });
+          },
+          onApprove: function(data, actions) {
+              return actions.order.capture().then(function(details) {
+                  alert('Payment completed by ' + details.payer.name.given_name);
+                  // ➤ TODO: Send confirmation to your backend
+              });
+          },
+          onError: function(err) {
+              console.error(err);
+              alert('Payment could not be completed.');
+          }
+      }).render('#paypal-button-container');
+    </script>
+    <script>
+      paypal.Buttons({
+        style: { layout: 'horizontal', color: 'blue', shape: 'pill', label: 'pay' },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: { value: '15.00', currency_code: 'EUR' },
+              description: 'Symposia Plan Upgrade'
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            alert('Payment completed by ' + details.payer.name.given_name);
+            // ➤ Qui puoi chiamare il backend per aggiornare l’account utente
+          });
+        },
+        onError: function(err) {
+          console.error(err);
+          alert('Payment could not be completed.');
+        }
+      }).render('#paypal-button-container');
     </script>
   </body>
 </html>
