@@ -1185,45 +1185,51 @@ flex-wrap: wrap;
 .mini-input {
   display: flex;
   align-items: center;
+  gap: 4px;
   background: transparent;
   border: none;
-  gap: 4px;
-  height: 40px;
 }
 /* MM / YY */
 .mini-input.expiry input {
-  width: 36px;              /* Fixed for 2 digits */
-  height: 40px;
+  width: 34px;              /* Fixed for 2 digits */
+  height: 30px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
+  line-height:30px;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   outline: none;
   background: white;
+  padding:0;
+  box-sizing:border-box;
 }
 /* Divider between MM and YY */
 .divider {
-  margin: 0 4px;
+  margin: 0 2px;
   color: #6b7280;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
 /* CVV */
 .mini-input.cvv input {
-  width: 50px;              /* Fixed for 3 digits */
-  height: 40px;
+  width: 44px;              /* Fixed for 3 digits */
+  height: 30px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   outline: none;
   background: white;
+  padding:0;
+  box-sizing:border-box;
+  line-height:30px;
 }
 
 /* Align billing link at the right end of the row */
 .billing-link {
   margin-left: auto;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #2563eb;
   font-style: italic;
   text-decoration: none;
