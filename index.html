@@ -1265,8 +1265,6 @@ flex-wrap: wrap;
   </style>
   </head>
   <body>
-    <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=buttons,hosted-fields,funding-eligibility&enable-funding=paypal,card,googlepay&currency=EUR"></script>
-
     <!-- ✅ TOP FIXED BANNER CON LOGO E LOGIN -->
     <div class="top-banner">
       <div class="logo" onclick="window.location.reload();">S</div>
@@ -2761,7 +2759,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener('DOMContentLoaded', bindDownloadButton);
     </script>
-    <script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=buttons,hosted-fields&enable-funding=paypal,card,googlepay&currency=EUR"></script>
+  <script>
       let paypalButtonsRendered = false;
 
       function initPayPalButtons() {
