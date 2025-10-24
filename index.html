@@ -2546,8 +2546,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function openUpgradeModal() {
     const modal = document.getElementById("upgradeModal");
     const sideMenu = document.getElementById("sideMenu");
-    if (sideMenu) {
+    const sideMenuBackdrop = document.getElementById("sideMenuBackdrop");
+    if (sideMenu || sideMenuBackdrop) {
       sideMenu.classList.remove("open");
+      sideMenuBackdrop.classList.remove("open");
       //sideMenu.classList.add("hidden");
     }
     if (!modal) return;
