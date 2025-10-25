@@ -1022,244 +1022,272 @@
 	  gap: 10px; 
 	  width: 100%;
 	}
-    .payment-header {
+  .payment-header {
     display: flex;
     position: relative;
   	overflow: hidden;
   	border-radius: 12px;
-    }
+  }
 
-.payment-bg {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-object-fit: cover;  /* Riempie tutto mantenendo le proporzioni */
-filter: brightness(0.6); /* Oscura leggermente per far risaltare il testo */
-z-index: 0;
-}
-
-.payment-content {
-position: relative;
-z-index: 1;
-padding: 20px;
-color: white;  /* Testo leggibile sopra l’immagine */
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-.back-btn {
- display: flex;
-  align-items: left;
-  gap: 8px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.05rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 6px 12px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.back-btn:hover {
- opacity: 0.9;
-  transform: translateX(-3px);
-}
-.back-icon {
-  width: 22px;
-  height: 22px;
-  fill: white;
-}
-
-.payment-body {
-display: flex;
-gap: 24px;
-flex-wrap: wrap;
-}
-
-.payment-left {
-  position: relative;
-  flex: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-.back-wrapper {
+  .payment-bg {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
-}
-
-.payment-right {
-  flex: 1;
-  background: rgba(233, 241, 255, 0.85); /* blu chiarissimo e offuscato */
-  border: 1px solid #d8e3f9;
-  border-radius: 12px;
-  padding: 40px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(4px); /* effetto glass */
-}
-
-.payment-right h2 {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-
-.payment-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-/* Bottoni Google Pay e PayPal */
-.payment-methods {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-start;
-}
-
-.pay-option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border: 1px solid #d0d7e2;
-  border-radius: 8px;
-  width: 150px;
-  height: 44px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.pay-btn:hover {
-  background: #eef2ff;
-}
-.pay-option:hover {
-  background: #f4f7ff;
-  transform: translateY(-1px);
-}
-
-.pay-option img {
-  height: 22px;
-  object-fit: contain;
-}
-
-.or {
-  text-align: center;
-  color: #6b7280;
-  margin: 10px 0;
-}
-
-#paymentForm input {
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
+  height: 100%;
+  object-fit: cover;  /* Riempie tutto mantenendo le proporzioni */
+  filter: brightness(0.6); /* Oscura leggermente per far risaltare il testo */
+  z-index: 0;
+  }
 
-/* Row for MM/YY + CVV + billing link */
-.card-row {
+  .payment-content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  color: white;  /* Testo leggibile sopra l’immagine */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 6px;                
-  margin-top: 8px;
-  flex-wrap: nowrap;       
-  overflow: hidden;
-}
+  gap: 10px;
+  }
 
-/* Shared mini input base */
-.mini-input {
+  .back-btn {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  background: transparent;
-  border: none;
-}
-/* MM / YY */
-.mini-input.expiry input {
-  width: 30px;              /* Fixed for 2 digits */
-  height: 28px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  line-height:28px;
-  text-align: center;
-  font-size: 0.8rem;
-  outline: none;
-  background: white;
-  padding:0;
-  box-sizing:border-box;
-}
-/* Divider between MM and YY */
-.divider {
-  margin: 0 2px;
-  color: #6b7280;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
+    align-items: left;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 12px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
 
-/* CVV */
-.mini-input.cvv input {
-  width: 38px;              /* Fixed for 3 digits */
-  height: 28px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 0.8rem;
-  outline: none;
-  background: white;
-  padding:0;
-  box-sizing:border-box;
-  line-height:28px;
-}
+  .back-btn:hover {
+  opacity: 0.9;
+    transform: translateX(-3px);
+  }
+  .back-icon {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
 
-/* Align billing link at the right end of the row */
-.billing-link {
-  margin-left: auto;
-  font-size: 0.8rem;
-  color: #2563eb;
-  font-style: italic;
-  text-decoration: none;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.billing-link:hover {
-  text-decoration: underline;
-}
-
-/* Total section */
-.total-line {
+  .payment-body {
   display: flex;
-  justify-content: space-between; /* label left, value right */
-  align-items: baseline;
-  width: 100%; /* ensures both ends align with container edges */
-  margin-top: 16px;
-  font-size: 1rem;
-}
+  gap: 24px;
+  flex-wrap: wrap;
+  }
 
-.total-label {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1f2937; /* text-gray-800 */
-}
+  .payment-left {
+    position: relative;
+    flex: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .back-wrapper {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+  }
 
-.total-value {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #111827; /* darker */
-}
+  .payment-right {
+    flex: 1;
+    background: rgba(233, 241, 255, 0.85); /* blu chiarissimo e offuscato */
+    border: 1px solid #d8e3f9;
+    border-radius: 12px;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(4px); /* effetto glass */
+  }
+
+  .payment-right h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+  }
+
+  .payment-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  /* Bottoni Google Pay e PayPal */
+  .payment-methods {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .pay-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #d0d7e2;
+    border-radius: 8px;
+    width: 150px;
+    height: 44px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .pay-btn:hover {
+    background: #eef2ff;
+  }
+  .pay-option:hover {
+    background: #f4f7ff;
+    transform: translateY(-1px);
+  }
+
+  .pay-option img {
+    height: 22px;
+    object-fit: contain;
+  }
+
+  .or {
+    text-align: center;
+    color: #6b7280;
+    margin: 10px 0;
+  }
+
+  #paymentForm input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  /* Row for MM/YY + CVV + billing link */
+  .card-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;                
+    margin-top: 8px;
+    flex-wrap: nowrap;       
+    overflow: hidden;
+  }
+
+  /* Shared mini input base */
+  .mini-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+  }
+  /* MM / YY */
+  .mini-input.expiry input {
+    width: 30px;              /* Fixed for 2 digits */
+    height: 28px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    line-height:28px;
+    text-align: center;
+    font-size: 0.8rem;
+    outline: none;
+    background: white;
+    padding:0;
+    box-sizing:border-box;
+  }
+  /* Divider between MM and YY */
+  .divider {
+    margin: 0 2px;
+    color: #6b7280;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  /* CVV */
+  .mini-input.cvv input {
+    width: 38px;              /* Fixed for 3 digits */
+    height: 28px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.8rem;
+    outline: none;
+    background: white;
+    padding:0;
+    box-sizing:border-box;
+    line-height:28px;
+  }
+
+  /* Align billing link at the right end of the row */
+  .billing-link {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #2563eb;
+    font-style: italic;
+    text-decoration: none;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .billing-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Total section */
+  .total-line {
+    display: flex;
+    justify-content: space-between; /* label left, value right */
+    align-items: baseline;
+    width: 100%; /* ensures both ends align with container edges */
+    margin-top: 16px;
+    font-size: 1rem;
+  }
+
+  .total-label {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1f2937; /* text-gray-800 */
+  }
+
+  .total-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827; /* darker */
+  }
+
+  .paypal-button-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;              /* spaziatura orizzontale */
+    flex-wrap: nowrap;      /* evita che vadano a capo */
+    width: 100%;            /* usa tutta la larghezza disponibile */
+  }
+
+  /* Se vuoi margine sotto */
+  .paypal-button-container iframe {
+    margin: 0 5px;
+    min-width: 150px !important;
+    max-width: 180px !important;
+  }
+
+  .paypal-button-wrapper {
+    flex: 1 1 auto;
+    min-width: 150px;
+    max-width: 180px;
+  }
+
+  /* Uniforma la dimensione dei pulsanti */
+  .paypal-button-wrapper iframe {
+    min-width: 150px !important;
+    max-width: 180px !important;
+  }
 
 
   </style>
@@ -2849,13 +2877,24 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!buttonContainer) return;
       buttonContainer.innerHTML = '';
 
-      paypal.Buttons({
-        style: {
-          shape: 'rect',
-          layout: 'vertical',
-          label: 'paypal',
-          height: 45
-        },
+      const allowedSources = [
+      paypal.FUNDING.PAYPAL,
+      paypal.FUNDING.GOOGLE_PAY,
+      paypal.FUNDING.CARD
+      ];
+
+      //Stile orizzontale uniforme
+      const buttonStyle = {
+        layout: 'horizontal',
+        shape: 'rect',
+        tagline: false,
+        height: 45
+      };
+
+      allowedSources.forEach(fundingSource => {
+      const button = paypal.Buttons({
+        fundingSource,
+        style: buttonStyle,
         createOrder: (data, actions) => {
           return actions.order.create({
             purchase_units: [{ amount: { value: totalAmount } }]
@@ -2870,14 +2909,18 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error('PayPal error:', err);
           alert('❌ Pagamento non riuscito.');
         }
-      }).render(buttonContainer);
-    }
+    });
 
-    function openPaymentStep() {
-      // ... qui mostri la modale step 2 come già fai
-      initPayButtons(); // genera i pulsanti PayPal SOLO ora
+    // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
+    if (button.isEligible()) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'paypal-button-wrapper';
+      button.render(wrapper);
+      buttonContainer.appendChild(wrapper);
     }
-    
+    });
+  }
+
   </script>
   </body>
 </html>
