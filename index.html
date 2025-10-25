@@ -2891,7 +2891,7 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 45
       };
 
-      const rendered = new Set();
+      let paypalRendered = false;
 
       allowedSources.forEach(fundingSource => {
       const button = paypal.Buttons({
@@ -2914,8 +2914,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
-    if (button.isEligible() && !rendered.has(fundingSource)) {
-      rendered.add(fundingSource);
+    if (button.isEligible()) {
+
+      if (fundingSource === paypal.FUNDING.PAYPAL && paypalRendered) return;
+      if (fundingSource === paypal.FUNDING.PAYPAL) paypalRendered = true;
+
       const wrapper = document.createElement('div');
       wrapper.className = 'paypal-button-wrapper';
       button.render(wrapper);
