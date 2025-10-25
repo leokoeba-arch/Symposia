@@ -2891,7 +2891,7 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 45
       };
 
-      let paypalRendered = false;
+      const rendered = new Set();
 
       allowedSources.forEach(fundingSource => {
       const button = paypal.Buttons({
@@ -2915,14 +2915,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
     if (button.isEligible()) {
-
-      if (fundingSource === paypal.FUNDING.PAYPAL && paypalRendered) return;
-      if (fundingSource === paypal.FUNDING.PAYPAL) paypalRendered = true;
-
       const wrapper = document.createElement('div');
       wrapper.className = 'paypal-button-wrapper';
       button.render(wrapper);
       buttonContainer.appendChild(wrapper);
+
+      if (fundingSource === paypal.FUNDING.PAYPAL) rendered.add('paypal');
     }
     });
   }
