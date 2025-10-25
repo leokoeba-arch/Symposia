@@ -2907,6 +2907,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onApprove: (data, actions) => {
           return actions.order.capture().then(details => {
             alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
+            closeUpgradeModal();
           });
         },
         onError: (err) => {
@@ -2915,22 +2916,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
-    if (button.isEligible()) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'paypal-button-wrapper';
-      button.render(wrapper);
-      buttonContainer.appendChild(wrapper);
+      // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
+      if (button.isEligible()) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'paypal-button-wrapper';
+        button.render(wrapper);
+        buttonContainer.appendChild(wrapper);
 
-      if (fundingSource === paypal.FUNDING.PAYPAL) rendered.add('paypal');
+        if (fundingSource === paypal.FUNDING.PAYPAL) rendered.add('paypal');
+      }
+      });
     }
-    });
-  }
 
-  function openPaymentStep() {
-    // ... qui mostri la modale step 2 come già fai
-    initPayButtons(); // genera i pulsanti PayPal SOLO ora
-  }
+    function openPaymentStep() {
+      // ... qui mostri la modale step 2 come già fai
+      initPayButtons(); // genera i pulsanti PayPal SOLO ora
+    }
 
   </script>
   </body>
