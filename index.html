@@ -1627,6 +1627,77 @@ flex-wrap: wrap;
 
       let selectedFormat = 'Abstract'; // default
 
+          // Attach listener every time the button (re)appears
+    function bindDownloadButton() {
+      const downloadBtn = document.getElementById("downloadBtn");
+      if (!downloadBtn || downloadBtn.dataset.bound === "true") return;
+      downloadBtn.dataset.bound = "true"; // avoid double binding
+
+      downloadBtn.addEventListener("click", async () => {
+        const content = document.getElementById("output")?.textContent || "";
+        if (!content.trim()) {
+          alert("No draft available to download.");
+          return;
+        }
+
+      const user = auth.currentUser;
+      if (!user) {
+        if (typeof toggleAuthModal === 'function') toggleAuthModal(true, 'login');
+        else document.getElementById('authModal')?.classList.add('open');
+        return;
+      }
+
+      let count = 0;
+      try {
+        count = await fetchDownloadCount(user.email);
+        console.log("Current download count: ", count);
+      } catch (err) {
+        console.error("Error fetching download count:", err);
+      }
+
+      const localCount = Number(localStorage.getItem("symposia_downloadCount") || "0");
+      if (count < localCount) {
+        count = localCount;
+        try {
+          await saveDownloadCountToCloud(user.email, count);
+        } catch (err) {
+          console.error('saveDownloadCountToCloud error', err);
+        }
+      }
+
+      // limit check before proceeding
+      if (count >= 8) {
+        if (typeof openUpgradeModal === "function") openUpgradeModal();
+        else window.openUpgradeModal?.();
+        return;
+      }
+
+      // proceed with download
+      const blob = new Blob(["\ufeff", content], { type: "application/msword" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "symposia_draft.docx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove()
+      URL.revokeObjectURL(url);
+
+      // increment and sync
+      count += 1;
+      localStorage.setItem("symposia_downloadCount", count);
+      try { 
+        await saveDownloadCountToCloud(user.email, count);
+      } catch (err) { 
+        console.error('saveDownloadCountToCloud error', err);
+      }
+      if (typeof updateDownloadCounterUI === 'function') 
+        updateDownloadCounterUI(count);
+
+      updateDownloadButtonState(auth.currentUser);
+    }, {capture : true});
+    }
+
       // Format selection
       formatButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2423,6 +2494,7 @@ flex-wrap: wrap;
     }
     window.updateDownloadButtonState = updateDownloadButtonState;
 
+    /*
     // Attach listener every time the button (re)appears
     function bindDownloadButton() {
       const downloadBtn = document.getElementById("downloadBtn");
@@ -2493,7 +2565,7 @@ flex-wrap: wrap;
       updateDownloadButtonState(auth.currentUser);
     }, {capture : true});
     }
-
+    */
     window.bindDownloadButton = bindDownloadButton;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -2758,48 +2830,61 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener('DOMContentLoaded', bindDownloadButton);
     </script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=buttons,hosted-fields&enable-funding=paypal,card,googlepay&currency=EUR"></script>
-    <script>
-      function waitForPayPalSDK(callback) {
-        // Aspetta che window.paypal sia pronto
-        const interval = setInterval(() => {
-          if (window.paypal && typeof window.paypal.Buttons === "function") {
-            clearInterval(interval);
-            callback();
-          }
-        }, 200);
 
-        // Timeout dopo 10 secondi
-        setTimeout(() => clearInterval(interval), 10000);
-      }
+   <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
+   <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&currency=EUR&intent=capture&components=buttons&enable-funding=card,googlepay"></script>
+   <script>
 
-      function initPayPalButtons() {
-        waitForPayPalSDK(() => {
-          console.log("✅ PayPal SDK loaded, initializing buttons...");
-          paypal.Buttons({
-            style: { layout: 'horizontal', color: 'blue', shape: 'pill', label: 'pay' },
-            createOrder: (data, actions) => actions.order.create({
-              purchase_units: [{
-                amount: { value: '15.00', currency_code: 'EUR' },
-                description: 'Symposia Plan Upgrade'
-              }]
-            }),
-            onApprove: (data, actions) =>
-              actions.order.capture().then(details =>
-                alert('Payment completed by ' + details.payer.name.given_name)
-              ),
-            onError: err => console.error('PayPal error:', err)
-          }).render('paypal-button-container');
-        });
-      }
+     // Inizializzazione dei pulsanti PayPal + Google Pay + Carta
+    function initPayButtons() {
+    if (!window.paypal) {
+      // Se l'SDK non è ancora pronto, riprova tra 120ms
+      setTimeout(initPayButtons, 120);
+      return;
+    }
 
-      document.getElementById("continueToPayment")?.addEventListener("click", () => {
-        document.getElementById("upgradeStep1")?.classList.add("hidden");
-        document.getElementById("upgradeStep2")?.classList.remove("hidden");
+    const totalElement = document.getElementById('totalAmount');
+    const totalAmount = (totalElement?.textContent || '€1').replace(/[^\d.]/g, '') || '1';
 
-        // Ora aspetta che PayPal sia pronto
-        initPayPalButtons();
+    const buttonContainer = document.getElementById('paypal-button-container');
+    if (!buttonContainer) return;
+    container.innerHTML = ''; // pulisci eventuali pulsanti duplicati
+
+
+    const renderButton = (fundingSource) => {
+      const button = paypal.Buttons({
+        fundingSource,
+        style: { shape: 'rect', layout: 'vertical', label: 'pay', height: 45 },
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: total } }]
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            alert(`✅ Pagamento riuscito: ${details.payer.name.given_name}`);
+            // TODO: chiudi modale, aggiorna piano utente, registra ordine, ecc.
+          });
+        },
+        onError: (err) => {
+          console.error('PayPal error:', err);
+          alert('❌ Pagamento non riuscito. Riprova più tardi.');
+        }
       });
+
+      // Render solo se disponibile sul dispositivo (es. Google Pay mobile)
+      if (button.isEligible()) button.render('#paypal-button-container');
+    };
+
+    // Render dei tre metodi principali
+    renderButton(paypal.FUNDING.PAYPAL);      // PayPal classico
+    renderButton(paypal.FUNDING.GOOGLE_PAY);  // Google Pay
+    renderButton(paypal.FUNDING.CARD);        // Carta tramite PayPal
+    }
+
+    // Esegui l'inizializzazione quando la pagina è pronta
+    window.addEventListener('DOMContentLoaded', initPayButtons);
     </script>
+
   </body>
 </html>
