@@ -2869,9 +2869,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const totalElement = document.getElementById('totalAmount');
-      const totalAmount = (totalElement?.textContent || '€1')
-        .replace(/[^\d.]/g, '') || '1';
+      //const totalElement = document.getElementById('totalAmount');
+      //const totalAmount = (totalElement?.textContent || '€1')
+      //  .replace(/[^\d.]/g, '') || '1';
+
+      const totalAmount = ('€1').replace(/[^\d.]/g, '') || '1';
 
       const buttonContainer = document.getElementById('paypal-button-container');
       if (!buttonContainer) return;
