@@ -2722,6 +2722,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (continueBtn && step1 && step2) {
     continueBtn.addEventListener("click", () => {
       console.log("✅ Continue clicked");
+      openPaymentStep();
       step1.classList.add("hidden");
       step2.classList.remove("hidden");
     });
@@ -2848,7 +2849,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const buttonContainer = document.getElementById('paypal-button-container');
     if (!buttonContainer) return;
-    container.innerHTML = ''; // pulisci eventuali pulsanti duplicati
+    buttonContainer.innerHTML = ''; // pulisci eventuali pulsanti duplicati
 
 
     const renderButton = (fundingSource) => {
@@ -2857,7 +2858,7 @@ document.addEventListener("DOMContentLoaded", () => {
         style: { shape: 'rect', layout: 'vertical', label: 'pay', height: 45 },
         createOrder: (data, actions) => {
           return actions.order.create({
-            purchase_units: [{ amount: { value: total } }]
+            purchase_units: [{ amount: { value: totalAmount } }]
           });
         },
         onApprove: (data, actions) => {
@@ -2882,8 +2883,10 @@ document.addEventListener("DOMContentLoaded", () => {
     renderButton(paypal.FUNDING.CARD);        // Carta tramite PayPal
     }
 
-    // Esegui l'inizializzazione quando la pagina è pronta
-    window.addEventListener('DOMContentLoaded', initPayButtons);
+    function openPaymentStep() {
+      // ... qui mostri la modale step 2 come già fai
+      initPayButtons(); // genera i pulsanti PayPal SOLO ora
+    }
     </script>
 
   </body>
