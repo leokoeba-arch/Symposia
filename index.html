@@ -2877,6 +2877,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!buttonContainer) return;
       buttonContainer.innerHTML = '';
 
+      const allowedSources = [
+      paypal.FUNDING.PAYPAL,
+      paypal.FUNDING.GOOGLE_PAY,
+      paypal.FUNDING.CARD
+      ];
+
       //Stile orizzontale uniforme
       const buttonStyle = {
         layout: 'horizontal',
@@ -2885,73 +2891,38 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 45
       };
 
-    // --- PAYPAL ---
-  const paypalBtn = paypal.Buttons({
-    fundingSource: paypal.FUNDING.PAYPAL,
-    style,
-    createOrder: (data, actions) =>
-      actions.order.create({
-        purchase_units: [{ amount: { value: totalAmount } }]
-      }),
-    onApprove: (data, actions) =>
-      actions.order.capture().then(details =>
-        alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`)
-      ),
-    onError: err => console.error('PayPal error:', err)
-  });
-  if (paypalBtn.isEligible()) {
-    const wrap = document.createElement('div');
-    wrap.className = 'paypal-button-wrapper paypal-main';
-    paypalBtn.render(wrap);
-    container.appendChild(wrap);
-  }
+      const rendered = new Set();
 
-  // --- GOOGLE PAY ---
-  const gpayBtn = paypal.Buttons({
-    fundingSource: paypal.FUNDING.GOOGLE_PAY,
-    style,
-    createOrder: (data, actions) =>
-      actions.order.create({
-        purchase_units: [{ amount: { value: totalAmount } }]
-      }),
-    onApprove: (data, actions) =>
-      actions.order.capture().then(details =>
-        alert(`✅ Pagamento via Google Pay da ${details.payer.name.given_name}`)
-      ),
-    onError: err => console.error('Google Pay error:', err)
-  });
-  if (gpayBtn.isEligible()) {
-    const wrap = document.createElement('div');
-    wrap.className = 'paypal-button-wrapper gpay';
-    gpayBtn.render(wrap);
-    container.appendChild(wrap);
-  }
+      allowedSources.forEach(fundingSource => {
+      const button = paypal.Buttons({
+        fundingSource,
+        style: buttonStyle,
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: totalAmount } }]
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
+          });
+        },
+        onError: (err) => {
+          console.error('PayPal error:', err);
+          alert('❌ Pagamento non riuscito.');
+        }
+    });
 
-  // --- CARD ---
-  const cardBtn = paypal.Buttons({
-    fundingSource: paypal.FUNDING.CARD,
-    style,
-    createOrder: (data, actions) =>
-      actions.order.create({
-        purchase_units: [{ amount: { value: totalAmount } }]
-      }),
-    onApprove: (data, actions) =>
-      actions.order.capture().then(details =>
-        alert(`✅ Pagamento carta riuscito da ${details.payer.name.given_name}`)
-      ),
-    onError: err => console.error('Card error:', err)
-  });
-  if (cardBtn.isEligible()) {
-    const wrap = document.createElement('div');
-    wrap.className = 'paypal-button-wrapper card';
-    cardBtn.render(wrap);
-    container.appendChild(wrap);
-  }
-  const paypalIframes = container.querySelectorAll('.paypal-button-wrapper iframe');
-  if (paypalIframes.length > 1) {
-    paypalIframes[1].parentElement.remove(); // elimina duplicato
-  }
+    // Render solo se disponibile (es. Google Pay su dispositivi compatibili)
+    if (button.isEligible()) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'paypal-button-wrapper';
+      button.render(wrapper);
+      buttonContainer.appendChild(wrapper);
 
+      if (fundingSource === paypal.FUNDING.PAYPAL) rendered.add('paypal');
+    }
+    });
   }
 
   function openPaymentStep() {
