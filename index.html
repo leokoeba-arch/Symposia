@@ -2833,29 +2833,29 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 
    <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
-   <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons&enable-funding=card,googlepay"></script>
-   <script>
-
-     // Inizializzazione dei pulsanti PayPal + Google Pay + Carta
+  <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
+  <script>
     function initPayButtons() {
-    if (!window.paypal) {
-      // Se l'SDK non è ancora pronto, riprova tra 120ms
-      setTimeout(initPayButtons, 120);
-      return;
-    }
+      if (!window.paypal) {
+        setTimeout(initPayButtons, 150);
+        return;
+      }
 
-    const totalElement = document.getElementById('totalAmount');
-    const totalAmount = (totalElement?.textContent || '€1').replace(/[^\d.]/g, '') || '1';
+      const totalElement = document.getElementById('totalAmount');
+      const totalAmount = (totalElement?.textContent || '€1')
+        .replace(/[^\d.]/g, '') || '1';
 
-    const buttonContainer = document.getElementById('paypal-button-container');
-    if (!buttonContainer) return;
-    buttonContainer.innerHTML = ''; // pulisci eventuali pulsanti duplicati
+      const buttonContainer = document.getElementById('paypal-button-container');
+      if (!buttonContainer) return;
+      buttonContainer.innerHTML = '';
 
-
-    const renderButton = (fundingSource) => {
-      const button = paypal.Buttons({
-        fundingSource,
-        style: { shape: 'rect', layout: 'vertical', label: 'pay', height: 45 },
+      paypal.Buttons({
+        style: {
+          shape: 'rect',
+          layout: 'vertical',
+          label: 'paypal',
+          height: 45
+        },
         createOrder: (data, actions) => {
           return actions.order.create({
             purchase_units: [{ amount: { value: totalAmount } }]
@@ -2863,31 +2863,15 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then(details => {
-            alert(`✅ Pagamento riuscito: ${details.payer.name.given_name}`);
-            // TODO: chiudi modale, aggiorna piano utente, registra ordine, ecc.
+            alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
           });
         },
         onError: (err) => {
           console.error('PayPal error:', err);
-          alert('❌ Pagamento non riuscito. Riprova più tardi.');
+          alert('❌ Pagamento non riuscito.');
         }
-      });
-
-      // Render solo se disponibile sul dispositivo (es. Google Pay mobile)
-      if (button.isEligible()) button.render('#paypal-button-container');
-    };
-
-    // Render dei tre metodi principali
-    renderButton(paypal.FUNDING.PAYPAL);      // PayPal classico
-    renderButton(paypal.FUNDING.GOOGLE_PAY);  // Google Pay
-    renderButton(paypal.FUNDING.CARD);        // Carta tramite PayPal
+      }).render(buttonContainer);
     }
-
-    function openPaymentStep() {
-      // ... qui mostri la modale step 2 come già fai
-      initPayButtons(); // genera i pulsanti PayPal SOLO ora
-    }
-    </script>
-
+  </script>
   </body>
 </html>
