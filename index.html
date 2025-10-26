@@ -6,6 +6,7 @@
     <title>Symposia</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -249,53 +250,53 @@
 
     /* 🔹 Top banner */
     .top-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    background-color: #1e293b;
-    color: white;
-    display: flex;
-    justify-content: space-between; /* separates logo and login */
-    align-items: center;
-    padding: 0 20px;
-    z-index: 999;
-    }
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background-color: #1e293b;
+      color: white;
+      display: flex;
+      justify-content: space-between; /* separates logo and login */
+      align-items: center;
+      padding: 0 20px;
+      z-index: 999;
+      }
 
-    .logo {
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+      .logo {
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     #drName {
-    margin-right: 15px;
-    font-weight: 500;
-    display: none; /* hide initially */
-    color: white;
-    visibility: hidden;
-    cursor: pointer;
-    user-select: none;
-    }
-    #drName:hover {
-    text-decoration: underline;
+      margin-right: 15px;
+      font-weight: 500;
+      display: none; /* hide initially */
+      color: white;
+      visibility: hidden;
+      cursor: pointer;
+      user-select: none;
+      }
+      #drName:hover {
+      text-decoration: underline;
     }
 
     .login-btn {
-    background-color: #3b82f6;
-    color: #fff;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;        /* a bit softer */
-    cursor: pointer;
-    font-family: inherit;      /* same font as page */
-    font-weight: 600;          /* match headings/buttons */
-    letter-spacing: .2px;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    touch-action: manipulation;
-    visibility: hidden;
+      background-color: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;        /* a bit softer */
+      cursor: pointer;
+      font-family: inherit;      /* same font as page */
+      font-weight: 600;          /* match headings/buttons */
+      letter-spacing: .2px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      touch-action: manipulation;
+      visibility: hidden;
     }
 
     .top-banner .login-btn:hover {
@@ -304,53 +305,210 @@
 
     /* ===== Auth Modal - Backdrop ===== */
     .modal {
-    display: none;                 /* toggled via JS by adding .open */
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55); /* dark, soft */
-    backdrop-filter: blur(2px);
-    z-index: 2000;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+      display: none;                 /* toggled via JS by adding .open */
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55); /* dark, soft */
+      backdrop-filter: blur(2px);
+      z-index: 2000;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .modal.open { display: block; }
 
     /* ===== Modal Panel (card) ===== */
     .modal__panel {
-    width: 100%;
-    max-width: 392px;          /* slightly slimmer, feels taller/elegant */
-    margin: 6vh auto;
-    background:#fff;
-    border-radius: 14px;
-    padding: 26px 22px;
-    box-shadow:0 16px 40px rgba(2, 6, 23, .24);
+      width: 100%;
+      max-width: 392px;          /* slightly slimmer, feels taller/elegant */
+      margin: 6vh auto;
+      background:#fff;
+      border-radius: 14px;
+      padding: 26px 22px;
+      box-shadow:0 16px 40px rgba(2, 6, 23, .24);
     }
 
     /* Close (×) */
     .modal__close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    border: 0;
-    background: transparent;
-    font-size: 22px;
-    color: #64748b;
-    cursor: pointer;
-    line-height: 1;
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      border: 0;
+      background: transparent;
+      font-size: 22px;
+      color: #64748b;
+      cursor: pointer;
+      line-height: 1;
     }
     .modal__close:hover { color: #0f172a; }
 
     /* Header */
     .modal__title {
-    margin: 2px 0 2px;
-    font-size: 1.52rem;
-    font-weight: 700;
-    color: #0f172a;
+      margin: 2px 0 2px;
+      font-size: 1.52rem;
+      font-weight: 700;
+      color: #0f172a;
     }
     .modal__subtitle {
-    margin: 0 0 14px;
-    color: #475569;
+      margin: 0 0 14px;
+      color: #475569;
     }
+
+    .personal-info-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .personal-info-content label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .personal-info-content p {
+      margin: 8px 0;
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .personal-info-content strong {
+      color: #1e293b;
+    }
+
+    #personalInfoModal .info-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      margin-top: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background-color: #f8fafc;
+      font-size: 15px;
+    }
+
+    #personalInfoModal label {
+      margin-top: 14px;
+      display: block;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    #infoUpgradeBtn {
+      display: block !important;
+      margin: 26px auto 0 auto;
+      background-color: #2563eb;
+      color: white !important;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.1s ease;
+      width: fit-content;
+    }
+
+    #infoUpgradeBtn:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .info-input {
+      margin-top: 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background-color: #f8fafc;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .info-input[readonly] {
+      background-color: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+
+    .info-input:focus {
+      border-color: #2563eb;
+      outline: none;
+      background-color: #fff;
+    }
+
+    .edit-icon {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .edit-icon:hover {
+      color: #2563eb;
+    }
+
+    .save-btn {
+      align-self: flex-end;
+      margin-top: 12px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .save-btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    #infoUpgradeBtn.link {
+      font-size: 0.9rem;
+      color: #2563eb;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #infoUpgradeBtn.link:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Bottone Upgrade Plan centrato in basso --- */
+    .personal-info-footer {
+      margin-top: 5px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .upgrade-btn {
+      display: block;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2563eb;
+      color: #fff;
+      font-weight: 500;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.1s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .upgrade-btn:hover {
+      background-color: #1e40af;
+      transform: translateY(-1px);
+    }
+
+    .upgrade-btn:active {
+      transform: translateY(0);
+    }
+
 
     /* Provider buttons stack */
     .provider-stack { display: flex; flex-direction: column; gap: 10px; }
@@ -358,22 +516,22 @@
 
     /* Provider buttons – consistent type + bigger icons */
     .provider-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;     /* centers icon + text together */
-    gap: 10px;
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #f3f4f6;         /* light neutral like your mock */
-    color: #0f172a;
-    font: inherit;                /* same font as rest */
-    font-weight: 600;
-    letter-spacing: .2px;
-    cursor: pointer;
-    transition: background .15s ease, box-shadow .15s ease;
-    touch-action: manipulation;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;     /* centers icon + text together */
+      gap: 10px;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f3f4f6;         /* light neutral like your mock */
+      color: #0f172a;
+      font: inherit;                /* same font as rest */
+      font-weight: 600;
+      letter-spacing: .2px;
+      cursor: pointer;
+      transition: background .15s ease, box-shadow .15s ease;
+      touch-action: manipulation;
     }
 
     .provider-btn svg {
@@ -1302,6 +1460,113 @@
     }
   }
 
+  #personalInfoModal {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  #personalInfoModal.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #personalInfoModal .modal__panel {
+    max-width: 440px;
+    margin: 6vh auto;
+    padding: 36px 40px;
+    border-radius: 14px;
+    box-sizing: border-box;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.2);
+  }
+
+  #personalInfoModal .modal__content {
+    padding: 32px 40px;  
+    max-width: 480px;               /* limita la larghezza totale */
+    margin: 0 auto;                 /* centra tutto */
+    box-sizing: border-box;          /* più spazio interno */
+  }
+
+  #personalInfoModal h2 {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;           /* distanzia il titolo dai campi */
+  }
+
+  #personalInfoModal label {
+    display: block;
+    margin-top: 12px;              /* spazio tra i campi */
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  #personalInfoModal input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 4px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 15px;
+  }
+
+  #personalInfoModal input[readonly] {
+    background-color: #f1f5f9;
+    color: #334155;
+  }
+
+    /* === CONTACT SUPPORT MODAL === */
+  #contactSupportModal .modal__panel {
+    max-width: 420px;
+    margin: 8vh auto;
+    padding: 36px 40px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.2);
+    box-sizing: border-box;
+  }
+
+  #contactSupportModal .modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #0f172a;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    color: #1e293b;
+    margin-bottom: 16px;
+  }
+
+  .contact-item i {
+    font-size: 18px;
+    color: #2563eb;
+  }
+
+  #upgradePlanBtn {
+    display: block;                 /* lo rende un elemento a sé, non inline */
+    margin: 28px auto 0;            /* centra orizzontalmente e distanzia dai campi */
+    padding: 10px 22px;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+    width: fit-content;
+    transition: background-color 0.25s ease, transform 0.1s ease;
+  }
+
+  #upgradePlanBtn:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+  }
 
   </style>
   </head>
@@ -1366,7 +1631,7 @@
 
     <div class="user-menu-section">
       <h4>SUPPORT</h4>
-      <button class="menu-item" onclick="contactSupport()">
+      <button class="menu-item" onclick="openContactSupportModal()">
         <span class="icon">
           <!-- Contact -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
@@ -1503,6 +1768,63 @@
   </div>
 </div>
  
+<!-- === PERSONAL INFO MODAL === -->
+<div id="personalInfoModal" class="modal" aria-hidden="true">
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="personalInfoTitle">
+    <button class="modal__close" aria-label="Close" onclick="closePersonalInfo()">×</button>
+    
+    <h2 id="personalInfoTitle" class="modal__title flex items-center justify-between">
+      <span>Personal Info</span>
+      <button id="editPersonalInfoBtn" class="edit-icon" title="Edit Info" onclick="togglePersonalInfoEdit()">
+        <i class="fa-solid fa-pen"></i>
+      </button>
+    </h2>
+    <div class="personal-info-content">
+      <label><strong>First name:</strong>
+        <input id="infoFirstName" class="info-input" readonly>
+      </label>
+
+      <label><strong>Last name:</strong>
+        <input id="infoLastName" class="info-input" readonly>
+      </label>
+
+      <label><strong>Email:</strong>
+        <input id="infoEmail" class="info-input" readonly>
+      </label>
+
+      <label><strong>Drafts downloaded:</strong>
+        <input id="infoDownloads" class="info-input" readonly>
+      </label>
+
+      <label><strong>Subscription:</strong>
+        <input id="infoPlan" class="info-input" readonly>
+      </label>
+
+      <div class="personal-info-footer">
+        <button id="infoUpgradeBtn" class="upgrade-btn" onclick="openUpgradeModal()">Upgrade Plan</button>
+      </div>
+
+      <button id="savePersonalInfoBtn" class="save-btn" style="display:none;" onclick="savePersonalInfo()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTACT SUPPORT MODAL ===== -->
+<div id="contactSupportModal" class="modal" aria-hidden="true">
+  <div class="modal__panel">
+    <h2 class="modal-title">Contact Support</h2>
+
+    <!--<div class="contact-item">
+      <i class="fa-solid fa-phone"></i>
+      <span>+39 327 993 1198</span>
+    </div>-->
+
+    <div class="contact-item">
+      <i class="fa-solid fa-envelope"></i>
+      <span>support@symposia-ai.com</span>
+    </div>
+  </div>
+</div>
    
  <!-- === UPGRADE MODAL === -->
 <div id="upgradeModal" class="modal" aria-hidden="true">
@@ -2075,6 +2397,166 @@
     }
     }
 
+    function openPersonalInfo() {
+        // Chiude il side menu e il backdrop se sono aperti
+      const sideMenu = document.getElementById("sideMenu");
+      const backdrop = document.getElementById("sideMenuBackdrop");
+
+      if (sideMenu) sideMenu.classList.remove("open");
+      if (backdrop) backdrop.classList.remove("open");
+      const modal = document.getElementById("personalInfoModal");
+      /*const sideMenu = document.getElementById("sideMenu");
+      const sideMenuBackdrop = document.getElementById("sideMenuBackdrop");
+      if (sideMenu || sideMenuBackdrop) {
+        sideMenu.classList.remove("open");
+        sideMenuBackdrop.classList.remove("open");*/
+      if (!modal) return;
+      populatePersonalInfo();
+
+      // Recupera dati da localStorage o Firebase
+      const firstName = localStorage.getItem("userFirstName") || "—";
+      const lastName = localStorage.getItem("userLastName") || "—";
+      const email = auth?.currentUser?.email || "—";
+      const downloads = localStorage.getItem("symposia_downloadCount") || "0";
+      const plan = localStorage.setItem("userPlan" ,"Free");
+
+      document.getElementById("infoFirstName").textContent = firstName;
+      document.getElementById("infoLastName").textContent = lastName;
+      document.getElementById("infoEmail").textContent = email;
+      document.getElementById("infoDownloads").textContent = localStorage.getItem("symposia_downloadCount");
+      document.getElementById("infoPlan").textContent = plan;
+
+      // Se piano = Free → mostra "Upgrade plan"
+      const upgradeBtn = document.getElementById("infoUpgradeBtn");
+      if ((plan || "free").toLowerCase() === "free") {
+        upgradeBtn.style.display = "inline-block";
+      } else {
+        upgradeBtn.style.display = "none";
+      }
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function populatePersonalInfo() {
+      // Recupera i dati dal localStorage (o imposta valori di fallback)
+      const first = localStorage.getItem("userFirstName") || "";
+      const last = localStorage.getItem("userLastName") || "";
+      const email = localStorage.getItem("userEmail") || "";
+      const downloads = localStorage.getItem("symposia_downloadCount") || "0";
+      const plan = localStorage.getItem("userPlan") || "Free";
+
+      // Inserisce i valori negli input
+      document.getElementById("infoFirstName").value = first;
+      document.getElementById("infoLastName").value = last;
+      document.getElementById("infoEmail").value = email;
+      document.getElementById("infoDownloads").value = downloads;
+      document.getElementById("infoPlan").value = plan;
+
+      // Se è free, mostra il bottone “Upgrade Plan”
+      const upgradeBtn = document.getElementById("infoUpgradeBtn");
+      if (plan.toLowerCase() === "free") {
+        upgradeBtn.style.display = "block";
+      } else {
+        upgradeBtn.style.display = "none";
+      }
+    }
+
+
+    function closePersonalInfo() {
+      const modal = document.getElementById("personalInfoModal");
+      if (!modal) return;
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    function togglePersonalInfoEdit() {
+      const inputs = document.querySelectorAll('.info-input');
+      const saveBtn = document.getElementById('savePersonalInfoBtn');
+
+      const isReadOnly = inputs[0].hasAttribute('readonly');
+
+      inputs.forEach(input => {
+        if (input.id === 'infoDownloads' || input.id === 'infoPlan') return; // non modificabili
+        if (isReadOnly) {
+          input.removeAttribute('readonly');
+          input.style.backgroundColor = '#fff';
+        } else {
+          input.setAttribute('readonly', true);
+          input.style.backgroundColor = '#f1f5f9';
+        }
+      });
+
+      saveBtn.style.display = isReadOnly ? 'inline-block' : 'none';
+    }
+
+    function savePersonalInfo() {
+      const first = document.getElementById("infoFirstName").value.trim();
+      const last = document.getElementById("infoLastName").value.trim();
+      const email = document.getElementById("infoEmail").value.trim();
+
+      localStorage.setItem("userFirstName", first);
+      localStorage.setItem("userLastName", last);
+      localStorage.setItem("userEmail", email);
+
+      togglePersonalInfoEdit(); // torna in sola lettura
+      alert("✅ Personal information updated!");
+    }
+
+    window.addEventListener("click", function (e) {
+      const modal = document.getElementById("personalInfoModal");
+      if (!modal || !modal.classList.contains("open")) return;
+
+      // Assicurati che il click sia sull'overlay, non sul contenuto interno
+      if (e.target === modal) {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+  // === CHIUSURA Personal Info Modal con tasto ESC ===
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      const modal = document.getElementById("personalInfoModal");
+      if (modal && modal.classList.contains("open")) {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+    }
+  });
+
+  function openContactSupportModal() {
+    const modal = document.getElementById("contactSupportModal");
+    const sideMenu = document.getElementById("sideMenu");
+    const sideMenuBackdrop = document.getElementById("sideMenuBackdrop");
+
+    // 1️⃣ Rimuove focus da qualunque elemento attivo
+    setTimeout(() => document.activeElement?.blur(), 50);
+
+    // 2️⃣ Chiude il side menu e backdrop
+    if (sideMenu) sideMenu.classList.remove("open");
+    if (sideMenuBackdrop) sideMenuBackdrop.classList.remove("open");
+
+    // 3️⃣ Attende un frame per assicurarsi che siano nascosti, poi apre la modale
+    setTimeout(() => {
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+
+      // 4️⃣ Aggiunge listener per chiusura al click esterno
+      document.addEventListener("click", closeOnOutsideClick);
+    }, 100);
+  }
+
+  function closeOnOutsideClick(e) {
+    const modal = document.getElementById("contactSupportModal");
+    if (modal && modal.classList.contains("open") && !modal.querySelector(".modal__panel").contains(e.target)) {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.removeEventListener("click", closeOnOutsideClick);
+    }
+  }
+
+
     // Close on ESC
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') toggleAuthModal(false);
@@ -2194,14 +2676,14 @@
     });
 
     // stub handlers (to be implemented later)
-    function openPersonalInfo(){ alert('Personal Info — coming soon'); }
-    function openBilling(){ alert('Billing Info — coming soon'); }
+    function openBillingInfo(){ alert('Billing Info — coming soon'); }
     function openUpgrade(){ alert('Upgrade — coming soon'); }
     function openMyDrafts(){ alert('My Drafts — coming soon'); }
     function openDownloadHistory(){ alert('Download History — coming soon'); }
     function openHelp(){ alert('Help / Docs — coming soon'); }
     function contactSupport(){ window.location.href = 'mailto:support@symposia.ai'; }
     function openPrivacy(){ alert('Privacy Policy — coming soon'); }
+    function openBillingInfo(){ alert('Billing Info — coming soon'); }
     function openTerms(){ alert('Terms of Service — coming soon'); }
     </script>
 
@@ -2249,7 +2731,7 @@
     // expose globally
     window.toggleSideMenu = toggleSideMenu;
     window.openPersonalInfo = openPersonalInfo;
-    window.openBilling = openBilling;
+    window.openBillingInfo = openBillingInfo;
     window.openUpgrade = openUpgrade;
     window.openMyDrafts = openMyDrafts;
     window.openDownloadHistory = openDownloadHistory;
@@ -2533,78 +3015,7 @@
     }
     window.updateDownloadButtonState = updateDownloadButtonState;
 
-    /*
-    // Attach listener every time the button (re)appears
-    function bindDownloadButton() {
-      const downloadBtn = document.getElementById("downloadBtn");
-      if (!downloadBtn || downloadBtn.dataset.bound === "true") return;
-      downloadBtn.dataset.bound = "true"; // avoid double binding
-
-      downloadBtn.addEventListener("click", async () => {
-        const content = document.getElementById("output")?.textContent || "";
-        if (!content.trim()) {
-          alert("No draft available to download.");
-          return;
-        }
-
-      const user = auth.currentUser;
-      if (!user) {
-        if (typeof toggleAuthModal === 'function') toggleAuthModal(true, 'login');
-        else document.getElementById('authModal')?.classList.add('open');
-        return;
-      }
-
-      let count = 0;
-      try {
-        count = await fetchDownloadCount(user.email);
-        console.log("Current download count: ", count);
-      } catch (err) {
-        console.error("Error fetching download count:", err);
-      }
-
-      const localCount = Number(localStorage.getItem("symposia_downloadCount") || "0");
-      if (count < localCount) {
-        count = localCount;
-        try {
-          await saveDownloadCountToCloud(user.email, count);
-        } catch (err) {
-          console.error('saveDownloadCountToCloud error', err);
-        }
-      }
-
-      // limit check before proceeding
-      if (count >= 8) {
-        if (typeof openUpgradeModal === "function") openUpgradeModal();
-        else window.openUpgradeModal?.();
-        return;
-      }
-
-      // proceed with download
-      const blob = new Blob(["\ufeff", content], { type: "application/msword" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "symposia_draft.docx";
-      document.body.appendChild(a);
-      a.click();
-      a.remove()
-      URL.revokeObjectURL(url);
-
-      // increment and sync
-      count += 1;
-      localStorage.setItem("symposia_downloadCount", count);
-      try { 
-        await saveDownloadCountToCloud(user.email, count);
-      } catch (err) { 
-        console.error('saveDownloadCountToCloud error', err);
-      }
-      if (typeof updateDownloadCounterUI === 'function') 
-        updateDownloadCounterUI(count);
-
-      updateDownloadButtonState(auth.currentUser);
-    }, {capture : true});
-    }
-    */
+   
     window.bindDownloadButton = bindDownloadButton;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -2626,23 +3037,6 @@
       handlePrimaryAuth();
     }
     });
-
-/* --- Auth-based sync ---
-	onAuthStateChanged(auth, async (user) => {
-	  if (user && user.email) {
-	    currentEmail = user.email;
-	    keyName = `downloadCount_${currentEmail}`;
-	    const local = parseInt(localStorage.getItem(keyName) || "0", 10);
-	    const cloud = await fetchDownloadCount(currentEmail);
-	    downloadCount = Math.max(local, cloud);
-	    localStorage.setItem(keyName, String(downloadCount));
-	  } else {
-	    currentEmail = null;
-	    keyName = "downloadCount_guest";
-	    downloadCount = parseInt(localStorage.getItem(keyName) || "0", 10);
-	  }
-	  syncDownloadUI();
-	});*/
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -2777,7 +3171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-    <script>
+<script>
     document.addEventListener("DOMContentLoaded", () => {
     const primaryBtn = document.getElementById("primaryAuthBtn");
     const fields = [
@@ -2919,6 +3313,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return actions.order.capture().then(details => {
             alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
             closeUpgradeModal();
+            setUserPlan('PRO');
           });
         },
         onError: (err) => {
@@ -2995,6 +3390,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.status === "COMPLETED") {
               alert("✅ Pagamento completato!");
               closeUpgradeModal();
+              setUserPlan("PRO");
             } else {
               alert("⚠️ Pagamento non completato.");
               console.warn(data);
@@ -3058,5 +3454,92 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   </script>
+  <script>
+  /* ===========================
+    PLANS & DOWNLOADS GATE
+    =========================== */
+  const MAX_FREE_DOWNLOADS = 8;
+
+  // --- keys compat con tuo codice attuale ---
+  const DL_KEY_PRIMARY   = 'usedDownloads';
+  const DL_KEY_LEGACY    = 'symposia_downloadCount'; // se lo usavi prima
+  const PLAN_KEY         = 'userPlan';               // 'free' | 'pro' ...
+
+  // Helpers plan
+  function getUserPlan() {
+    return (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
+  }
+  function setUserPlan(plan) {
+    localStorage.setItem(PLAN_KEY, plan.toLowerCase());
+    refreshAccountUI();
+  }
+
+  // Helpers downloads (compat con chiave legacy)
+  function getUsedDownloads() {
+    const legacy = parseInt(localStorage.getItem(DL_KEY_LEGACY) || '0', 10);
+    const current = parseInt(localStorage.getItem(DL_KEY_PRIMARY) || '0', 10);
+    const used = isNaN(current) ? (isNaN(legacy) ? 0 : legacy) : current;
+    return Math.max(0, used);
+  }
+  function setUsedDownloads(n) {
+    localStorage.setItem(DL_KEY_PRIMARY, String(n));
+    // opzionale: mantieni allineata la legacy se altrove la leggi ancora
+    localStorage.setItem(DL_KEY_LEGACY, String(n));
+  }
+  function incUsedDownloads() {
+    setUsedDownloads(getUsedDownloads() + 1);
+  }
+
+  // UI refresh: Remaining Downloads, badge piano, personal info, ecc.
+  function refreshAccountUI() {
+    const plan = getUserPlan();
+    const remainingEl = document.getElementById('remainingDownloads'); // <span> 0 / 8
+    if (remainingEl) {
+      if (plan === 'pro') {
+        remainingEl.textContent = '∞';
+      } else {
+        remainingEl.textContent = `${getUsedDownloads()} / ${MAX_FREE_DOWNLOADS}`;
+      }
+    }
+    // badge in header (se hai il pill "FREE")
+    const planBadge = document.getElementById('planBadge') || document.querySelector('.user-plan-badge');
+    if (planBadge) planBadge.textContent = plan.toUpperCase();
+
+    // Personal Info: campo Subscription + bottone upgrade
+    const subscriptionField = document.getElementById('subscriptionField');
+    if (subscriptionField) subscriptionField.value = plan.charAt(0).toUpperCase() + plan.slice(1);
+
+    const infoUpgradeBtn = document.getElementById('infoUpgradeBtn');
+    if (infoUpgradeBtn) infoUpgradeBtn.style.display = (plan === 'free') ? 'block' : 'none';
+  }
+
+  // Guardia per il download: chiama la tua funzione solo se permesso
+  async function guardDownloadsOrOpenUpgrade(onAllowedDownload) {
+    const plan = getUserPlan();
+
+    // PRO: nessun limite
+    if (plan === 'pro') {
+      await onAllowedDownload();
+      incUsedDownloads();           // opzionale: tieni statistica anche per i pro
+      refreshAccountUI();
+      return;
+    }
+
+    // FREE: limite a 8
+    const used = getUsedDownloads();
+    if (used >= MAX_FREE_DOWNLOADS) {
+      openUpgradeModal();           // tua modale già esistente
+      return;
+    }
+
+    await onAllowedDownload();
+    incUsedDownloads();
+    refreshAccountUI();
+  }
+
+  // Inizializza UI all’avvio
+  document.addEventListener('DOMContentLoaded', refreshAccountUI);
+  </script>
+
   </body>
 </html>
