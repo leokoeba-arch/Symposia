@@ -2981,6 +2981,7 @@ document.addEventListener("DOMContentLoaded", () => {
         payBtn.disabled = true;
         const prev = payBtn.textContent;
         payBtn.textContent = "Processing...";
+        console.log("Click PayNow, hostedFieldsInstance:", hostedFieldsInstance);
 
         hostedFieldsInstance.submit({ contingencies: ["3D_SECURE"] })
           .then(({ orderId }) => fetch("/api/capture-order", {
@@ -3010,17 +3011,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function initCardFields() {
       try {
-        await loadHostedFieldsSDK();             // carica modulo + client token
-        if (!paypal.HostedFields) throw new Error("HostedFields non disponibili");
+        console.log("🚀 Inizio caricamento Hosted Fields...");
+        await loadHostedFieldsSDK(); // carica SDK + token
+        await new Promise(r => setTimeout(r, 500)); // buffer per garantire caricamento
+        
+        if (!paypal.HostedFields) {
+          console.error("❌ paypal.HostedFields non definito dopo loadHostedFieldsSDK");
+          return;
+        }
 
-        // inizializza Hosted Fields (usa i TUOI id degli input)
+        console.log("✅ SDK Hosted Fields caricata, inizializzo...");
         const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15").replace(/[^\d.]/g, "") || "15";
-        const hf = await paypal.HostedFields.render({
+
+        const hostedFieldsInstance = await paypal.HostedFields.render({
           createOrder: () => fetch("/api/create-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
-          }).then(r => r.json()).then(d => d.id),
+          })
+          .then(r => r.json())
+          .then(d => {
+            console.log("🆔 Ordine creato:", d.id);
+            return d.id;
+          }),
 
           styles: {
             input: { "font-size": "16px", "color": "#1e293b" },
@@ -3034,10 +3047,16 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        wireCardPayNow(hf);                       // collega il bottone Pay Now
-        console.log("✅ Hosted Fields pronti");
+        if (!hostedFieldsInstance) {
+          console.error("❌ hostedFieldsInstance non creato");
+          return;
+        }
+
+        console.log("✅ Hosted Fields pronti, collego bottone Pay Now...");
+        wireCardPayNow(hostedFieldsInstance);
+        
       } catch (err) {
-        console.error("Init card fields failed:", err);
+        console.error("❌ Errore initCardFields:", err);
       }
     }
 
