@@ -2892,11 +2892,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      //const totalElement = document.getElementById('totalAmount');
-      //const totalAmount = (totalElement?.textContent || '€1')
-      //  .replace(/[^\d.]/g, '') || '1';
+      const totalElement = document.getElementById('totalAmount');
+      const totalAmount = (totalElement?.textContent || '€15')
+        .replace(/[^\d.]/g, '') || '15';
 
-      const totalAmount = ('€1').replace(/[^\d.]/g, '') || '1';
 
       const buttonContainer = document.getElementById('paypal-button-container');
       if (!buttonContainer) return;
@@ -2956,88 +2955,93 @@ document.addEventListener("DOMContentLoaded", () => {
       initPayButtons(); // genera i pulsanti PayPal SOLO ora
     }
 
-    // === INIZIALIZZAZIONE CAMPI CARTA + AZIONE SU "PAY NOW" ===
-    function initCardFields() {
-      if (!paypal.HostedFields) {
-        console.warn("Hosted Fields non ancora pronti, ritento...");
-        setTimeout(initCardFields, 250);
-        return;
-      }
+    async function loadHostedFieldsSDK() {
+      // 1) prendi il client token dal tuo server
+      const r = await fetch("/api/generate-client-token", { method: "POST" });
+      const { clientToken } = await r.json();
+      if (!clientToken) throw new Error("Nessun clientToken");
 
-      paypal.HostedFields.render({
-        //Quando PayPal deve creare un ordine (prima del pagamento)
-        createOrder: function () {
-          const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15")
-            .replace(/[^\d.]/g, "");
-          
-          return fetch("/api/create-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
-          })
-            .then(res => res.json())
-            .then(data => {
-              console.log("Ordine creato:", data.id);
-              return data.id;
-            });
-        },
-
-        //Styling dei campi carta
-        styles: {
-          input: { "font-size": "16px", "color": "#1e293b" },
-          ".valid": { "color": "#16a34a" },
-          ".invalid": { "color": "#dc2626" }
-        },
-
-        //Collegamento con i tuoi input HTML
-        fields: {
-          number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
-          expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
-          cvv:           { selector: "#cardCVV", placeholder: "123" }
-        }
-      }).then(function (hostedFieldsInstance) {
-
-        // 4️⃣ Quando l'utente clicca su "Pay Now"
-        const payNowBtn = document.getElementById("payNow");
-        if (!payNowBtn) return;
-
-        payNowBtn.addEventListener("click", function (event) {
-          event.preventDefault();
-          payNowBtn.disabled = true;
-          payNowBtn.textContent = "Processing...";
-
-          hostedFieldsInstance
-            .submit({ contingencies: ["3D_SECURE"] })
-            .then(({ orderId }) => {
-              console.log("Pagamento inviato, ordine:", orderId);
-              return fetch("/api/capture-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderID: orderId })
-              });
-            })
-            .then(res => res.json())
-            .then(data => {
-              console.log("Risposta PayPal:", data);
-              if (data.status === "COMPLETED") {
-                alert("✅ Pagamento completato con successo!");
-              } else {
-                alert("⚠️ Pagamento non completato o rifiutato.");
-              }
-            })
-            .catch(err => {
-              console.error("Errore pagamento:", err);
-              alert("❌ Errore durante il pagamento.");
-            })
-            .finally(() => {
-              payNowBtn.disabled = false;
-              payNowBtn.textContent = "Pay Now";
-            });
-        });
+      // 2) inietta la SDK PayPal SOLO per hosted-fields, passando il client token come data-attr
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&components=hosted-fields&currency=EUR&intent=capture";
+        s.setAttribute("data-client-token", clientToken);
+        s.onload = resolve;
+        s.onerror = () => reject(new Error("SDK hosted-fields non caricata"));
+        document.body.appendChild(s);
       });
     }
 
-    // Avvio automatico
+    function wireCardPayNow(hostedFieldsInstance) {
+      const payBtn = document.getElementById("payNow");
+      if (!payBtn) return;
+
+      payBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        payBtn.disabled = true;
+        const prev = payBtn.textContent;
+        payBtn.textContent = "Processing...";
+
+        hostedFieldsInstance.submit({ contingencies: ["3D_SECURE"] })
+          .then(({ orderId }) => fetch("/api/capture-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderID: orderId })
+          }))
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === "COMPLETED") {
+              alert("✅ Pagamento completato!");
+            } else {
+              alert("⚠️ Pagamento non completato.");
+              console.log(data);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert("❌ Errore durante il pagamento.");
+          })
+          .finally(() => {
+            payBtn.disabled = false;
+            payBtn.textContent = prev;
+          });
+      });
+    }
+
+    async function initCardFields() {
+      try {
+        await loadHostedFieldsSDK();             // carica modulo + client token
+        if (!paypal.HostedFields) throw new Error("HostedFields non disponibili");
+
+        // inizializza Hosted Fields (usa i TUOI id degli input)
+        const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15").replace(/[^\d.]/g, "") || "15";
+        const hf = await paypal.HostedFields.render({
+          createOrder: () => fetch("/api/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
+          }).then(r => r.json()).then(d => d.id),
+
+          styles: {
+            input: { "font-size": "16px", "color": "#1e293b" },
+            ".valid": { "color": "#16a34a" },
+            ".invalid": { "color": "#dc2626" }
+          },
+          fields: {
+            number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
+            expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
+            cvv:           { selector: "#cardCVV", placeholder: "123" }
+          }
+        });
+
+        wireCardPayNow(hf);                       // collega il bottone Pay Now
+        console.log("✅ Hosted Fields pronti");
+      } catch (err) {
+        console.error("Init card fields failed:", err);
+      }
+    }
+
+    // chiama questa DOPO initPayButtons()
     initCardFields();
 
   </script>
