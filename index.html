@@ -1976,7 +1976,7 @@
     </div>
 
       <!-- Single download button -->
-      <button id="downloadBtn">Download Draft</button>
+      <button id="downloadBtn" onClick()="guardDownloadsOrOpenUpgrade(downloadBtn)">Download Draft</button>
     </div>
 
     <script>
@@ -3456,16 +3456,12 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
   <script>
   /* ===========================
-    PLANS & DOWNLOADS GATE
+    PLANS & DOWNLOADS – CORE
     =========================== */
   const MAX_FREE_DOWNLOADS = 8;
+  const PLAN_KEY = 'userPlan';                   // 'free' | 'pro'
+  const DL_KEY  = 'usedDownloads';               // contatore locale
 
-  // --- keys compat con tuo codice attuale ---
-  const DL_KEY_PRIMARY   = 'usedDownloads';
-  const DL_KEY_LEGACY    = 'symposia_downloadCount'; // se lo usavi prima
-  const PLAN_KEY         = 'userPlan';               // 'free' | 'pro' ...
-
-  // Helpers plan
   function getUserPlan() {
     return (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
   }
@@ -3474,61 +3470,82 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshAccountUI();
   }
 
-  // Helpers downloads (compat con chiave legacy)
   function getUsedDownloads() {
-    const legacy = parseInt(localStorage.getItem(DL_KEY_LEGACY) || '0', 10);
-    const current = parseInt(localStorage.getItem(DL_KEY_PRIMARY) || '0', 10);
-    const used = isNaN(current) ? (isNaN(legacy) ? 0 : legacy) : current;
-    return Math.max(0, used);
+    const n = parseInt(localStorage.getItem(DL_KEY) || '0', 10);
+    return isNaN(n) ? 0 : Math.max(0, n);
   }
   function setUsedDownloads(n) {
-    localStorage.setItem(DL_KEY_PRIMARY, String(n));
-    // opzionale: mantieni allineata la legacy se altrove la leggi ancora
-    localStorage.setItem(DL_KEY_LEGACY, String(n));
+    localStorage.setItem(DL_KEY, String(Math.max(0, n)));
   }
   function incUsedDownloads() {
     setUsedDownloads(getUsedDownloads() + 1);
   }
 
-  // UI refresh: Remaining Downloads, badge piano, personal info, ecc.
+  /* ===========================
+    UI REFRESH (menu + personal info)
+    =========================== */
   function refreshAccountUI() {
     const plan = getUserPlan();
-    const remainingEl = document.getElementById('remainingDownloads'); // <span> 0 / 8
+
+    // 1) Remaining Downloads (side menu)
+    const remainingEl = document.getElementById('remainingDownloads');
     if (remainingEl) {
-      if (plan === 'pro') {
-        remainingEl.textContent = '∞';
-      } else {
-        remainingEl.textContent = `${getUsedDownloads()} / ${MAX_FREE_DOWNLOADS}`;
-      }
+      remainingEl.textContent = (plan === 'pro')
+        ? '∞'
+        : `${getUsedDownloads()} / ${MAX_FREE_DOWNLOADS}`;
     }
-    // badge in header (se hai il pill "FREE")
+
+    // 2) Badge piano (FREE/PRO)
     const planBadge = document.getElementById('planBadge') || document.querySelector('.user-plan-badge');
     if (planBadge) planBadge.textContent = plan.toUpperCase();
 
-    // Personal Info: campo Subscription + bottone upgrade
+    // 3) Personal Info: subscription field
     const subscriptionField = document.getElementById('subscriptionField');
-    if (subscriptionField) subscriptionField.value = plan.charAt(0).toUpperCase() + plan.slice(1);
+    if (subscriptionField) {
+      subscriptionField.value = plan.charAt(0).toUpperCase() + plan.slice(1);
+    }
 
-    const infoUpgradeBtn = document.getElementById('infoUpgradeBtn');
-    if (infoUpgradeBtn) infoUpgradeBtn.style.display = (plan === 'free') ? 'block' : 'none';
+    // 4) Nascondi “Upgrade Plan” se PRO (sia in Personal Info che nel menu)
+    const infoUpgradeBtn =
+      document.getElementById('infoUpgradeBtn') ||
+      document.querySelector('#personalInfoModal .upgrade-btn');
+
+    if (infoUpgradeBtn) {
+      infoUpgradeBtn.style.display = (plan === 'pro') ? 'none' : 'block';
+    }
+
+    const sideUpgradeBtn =
+      document.getElementById('sideUpgradeBtn') ||
+      [...document.querySelectorAll('#sideMenu .menu-item')].find(el => /upgrade plan/i.test(el.textContent));
+
+    if (sideUpgradeBtn) {
+      sideUpgradeBtn.style.display = (plan === 'pro') ? 'none' : 'flex';
+    }
   }
 
-  // Guardia per il download: chiama la tua funzione solo se permesso
+  /* ===========================
+    DOWNLOAD GUARD
+    =========================== */
+  /**
+   * Usa SEMPRE questa guardia quando scarichi:
+   * guardDownloadsOrOpenUpgrade(() => downloadPDF() )
+   */
   async function guardDownloadsOrOpenUpgrade(onAllowedDownload) {
     const plan = getUserPlan();
 
-    // PRO: nessun limite
+    // PRO: illimitati, niente upgrade modal
     if (plan === 'pro') {
       await onAllowedDownload();
-      incUsedDownloads();           // opzionale: tieni statistica anche per i pro
+      // opzionale: traccia comunque i download
+      incUsedDownloads();
       refreshAccountUI();
       return;
     }
 
-    // FREE: limite a 8
+    // FREE: limite 8
     const used = getUsedDownloads();
     if (used >= MAX_FREE_DOWNLOADS) {
-      openUpgradeModal();           // tua modale già esistente
+      openUpgradeModal();
       return;
     }
 
@@ -3537,9 +3554,14 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshAccountUI();
   }
 
-  // Inizializza UI all’avvio
-  document.addEventListener('DOMContentLoaded', refreshAccountUI);
+  /* ===========================
+    BOOT
+    =========================== */
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshAccountUI();
+  });
   </script>
+
 
   </body>
 </html>
