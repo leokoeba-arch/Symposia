@@ -2871,6 +2871,21 @@ document.addEventListener("DOMContentLoaded", () => {
   <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js?components=hosted-fields"></script>
   <script>
+    // Fix per Hosted Fields legacy: collega la libreria vecchia all'oggetto paypal moderno
+    if (window.paypal && window.braintree && window.braintree.hostedFields) {
+      window.paypal.HostedFields = window.braintree.hostedFields;
+    } else {
+      // Aspetta che PayPal carichi e poi collega
+      const tryLinkHostedFields = setInterval(() => {
+        if (window.paypal && window.braintree && window.braintree.hostedFields) {
+          window.paypal.HostedFields = window.braintree.hostedFields;
+          clearInterval(tryLinkHostedFields);
+          console.log("✅ Hosted Fields collegati correttamente");
+        }
+      }, 200);
+    }
+  </script>
+  <script>
     function initPayButtons() {
       if (!window.paypal) {
         setTimeout(initPayButtons, 150);
