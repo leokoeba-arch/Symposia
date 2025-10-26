@@ -2026,8 +2026,12 @@
         }
       }
 
+      const pro = isProUser();
+      let used = parseInt(localStorage.getItem("symposia_downloadCount") || "0", 10);
+
+
       // limit check before proceeding
-      if (count >= 8) {
+      if (!pro && used >= 8) {
         if (typeof openUpgradeModal === "function") openUpgradeModal();
         else window.openUpgradeModal?.();
         return;
@@ -2045,10 +2049,10 @@
       URL.revokeObjectURL(url);
 
       // increment and sync
-      count += 1;
-      localStorage.setItem("symposia_downloadCount", count);
+      used += 1;
+      localStorage.setItem("symposia_downloadCount", used);
       try { 
-        await saveDownloadCountToCloud(user.email, count);
+        await saveDownloadCountToCloud(user.email, used);
       } catch (err) { 
         console.error('saveDownloadCountToCloud error', err);
       }
@@ -2056,6 +2060,7 @@
         updateDownloadCounterUI(count);
 
       updateDownloadButtonState(auth.currentUser);
+      refreshPlanUI();
     }, {capture : true});
     }
 
@@ -3004,6 +3009,65 @@
     if (counter) counter.textContent = `${count} / 8`;
     }
 
+  //Da qui UI plan-aware per side menu e trigger
+  function refreshPlanUI() {
+    const plan = (localStorage.getItem('userPlan') || 'Free').toLowerCase();
+    const isPro = (plan !== 'free');
+
+    // — badge (già lo fai altrove, ma lo forziamo qui per sicurezza)
+    if (typeof updatePlanBadge === 'function') {
+      updatePlanBadge(isPro ? 'PRO' : 'Free');
+    }
+
+    // — Remaining Downloads: se PRO mostra ∞, altrimenti usa il contatore salvato
+    const counterEl = document.getElementById('downloadCounter');
+    if (counterEl) {
+      if (isPro) {
+        counterEl.textContent = '∞';
+      } else {
+        const used = parseInt(localStorage.getItem('symposia_downloadCount') || '0', 10);
+        counterEl.textContent = `${used} / 8`;
+      }
+    }
+
+    // — Side-menu: nascondi "Upgrade Plan" se PRO
+    const upgradeMenuItem = document.querySelector(".menu-item[onclick='openUpgradePlan()']");
+    if (upgradeMenuItem) {
+      upgradeMenuItem.style.display = isPro ? 'none' : '';
+    }
+
+    // — Click su "Remaining Downloads": consentito aprire upgrade solo se Free
+    const trigger = document.getElementById('remainingDownloadsBtn');
+    if (trigger) {
+      // rimuove eventuali vecchi listener clonando il nodo (è il modo più pulito)
+      const clone = trigger.cloneNode(true);
+      trigger.parentNode.replaceChild(clone, trigger);
+
+      if (!isPro) {
+        clone.addEventListener('click', openUpgradeModal);
+        clone.style.cursor = 'pointer';
+        clone.title = 'Upgrade to PRO';
+      } else {
+        clone.style.cursor = 'default';
+        clone.title = '';
+      }
+    }
+
+    // — Personal Info: nascondi il bottone "Upgrade Plan" se PRO
+    const infoBtn = document.getElementById('infoUpgradeBtn');
+    if (infoBtn) infoBtn.style.display = isPro ? 'none' : 'block';
+  }
+
+  // piccola helper da riusare ovunque
+  function isProUser() {
+    return (localStorage.getItem('userPlan') || 'Free').toLowerCase() !== 'free';
+  }  
+
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshPlanUI();
+  });
+  //FINO A QUI
+
     // --- Stato/abilitazione del pulsante download ---
     function updateDownloadButtonState(user) {
       const btn = document.getElementById('downloadBtn');
@@ -3019,9 +3083,9 @@
     window.bindDownloadButton = bindDownloadButton;
 
     document.addEventListener('DOMContentLoaded', () => {
-    bindDownloadButton();
-    // inizializza stato bottone
-    updateDownloadButtonState(auth.currentUser || null);
+      bindDownloadButton();
+      // inizializza stato bottone
+      updateDownloadButtonState(auth.currentUser || null);
     });
 
     // Observe DOM for changes (if UI regenerates after draft generation)
@@ -3127,8 +3191,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === Connect all modal triggers ===
-  document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
-  document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
+  //document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", openUpgradeModal);
+  //document.querySelector(".menu-item[onclick='openUpgradePlan()']")?.addEventListener("click", openUpgradeModal);
+  //commentato righe sopra e aggiunto il refreshPlanUI() qui sotto
+  refreshPlanUI();
 
   // === Billing option selection + price update ===
   const planOptions = document.querySelectorAll(".plan-month, .plan-quarter, .plan-year");
@@ -3314,6 +3380,8 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
             closeUpgradeModal();
             setUserPlan('PRO');
+            localStorage.setItem('userPlan', 'PRO');
+            refreshPlanUI();
           });
         },
         onError: (err) => {
@@ -3391,6 +3459,8 @@ document.addEventListener("DOMContentLoaded", () => {
               alert("✅ Pagamento completato!");
               closeUpgradeModal();
               setUserPlan("PRO");
+              localStorage.setItem('userPlan', 'PRO');
+              refreshPlanUI();
             } else {
               alert("⚠️ Pagamento non completato.");
               console.warn(data);
