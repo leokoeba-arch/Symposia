@@ -2963,6 +2963,50 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // === GESTIONE PULSANTE PAY NOW ===
+    function wireCardPayNow(hostedFieldsInstance) {
+      const payBtn = document.getElementById("payNow");
+      if (!payBtn) {
+        console.error("❌ Bottone Pay Now non trovato.");
+        return;
+      }
+
+      payBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        payBtn.disabled = true;
+        const prev = payBtn.textContent;
+        payBtn.textContent = "Processing...";
+
+        hostedFieldsInstance
+          .submit({ contingencies: ["3D_SECURE"] })
+          .then(({ orderId }) =>
+            fetch("/api/capture-order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderID: orderId }),
+            })
+          )
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.status === "COMPLETED") {
+              alert("✅ Pagamento completato!");
+            } else {
+              alert("⚠️ Pagamento non completato.");
+              console.warn(data);
+            }
+          })
+          .catch((err) => {
+            console.error("❌ Errore durante il pagamento:", err);
+            alert("❌ Errore durante il pagamento.");
+          })
+          .finally(() => {
+            payBtn.disabled = false;
+            payBtn.textContent = prev;
+          });
+      });
+    }
+
+
     async function initCardFields() {
       try {
         console.log("🚀 Inizio caricamento Hosted Fields...");
