@@ -2966,10 +2966,57 @@ document.addEventListener("DOMContentLoaded", () => {
         const s = document.createElement("script");
         s.src = "https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&components=hosted-fields&currency=EUR&intent=capture";
         s.setAttribute("data-client-token", clientToken);
+        s.setAttribute("data-namespace", "paypal_hf");
         s.onload = resolve;
         s.onerror = () => reject(new Error("SDK hosted-fields non caricata"));
         document.body.appendChild(s);
       });
+    }
+
+    async function initCardFields() {
+      try {
+        console.log("🚀 Inizio caricamento Hosted Fields...");
+        await loadHostedFieldsSDK(); // carica SDK + token
+        await new Promise(r => setTimeout(r, 500)); // buffer per garantire caricamento
+        
+        if (!window.paypal_hf || !paypal_hf.HostedFields) {
+          console.error("paypal_hf.HostedFields non definito dopo loadHostedFieldsSDK");
+          return;
+        }
+
+        console.log("SDK Hosted Fields caricata, inizializzo...");
+        const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15").replace(/[^\d.]/g, "") || "15";
+
+        const hostedFieldsInstance = await paypal_hf.HostedFields.render({
+          createOrder: () => fetch("/api/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
+          })
+          .then(r => r.json())
+          .then(d => {
+            console.log("🆔 Ordine creato:", d.id);
+            return d.id;
+          }),
+
+          styles: {
+            input: { "font-size": "16px", "color": "#1e293b" },
+            ".valid": { "color": "#16a34a" },
+            ".invalid": { "color": "#dc2626" }
+          },
+          fields: {
+            number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
+            expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
+            cvv:           { selector: "#cardCVV", placeholder: "123" }
+          }
+        });
+
+        console.log("✅ Hosted Fields pronti, collego bottone Pay Now...");
+        wireCardPayNow(hostedFieldsInstance);
+        
+      } catch (err) {
+        console.error("❌ Errore initCardFields:", err);
+      }
     }
 
     function wireCardPayNow(hostedFieldsInstance) {
@@ -3007,57 +3054,6 @@ document.addEventListener("DOMContentLoaded", () => {
             payBtn.textContent = prev;
           });
       });
-    }
-
-    async function initCardFields() {
-      try {
-        console.log("🚀 Inizio caricamento Hosted Fields...");
-        await loadHostedFieldsSDK(); // carica SDK + token
-        await new Promise(r => setTimeout(r, 500)); // buffer per garantire caricamento
-        
-        if (!paypal.HostedFields) {
-          console.error("❌ paypal.HostedFields non definito dopo loadHostedFieldsSDK");
-          return;
-        }
-
-        console.log("✅ SDK Hosted Fields caricata, inizializzo...");
-        const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15").replace(/[^\d.]/g, "") || "15";
-
-        const hostedFieldsInstance = await paypal.HostedFields.render({
-          createOrder: () => fetch("/api/create-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
-          })
-          .then(r => r.json())
-          .then(d => {
-            console.log("🆔 Ordine creato:", d.id);
-            return d.id;
-          }),
-
-          styles: {
-            input: { "font-size": "16px", "color": "#1e293b" },
-            ".valid": { "color": "#16a34a" },
-            ".invalid": { "color": "#dc2626" }
-          },
-          fields: {
-            number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
-            expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
-            cvv:           { selector: "#cardCVV", placeholder: "123" }
-          }
-        });
-
-        if (!hostedFieldsInstance) {
-          console.error("❌ hostedFieldsInstance non creato");
-          return;
-        }
-
-        console.log("✅ Hosted Fields pronti, collego bottone Pay Now...");
-        wireCardPayNow(hostedFieldsInstance);
-        
-      } catch (err) {
-        console.error("❌ Errore initCardFields:", err);
-      }
     }
 
     // chiama questa DOPO initPayButtons()
