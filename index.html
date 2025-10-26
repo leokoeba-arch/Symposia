@@ -2868,7 +2868,8 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 
    <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
-  <script src="https://www.paypal.com/sdk/js?client-id=Ab1xUgrW1kGqPnM7U7k92MUvG0zVh_rvZJ5jBgNaG8ps8cfZC2pJkJcQOjHDhaWhMiOEt7E4cXK2zMWM&components=buttons,hosted-fields&enable-funding=card,paypal,googlepay&currency=EUR&intent=capture"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
+  <script src="https://www.paypalobjects.com/api/checkout.js?components=hosted-fields"></script>
   <script>
     function initPayButtons() {
       if (!window.paypal) {
@@ -2940,6 +2941,53 @@ document.addEventListener("DOMContentLoaded", () => {
       initPayButtons(); // genera i pulsanti PayPal SOLO ora
     }
 
+    function initCardFields() {
+      if (!paypal.HostedFields) {
+        console.warn("Hosted Fields non ancora pronti, ritento...");
+        setTimeout(initCardFields, 250);
+        return;
+      }
+
+      paypal.HostedFields.render({
+        createOrder: function () {
+          return fetch("/api/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: "15.00", currency: "EUR" })
+          })
+          .then(res => res.json())
+          .then(data => data.id);
+        },
+        styles: {
+          'input': { 'font-size': '16px', 'color': '#1e293b' },
+          '.valid': { 'color': '#16a34a' },
+          '.invalid': { 'color': '#dc2626' }
+        },
+        fields: {
+          number:        { selector: '#cardNumber', placeholder: '4111 1111 1111 1111' },
+          expirationDate:{ selector: '#cardExpiry', placeholder: 'MM/YY' },
+          cvv:           { selector: '#cardCVV', placeholder: '123' }
+        }
+      }).then(hf => {
+        const payBtn = document.getElementById('payNow');
+        payBtn.addEventListener('click', e => {
+          e.preventDefault();
+          hf.submit({ contingencies: ['3D_SECURE'] })
+            .then(({ orderId }) => fetch('/api/capture-order', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderID: orderId })
+            }))
+            .then(r => r.json())
+            .then(() => alert('Pagamento completato!'))
+            .catch(err => {
+              console.error(err);
+              alert('Errore nel pagamento.');
+            });
+        });
+      });
+    }
+    initCardFields();
   </script>
   </body>
 </html>
