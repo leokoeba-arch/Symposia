@@ -1168,7 +1168,7 @@
     font-size: 0.95rem;
   }
 
-  #cardNumber, #cardExpiry, #cardHolderName, #cardCVV {
+  #card-number-field, #card-expiry-field, #cardHolderName, #card-cvv-field {
     height: 44px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
@@ -1588,14 +1588,14 @@
       <p class="or">or pay with card</p>
 
       <form id="paymentForm">
-        <input type="text" id="cardNumber" placeholder="Card Number" required>
-        <input type="text" id = "cardHolderName" placeholder="Card Holder Name" required>
+        <div id="card-number-field" placeholder="Card Number" required></div>
+        <!--<input type="text" id = "cardHolderName" placeholder="Card Holder Name" required>-->
         <div class="card-row">
           <div class="mini-input expiry">
-              <input type="text" id="cardExpiry" placeholder="MM/YY">
+              <div id="card-expiry-field" placeholder="MM/YY"></div>
           </div>
           <div class="mini-input cvv">
-              <input type="text" class="cvv" id="cardCVV" maxlength="4" placeholder="CVV">
+              <div id="card-cvv-field" maxlength="4" placeholder="CVV"></div>
           </div>	
 
 			    <a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
@@ -2871,21 +2871,6 @@ document.addEventListener("DOMContentLoaded", () => {
   <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js?components=hosted-fields"></script>
   <script>
-    // Fix per Hosted Fields legacy: collega la libreria vecchia all'oggetto paypal moderno
-    if (window.paypal && window.braintree && window.braintree.hostedFields) {
-      window.paypal.HostedFields = window.braintree.hostedFields;
-    } else {
-      // Aspetta che PayPal carichi e poi collega
-      const tryLinkHostedFields = setInterval(() => {
-        if (window.paypal && window.braintree && window.braintree.hostedFields) {
-          window.paypal.HostedFields = window.braintree.hostedFields;
-          clearInterval(tryLinkHostedFields);
-          console.log("✅ Hosted Fields collegati correttamente");
-        }
-      }, 200);
-    }
-  </script>
-  <script>
     function initPayButtons() {
       if (!window.paypal) {
         setTimeout(initPayButtons, 150);
@@ -2953,9 +2938,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function openPaymentStep() {
       // ... qui mostri la modale step 2 come già fai
       initPayButtons(); // genera i pulsanti PayPal SOLO ora
+      initCardFields();
     }
 
     async function loadHostedFieldsSDK() {
+      if (window.paypal_hf?.HostedFields) {
+        console.log("Hosted Fields SDK già caricata");
+        return;
+      }
       // 1) prendi il client token dal tuo server
       const r = await fetch("/api/generate-client-token", { method: "POST" });
       const { clientToken } = await r.json();
@@ -3005,9 +2995,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ".invalid": { "color": "#dc2626" }
           },
           fields: {
-            number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
-            expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
-            cvv:           { selector: "#cardCVV", placeholder: "123" }
+            number:        { selector: "#card-number-field", placeholder: "4111 1111 1111 1111" },
+            expirationDate:{ selector: "#card-expiry-field", placeholder: "MM/YY" },
+            cvv:           { selector: "#card-cvv-field", placeholder: "123" }
           }
         });
 
@@ -3018,47 +3008,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("❌ Errore initCardFields:", err);
       }
     }
-
-    function wireCardPayNow(hostedFieldsInstance) {
-      const payBtn = document.getElementById("payNow");
-      if (!payBtn) return;
-
-      payBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        payBtn.disabled = true;
-        const prev = payBtn.textContent;
-        payBtn.textContent = "Processing...";
-        console.log("Click PayNow, hostedFieldsInstance:", hostedFieldsInstance);
-
-        hostedFieldsInstance.submit({ contingencies: ["3D_SECURE"] })
-          .then(({ orderId }) => fetch("/api/capture-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ orderID: orderId })
-          }))
-          .then(r => r.json())
-          .then(data => {
-            if (data.status === "COMPLETED") {
-              alert("✅ Pagamento completato!");
-            } else {
-              alert("⚠️ Pagamento non completato.");
-              console.log(data);
-            }
-          })
-          .catch(err => {
-            console.error(err);
-            alert("❌ Errore durante il pagamento.");
-          })
-          .finally(() => {
-            payBtn.disabled = false;
-            payBtn.textContent = prev;
-          });
-      });
-    }
-
-    // chiama questa DOPO initPayButtons()
-    initCardFields();
-
   </script>
   </body>
 </html>
