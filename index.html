@@ -1168,6 +1168,15 @@
     font-size: 0.95rem;
   }
 
+  #cardNumber, #cardExpiry, #cardHolderName, #cardCVV {
+    height: 44px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   /* Row for MM/YY + CVV + billing link */
   .card-row {
     display: flex;
@@ -1576,22 +1585,20 @@
       <div class="payment-methods">
         <div id="paypal-button-container"></div>
       </div>
-
       <p class="or">or pay with card</p>
 
       <form id="paymentForm">
-        <input type="text" placeholder="Card Number" required>
-        <input type="text" placeholder="Card Holder Name" required>
+        <input type="text" id="cardNumber" placeholder="Card Number" required>
+        <input type="text" id = "cardHolderName" placeholder="Card Holder Name" required>
         <div class="card-row">
-		 <div class="mini-input expiry">
-		    <input type="text" class="month" id="cardMonth" maxlength="2" placeholder="MM">
-		    <span class="divider">/</span>
-		    <input type="text" class="year" id="cardYear" maxlength="2" placeholder="YY">
- 		 </div>
-		 <div class="mini-input cvv">
-   			<input type="text" class="cvv" id="cardCVV" maxlength="4" placeholder="CVV">
- 		 </div>		 
-			<a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
+          <div class="mini-input expiry">
+              <input type="text" id="cardExpiry" placeholder="MM/YY">
+          </div>
+          <div class="mini-input cvv">
+              <input type="text" class="cvv" id="cardCVV" maxlength="4" placeholder="CVV">
+          </div>	
+
+			    <a href="#" id="billingInfoLink" class="billing-link">See billing info</a> 
 	    </div>
 			
 		<div class="payment-footer">
@@ -2861,7 +2868,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 
    <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&components=buttons,hosted-fields&currency=EUR&intent=capture&enable-funding=paypal,card,googlepay"></script>
   <script>
     function initPayButtons() {
       if (!window.paypal) {
