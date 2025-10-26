@@ -2941,6 +2941,7 @@ document.addEventListener("DOMContentLoaded", () => {
       initPayButtons(); // genera i pulsanti PayPal SOLO ora
     }
 
+    // === INIZIALIZZAZIONE CAMPI CARTA + AZIONE SU "PAY NOW" ===
     function initCardFields() {
       if (!paypal.HostedFields) {
         console.warn("Hosted Fields non ancora pronti, ritento...");
@@ -2949,45 +2950,81 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       paypal.HostedFields.render({
+        //Quando PayPal deve creare un ordine (prima del pagamento)
         createOrder: function () {
+          const totalAmount = (document.getElementById("totalAmount")?.textContent || "€15")
+            .replace(/[^\d.]/g, "");
+          
           return fetch("/api/create-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: "15.00", currency: "EUR" })
+            body: JSON.stringify({ amount: totalAmount, currency: "EUR" })
           })
-          .then(res => res.json())
-          .then(data => data.id);
+            .then(res => res.json())
+            .then(data => {
+              console.log("Ordine creato:", data.id);
+              return data.id;
+            });
         },
+
+        //Styling dei campi carta
         styles: {
-          'input': { 'font-size': '16px', 'color': '#1e293b' },
-          '.valid': { 'color': '#16a34a' },
-          '.invalid': { 'color': '#dc2626' }
+          input: { "font-size": "16px", "color": "#1e293b" },
+          ".valid": { "color": "#16a34a" },
+          ".invalid": { "color": "#dc2626" }
         },
+
+        //Collegamento con i tuoi input HTML
         fields: {
-          number:        { selector: '#cardNumber', placeholder: '4111 1111 1111 1111' },
-          expirationDate:{ selector: '#cardExpiry', placeholder: 'MM/YY' },
-          cvv:           { selector: '#cardCVV', placeholder: '123' }
+          number:        { selector: "#cardNumber", placeholder: "4111 1111 1111 1111" },
+          expirationDate:{ selector: "#cardExpiry", placeholder: "MM/YY" },
+          cvv:           { selector: "#cardCVV", placeholder: "123" }
         }
-      }).then(hf => {
-        const payBtn = document.getElementById('payNow');
-        payBtn.addEventListener('click', e => {
-          e.preventDefault();
-          hf.submit({ contingencies: ['3D_SECURE'] })
-            .then(({ orderId }) => fetch('/api/capture-order', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderID: orderId })
-            }))
-            .then(r => r.json())
-            .then(() => alert('Pagamento completato!'))
+      }).then(function (hostedFieldsInstance) {
+
+        // 4️⃣ Quando l'utente clicca su "Pay Now"
+        const payNowBtn = document.getElementById("payNow");
+        if (!payNowBtn) return;
+
+        payNowBtn.addEventListener("click", function (event) {
+          event.preventDefault();
+          payNowBtn.disabled = true;
+          payNowBtn.textContent = "Processing...";
+
+          hostedFieldsInstance
+            .submit({ contingencies: ["3D_SECURE"] })
+            .then(({ orderId }) => {
+              console.log("Pagamento inviato, ordine:", orderId);
+              return fetch("/api/capture-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderID: orderId })
+              });
+            })
+            .then(res => res.json())
+            .then(data => {
+              console.log("Risposta PayPal:", data);
+              if (data.status === "COMPLETED") {
+                alert("✅ Pagamento completato con successo!");
+              } else {
+                alert("⚠️ Pagamento non completato o rifiutato.");
+              }
+            })
             .catch(err => {
-              console.error(err);
-              alert('Errore nel pagamento.');
+              console.error("Errore pagamento:", err);
+              alert("❌ Errore durante il pagamento.");
+            })
+            .finally(() => {
+              payNowBtn.disabled = false;
+              payNowBtn.textContent = "Pay Now";
             });
         });
       });
     }
+
+    // Avvio automatico
     initCardFields();
+
   </script>
   </body>
 </html>
