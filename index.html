@@ -1601,7 +1601,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"/></svg>
         </span> Personal Info
       </button>
-      <button class="menu-item" id="remainingDownloadsBtn" type="button" onclick="window.openUpgradeModal?.()">
+      <button class="menu-item" id="remainingDownloadsBtn" type="button" onclick="window.guardOpenUpgradeModal?.()">
         <span class="icon" aria-hidden="true">
           <!-- Download icon -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -1621,7 +1621,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M142 66.2C150.5 62.3 160.5 63.7 167.6 69.8L208 104.4L248.4 69.8C257.4 62.1 270.7 62.1 279.6 69.8L320 104.4L360.4 69.8C369.4 62.1 382.6 62.1 391.6 69.8L432 104.4L472.4 69.8C479.5 63.7 489.5 62.3 498 66.2C506.5 70.1 512 78.6 512 88L512 552C512 561.4 506.5 569.9 498 573.8C489.5 577.7 479.5 576.3 472.4 570.2L432 535.6L391.6 570.2C382.6 577.9 369.4 577.9 360.4 570.2L320 535.6L279.6 570.2C270.6 577.9 257.3 577.9 248.4 570.2L208 535.6L167.6 570.2C160.5 576.3 150.5 577.7 142 573.8C133.5 569.9 128 561.4 128 552L128 88C128 78.6 133.5 70.1 142 66.2zM232 200C218.7 200 208 210.7 208 224C208 237.3 218.7 248 232 248L408 248C421.3 248 432 237.3 432 224C432 210.7 421.3 200 408 200L232 200zM208 416C208 429.3 218.7 440 232 440L408 440C421.3 440 432 429.3 432 416C432 402.7 421.3 392 408 392L232 392C208 402.7 218.7 416 232 416zM232 296C218.7 296 208 306.7 208 320C208 333.3 218.7 344 232 344L408 344C421.3 344 432 333.3 432 320C432 306.7 421.3 296 408 296L232 296z"/></svg>
         </span> Billing Info
       </button>
-      <button class="menu-item" onclick="window.openUpgradePlan?.()">
+      <button class="menu-item" onclick="window.guardOpenUpgradeModal?.()">
         <span class="icon">
           <!-- Upgrade (replace this later with better SVG) -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M372.2 116C372.2 136.9 359.8 155 342 163.2L448 256L552.4 235.1C547.1 227.4 544 218 544 208C544 181.5 565.5 160 592 160C618.5 160 640 181.5 640 208C640 234 619.4 255.1 593.6 256L481 506.3C470.7 529.3 447.8 544 422.6 544L217.4 544C192.2 544 169.4 529.2 159 506.3L46.4 256C20.6 255.1 0 234 0 208C0 181.5 21.5 160 48 160C74.5 160 96 181.5 96 208C96 218.1 92.9 227.4 87.6 235.1L192 256L298.1 163.1C280.4 154.8 268.1 136.8 268.1 116C268.1 87.3 291.4 64 320.1 64C348.8 64 372.1 87.3 372.1 116z"/></svg>     
@@ -2471,7 +2471,7 @@
       document.getElementById("infoLastName").value = last;
       document.getElementById("infoEmail").value = email;
       document.getElementById("infoDownloads").value = downloads;
-      document.getElementById("infoPlan").value = plan;
+      document.getElementById("infoPlan").value = plan.toUpperCase();
 
       // Se è free, mostra il bottone “Upgrade Plan”
       const upgradeBtn = document.getElementById("infoUpgradeBtn");
@@ -2780,6 +2780,7 @@
       const drNameEl = document.getElementById('drName');
       if (user) {
         updateUserUI(user);
+        if (typeof refreshAccountUI === 'function') refreshAccountUI();
         if (loginBtn) { loginBtn.style.display = 'none'; loginBtn.style.visibility = 'visible'; }
         if (drNameEl) { drNameEl.style.display = 'inline-block'; drNameEl.style.visibility = 'visible'; }
 
@@ -3209,8 +3210,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === Connect all modal triggers ===
-  document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", () => window.openUpgradeModal?.());
-  document.querySelector(".menu-item[onclick*='openUpgradePlan']")?.addEventListener("click", () => window.openUpgradeModal?.());
+  //document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", () => window.openUpgradeModal?.());
+  //document.querySelector(".menu-item[onclick*='openUpgradePlan']")?.addEventListener("click", () => window.openUpgradeModal?.());
   // === Billing option selection + price update ===
   const planOptions = document.querySelectorAll(".plan-month, .plan-quarter, .plan-year");
   planOptions.forEach(opt => {
@@ -3348,8 +3349,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     });
     // === Connect all triggers ===
-    document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", () => window.openUpgradeModal?.());
-    document.querySelector(".menu-item[onclick*='openUpgradePlan']")?.addEventListener("click", () => window.openUpgradeModal?.());
+    //document.querySelector("#remainingDownloadsBtn")?.addEventListener("click", () => window.openUpgradeModal?.());
+    //document.querySelector(".menu-item[onclick*='openUpgradePlan']")?.addEventListener("click", () => window.openUpgradeModal?.());
 
     document.addEventListener('DOMContentLoaded', bindDownloadButton);
     </script>
@@ -3642,9 +3643,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
   }
   function setUserPlan(plan) {
-    localStorage.setItem(PLAN_KEY, plan.toLowerCase());
+    const normalized = String(plan || 'free').toLowerCase();
+    localStorage.setItem(PLAN_KEY, normalized);
+    // aggiorna UI centralmente
     refreshAccountUI();
-    if (typeof refreshPlanUI === 'function') refreshPlanUI(plan.toUpperCase());
+    if (typeof refreshPlanUI === 'function') refreshPlanUI(normalized.toUpperCase());
   }
 
   // Helpers downloads (compat con chiave legacy)
@@ -3666,17 +3669,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // UI refresh: Remaining Downloads, badge piano, personal info, ecc.
   function refreshAccountUI() {
     const plan = getUserPlan();
-    const remainingEl = document.getElementById('downloadCounter'); // <span> 0 / 8
+    const isPro = plan === 'pro';
+
+    const remainingEl = document.getElementById('downloadCounter');
     if (remainingEl) {
-      if (plan === 'pro') {
-        remainingEl.textContent = '∞ / ∞';
-      } else {
-        remainingEl.textContent = `${getUsedDownloads()} / ${MAX_FREE_DOWNLOADS}`;
-      }
+      remainingEl.textContent = isPro ? '∞ / ∞' : `${getUsedDownloads()} / ${MAX_FREE_DOWNLOADS}`;
     }
     // badge in header (se hai il pill "FREE")
     const planBadge = document.getElementById('planBadge');
-    if (planBadge) updatePlanBadge(plan === 'pro' ? 'Pro' : 'Free');
+    if (planBadge) {
+      updatePlanBadge(isPro ? 'Pro' : 'Free');
+      planBadge.textContent = isPro ? 'Pro' : 'Free';
+    }
 
     // Personal Info: campo Subscription + bottone upgrade
     const subscriptionField = document.getElementById('infoPlan');
@@ -3685,35 +3689,92 @@ document.addEventListener("DOMContentLoaded", () => {
     const infoUpgradeBtn = document.getElementById('infoUpgradeBtn');
     if (infoUpgradeBtn) infoUpgradeBtn.style.display = (plan === 'free') ? 'block' : 'none';
 
-    const upgradeMenuItem = document.querySelector(".menu-item[onclick*='openUpgradePlan']");
-    if (upgradeMenuItem) upgradeMenuItem.style.display = (plan === 'pro') ? 'none' : '';
+    hideUpgradeMenuItemsIfPro();
+      const remBtn = document.getElementById('remainingDownloadsBtn');
+    if (remBtn) {
+      if (isPro) {
+        remBtn.style.pointerEvents = 'none';
+        remBtn.setAttribute('aria-disabled', 'true');
+        // visivo: attenua (opzionale)
+        remBtn.style.opacity = '0.9';
+      } else {
+        remBtn.style.pointerEvents = '';
+        remBtn.removeAttribute('aria-disabled');
+        remBtn.style.opacity = '';
+      }
+    }
+
+    console.log('refreshAccountUI -> plan:', plan, 'isPro:', isPro);
   }
   
-  //START Upgrade function
-  function guardDownloadsOrOpenUpgrade(downloadBtn) {
-    const plan = localStorage.getItem('userPlan');
-    const isPro = plan && plan.toUpperCase() === 'PRO';
-    //const usedDownloads = parseInt(localStorage.getItem('usedDownloads') || '0', 10);
-    const usedDownloads = getUsedDownloads();
-    const maxDownloads = 8;
-
-    // 🔹 Se PRO → bypassa ogni controllo, scarica direttamente
-    if (isPro) {
-      console.log("PRO user detected — unlimited downloads enabled.");
-      startDownloadProcess(downloadBtn); // usa la tua funzione effettiva
+  function guardOpenUpgradeModal() {
+    if (getUserPlan() === 'pro') {
+      // ensure UI shows PRO everywhere
+      refreshAccountUI();
       return;
     }
-
-    // 🔹 Se Free e ha raggiunto limite → apri modale upgrade
-    if (usedDownloads >= maxDownloads) {
-      openUpgradeModal();
-      return;
-    }
-
-    // 🔹 Se Free ma non ha raggiunto limite → scarica normalmente
-    startDownloadProcess(downloadBtn);
+    // otherwise open modal
+    window.openUpgradeModal?.();
   }
-  //END Upgrade function
+  window.guardOpenUpgradeModal = guardOpenUpgradeModal;
+
+  // Hide any "Upgrade Plan" menu-items by checking text and onclick attribute
+  function hideUpgradeMenuItemsIfPro() {
+    const isPro = getUserPlan() === 'pro';
+    
+    document.querySelectorAll(".menu-item[onclick*='openUpgradePlan']").forEach(el => {
+    el.style.display = isPro ? 'none' : '';
+    if (!isPro) el.onclick = el.getAttribute('data-original-onclick') || el.onclick;
+   });
+
+    // also match by visible text to be robust
+    Array.from(document.querySelectorAll('.menu-item')).forEach(el => {
+      const txt = (el.textContent || '').trim().toLowerCase();
+      if (txt.includes('upgrade plan')) {
+        el.style.display = isPro ? 'none' : '';
+        // attach safe guard so clicks never open modal if still visible
+        if (isPro) {
+          // remove any existing click handlers that could open modal
+          el.onclick = (e) => { e.preventDefault(); e.stopImmediatePropagation(); return false; };
+        } else {
+          el.onclick = (e) => { window.openUpgradePlan?.(); };
+        }
+      }
+    });
+  }
+
+  // Attach DOM-ready listeners that override existing inline onclicks safely
+  document.addEventListener('DOMContentLoaded', () => {
+    // ensure remainingDownloadsBtn uses the guard
+    const remBtn = document.getElementById('remainingDownloadsBtn');
+    if (remBtn) {
+      // remove earlier attached handlers race-safely by adding capturing handler that stops propagation for PRO
+      remBtn.addEventListener('click', (e) => {
+        if (getUserPlan() === 'pro') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          refreshAccountUI();
+          return false;
+        }
+        // otherwise open modal via canonical entrypoint
+        window.openUpgradeModal?.();
+      }, { capture: true, passive: false });
+    }
+
+    // also ensure any "Upgrade Plan" entries are hidden/guarded
+    hideUpgradeMenuItemsIfPro();
+  });
+
+  // Ensure refreshAccountUI also hides menu items and forces badge text
+  const _origRefreshAccountUI = refreshAccountUI;
+  refreshAccountUI = function() {
+    _origRefreshAccountUI();
+    // reinforce badge text so it's consistent
+    const plan = getUserPlan();
+    const planBadge = document.getElementById('planBadge');
+    if (planBadge) planBadge.textContent = (plan === 'pro') ? 'Pro' : 'Free';
+    hideUpgradeMenuItemsIfPro();
+  };
 
 
   // Inizializza UI all’avvio
