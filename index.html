@@ -2008,6 +2008,24 @@
         return;
       }
 
+       const plan = localStorage.getItem("userPlan");
+        if (plan && plan.toUpperCase() === "PRO") {
+          console.log("User is PRO — unlimited downloads enabled.");
+
+          const blob = new Blob(["\ufeff", content], { type: "application/msword" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "symposia_draft.docx";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          // non incrementiamo il contatore per i PRO
+          return;
+       }
+
       let count = 0;
       try {
         count = await fetchDownloadCount(user.email);
@@ -2028,6 +2046,7 @@
 
       // limit check before proceeding
       if (count >= 8) {
+        console.log("Free user reached download limit — opening upgrade modal.");
         if (typeof openUpgradeModal === "function") openUpgradeModal();
         else window.openUpgradeModal?.();
         return;
@@ -2767,6 +2786,10 @@
         //START FIRESTORE SYNC HELPERS: piano utente AGGIUNTO ORA
         fetchUserPlan(user.email).then((plan) => {
           if (typeof refreshPlanUI === 'function') refreshPlanUI(plan);
+        }).catch(() => {
+          // in caso di errore, usa il piano in locale
+          const localPlan = localStorage.getItem('userPlan') || 'Free';
+          if (typeof refreshPlanUI === 'function') refreshPlanUI(localPlan);
         });
         //END FIRESTORE SYNC HELPERS: piano utente AGGIUNTO ORA
 
@@ -3300,6 +3323,45 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('DOMContentLoaded', bindDownloadButton);
     </script>
 
+    <script>
+      function refreshPlanUI(plan) {
+        const planBadge = document.getElementById('planBadge');
+        const remainingDownloads = document.getElementById('downloadCounter');
+
+        const effectivePlan  = plan || localStorage.getItem('userPlan') || 'Free';
+        const isPro = effectivePlan.toUpperCase() === 'PRO';
+
+
+        if (planBadge) {
+          planBadge.textContent = isPro ? "PRO" : "FREE";
+          planBadge.className = isPro ? 'plan-badge pro' : 'plan-badge free';
+        }
+
+        if (remainingDownloads) {
+          if (isPro) {
+            remainingDownloads.textContent = '∞ / ∞';
+          } else {
+            const count = Number(localStorage.getItem("symposia_downloadCount") || "0");
+            remainingDownloads.textContent = `${count} / 8`;
+          }
+        }
+
+        const remeainingDownloadsBtn = document.getElementById('remainingDownloadsBtn');
+        const infoUpgradeBtn = document.getElementById('infoUpgradeBtn');
+        if (remeainingDownloadsBtn || infoUpgradeBtn) {
+          if (isPro) {
+            const cloneRemaining = remeainingDownloadsBtn.cloneNode(true);
+            const cloneInfo = infoUpgradeBtn.cloneNode(true);
+            remeainingDownloadsBtn.parentNode.replaceChild(cloneRemaining, remeainingDownloadsBtn);
+            infoUpgradeBtn.parentNode.replaceChild(cloneInfo, infoUpgradeBtn);
+            remeainingDownloadsBtn.classList.add('disabled');
+            infoUpgradeBtn.classList.add('hidden');
+        }
+      }
+      console.log("Plan UI refreshed to:", effectivePlan);
+    }
+    </script>
+
    <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
   <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js?components=hosted-fields"></script>
@@ -3561,36 +3623,38 @@ document.addEventListener("DOMContentLoaded", () => {
     if (planBadge) planBadge.textContent = plan.toUpperCase();
 
     // Personal Info: campo Subscription + bottone upgrade
-    const subscriptionField = document.getElementById('subscriptionField');
+    const subscriptionField = document.getElementById('infoPlan');
     if (subscriptionField) subscriptionField.value = plan.charAt(0).toUpperCase() + plan.slice(1);
 
     const infoUpgradeBtn = document.getElementById('infoUpgradeBtn');
     if (infoUpgradeBtn) infoUpgradeBtn.style.display = (plan === 'free') ? 'block' : 'none';
   }
+  
+  //START Upgrade function
+  function guardDownloadsOrOpenUpgrade(downloadBtn) {
+    const plan = localStorage.getItem('userPlan');
+    const isPro = plan && plan.toUpperCase() === 'PRO';
+    const usedDownloads = parseInt(localStorage.getItem('usedDownloads') || '0', 10);
+    const maxDownloads = 8;
 
-  // Guardia per il download: chiama la tua funzione solo se permesso
-  async function guardDownloadsOrOpenUpgrade(onAllowedDownload) {
-    const plan = getUserPlan();
-
-    // PRO: nessun limite
-    if (plan === 'pro') {
-      await onAllowedDownload();
-      incUsedDownloads();           // opzionale: tieni statistica anche per i pro
-      refreshAccountUI();
+    // 🔹 Se PRO → bypassa ogni controllo, scarica direttamente
+    if (isPro) {
+      console.log("PRO user detected — unlimited downloads enabled.");
+      startDownloadProcess(downloadBtn); // usa la tua funzione effettiva
       return;
     }
 
-    // FREE: limite a 8
-    const used = getUsedDownloads();
-    if (used >= MAX_FREE_DOWNLOADS) {
-      openUpgradeModal();           // tua modale già esistente
+    // 🔹 Se Free e ha raggiunto limite → apri modale upgrade
+    if (usedDownloads >= maxDownloads) {
+      openUpgradeModal();
       return;
     }
 
-    await onAllowedDownload();
-    incUsedDownloads();
-    refreshAccountUI();
+    // 🔹 Se Free ma non ha raggiunto limite → scarica normalmente
+    startDownloadProcess(downloadBtn);
   }
+  //END Upgrade function
+
 
   // Inizializza UI all’avvio
   document.addEventListener('DOMContentLoaded', refreshAccountUI);
