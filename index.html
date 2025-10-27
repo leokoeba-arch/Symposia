@@ -2681,6 +2681,30 @@
     const backdrop = document.getElementById('sideMenuBackdrop');
     if (!menu || !backdrop) return;
 
+    try {
+      const plan = (localStorage.getItem('userPlan') || 'free').toLowerCase();
+      const isPro = plan === 'pro';
+
+      // aggiorna badge testo + class in modo definitivo
+      updatePlanBadge(isPro ? 'Pro' : 'Free');
+      const planBadge = document.getElementById('planBadge');
+      if (planBadge) planBadge.textContent = isPro ? 'Pro' : 'Free';
+
+      // nascondi/ripristina la voce Upgrade Plan
+      document.querySelectorAll('.menu-item').forEach(el => {
+        const txt = (el.textContent || '').trim().toLowerCase();
+        if (txt.includes('upgrade plan')) {
+          el.style.display = isPro ? 'none' : '';
+          el.style.pointerEvents = isPro ? 'none' : '';
+        }
+    });
+
+    // aggiorna counter / personal info visuali
+    if (typeof refreshAccountUI === 'function') refreshAccountUI();
+    } catch (e) {
+      console.warn('toggleSideMenu: sync failed', e);
+    }
+
     if (show) {
       try { if (typeof refreshAccountUI === 'function') refreshAccountUI(); } catch(e) { console.warn(e); }
       menu.classList.add('open');
