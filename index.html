@@ -3638,9 +3638,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function setUserPlan(plan) {
     const normalized = String(plan || 'free').toLowerCase();
     localStorage.setItem(PLAN_KEY, normalized);
+
     // aggiorna UI centralmente
-    refreshAccountUI();
-    if (typeof refreshPlanUI === 'function') refreshPlanUI(normalized.toUpperCase());
+    try {
+      // forza badge correttamente (ultimo writer wins)
+      const pbText = (normalized === 'pro') ? 'Pro' : (normalized === 'nobel' ? 'Nobel' : 'Free');
+      updatePlanBadge(pbText);
+      const planBadge = document.getElementById('planBadge');
+      if (planBadge) planBadge.textContent = pbText;
+    } catch (e) { console.warn('setUserPlan: badge update failed', e); }
+
+    // aggiorna il resto della UI tramite l'entrypoint centrale
+    try { refreshAccountUI(); } catch (e) { if (typeof refreshPlanUI === 'function') refreshPlanUI(normalized.toUpperCase()); }
   }
 
   // Helpers downloads (compat con chiave legacy)
@@ -3722,6 +3731,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ".menu-item[onclick*='openUpgradeModal']"
   ];
   document.querySelectorAll(attrSelectors.join(',')).forEach(el => {
+    if (el.id === 'remainingDownloadsBtn') return;
     el.style.display = isPro ? 'none' : '';
     el.style.pointerEvents = isPro ? 'none' : '';
   });
@@ -3730,6 +3740,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.menu-item').forEach(el => {
     const txt = (el.textContent || '').trim().toLowerCase();
     if (txt.includes('upgrade plan')) {
+      if (el.id === 'remainingDownloadsBtn') return;
       el.style.display = isPro ? 'none' : '';
       el.style.pointerEvents = isPro ? 'none' : '';
       // rimuovi handler che potrebbe aprire la modal
