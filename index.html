@@ -2792,15 +2792,10 @@
             // usa l'entrypoint unico per impostare il piano e aggiornare tutte le UI
             if (typeof setUserPlan === 'function') {
               setUserPlan(String(plan || 'free').toLowerCase());
-            } else if (typeof refreshPlanUI === 'function') {
-              refreshPlanUI(plan);
-            }
+            } 
           })
           .catch(() => {
-            // fallback: applica piano locale
-            const localPlan = (localStorage.getItem('userPlan') || 'free').toLowerCase();
-            if (typeof setUserPlan === 'function') setUserPlan(localPlan);
-            else if (typeof refreshPlanUI === 'function') refreshPlanUI(localPlan);
+            if (typeof setUserPlan === 'function') setUserPlan((localStorage.getItem('userPlan') || 'free').toLowerCase());
           });
         //END FIRESTORE SYNC HELPERS: piano utente AGGIUNTO ORA
 
@@ -3446,9 +3441,7 @@ document.addEventListener("DOMContentLoaded", () => {
               } else {
                 console.warn('No user email available; saving PRO locally.');
               }
-              localStorage.setItem('userPlan', 'PRO');
-              setUserPlan('PRO');
-              if (typeof refreshPlanUI === 'function') refreshPlanUI('PRO');
+              setUserPlan('pro');
             } catch (err) {
               console.error('Error updating user plan after payment:', err);
               // fallback: salva locale e aggiorna UI
@@ -3690,7 +3683,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (infoUpgradeBtn) infoUpgradeBtn.style.display = (plan === 'free') ? 'block' : 'none';
 
     hideUpgradeMenuItemsIfPro();
-      const remBtn = document.getElementById('remainingDownloadsBtn');
+    const remBtn = document.getElementById('remainingDownloadsBtn');
     if (remBtn) {
       if (isPro) {
         remBtn.style.pointerEvents = 'none';
@@ -3720,27 +3713,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Hide any "Upgrade Plan" menu-items by checking text and onclick attribute
   function hideUpgradeMenuItemsIfPro() {
-    const isPro = getUserPlan() === 'pro';
-    
-    document.querySelectorAll(".menu-item[onclick*='openUpgradePlan']").forEach(el => {
-    el.style.display = isPro ? 'none' : '';
-    if (!isPro) el.onclick = el.getAttribute('data-original-onclick') || el.onclick;
-   });
+  const isPro = getUserPlan() === 'pro';
 
-    // also match by visible text to be robust
-    Array.from(document.querySelectorAll('.menu-item')).forEach(el => {
-      const txt = (el.textContent || '').trim().toLowerCase();
-      if (txt.includes('upgrade plan')) {
-        el.style.display = isPro ? 'none' : '';
-        // attach safe guard so clicks never open modal if still visible
-        if (isPro) {
-          // remove any existing click handlers that could open modal
-          el.onclick = (e) => { e.preventDefault(); e.stopImmediatePropagation(); return false; };
-        } else {
-          el.onclick = (e) => { window.openUpgradePlan?.(); };
-        }
+  // Match by onclick attribute (più varianti), poi fallback by visible text
+  const attrSelectors = [
+    ".menu-item[onclick*='openUpgradePlan']",
+    ".menu-item[onclick*='guardOpenUpgradeModal']",
+    ".menu-item[onclick*='openUpgradeModal']"
+  ];
+  document.querySelectorAll(attrSelectors.join(',')).forEach(el => {
+    el.style.display = isPro ? 'none' : '';
+    el.style.pointerEvents = isPro ? 'none' : '';
+  });
+
+  // Fallback: match per testo visibile (robusto contro markup diverso)
+  document.querySelectorAll('.menu-item').forEach(el => {
+    const txt = (el.textContent || '').trim().toLowerCase();
+    if (txt.includes('upgrade plan')) {
+      el.style.display = isPro ? 'none' : '';
+      el.style.pointerEvents = isPro ? 'none' : '';
+      // rimuovi handler che potrebbe aprire la modal
+      if (isPro) {
+        el.onclick = (e) => { e.preventDefault(); e.stopImmediatePropagation(); return false; };
+      } else {
+        el.onclick = (e) => { window.guardOpenUpgradeModal?.(); };
       }
-    });
+    }
+  });
+
+  console.log('hideUpgradeMenuItemsIfPro -> isPro:', isPro);
   }
 
   // Attach DOM-ready listeners that override existing inline onclicks safely
