@@ -2764,6 +2764,11 @@
 
         // 🔹 Sync download count on login
         fetchDownloadCount(user.email).then((count) => updateDownloadCounterUI(count));
+        //START FIRESTORE SYNC HELPERS: piano utente AGGIUNTO ORA
+        fetchUserPlan(user.email).then((plan) => {
+          if (typeof refreshPlanUI === 'function') refreshPlanUI(plan);
+        });
+        //END FIRESTORE SYNC HELPERS: piano utente AGGIUNTO ORA
 
       } else {
         if (drNameEl) { drNameEl.textContent = ''; drNameEl.style.display = 'none'; drNameEl.style.visibility = 'visible'; }
@@ -2813,14 +2818,44 @@
     }
 
     async function saveDownloadCountToCloud(userEmail, count) {
-    if (!userEmail) return;
-    try {
-      const ref = doc(db, "userDownloads", userEmail);
-      await setDoc(ref, { count }, { merge: true });
-    } catch (err) {
-      console.error("Error saving download count:", err);
+      if (!userEmail) return;
+      try {
+        const ref = doc(db, "userDownloads", userEmail);
+        await setDoc(ref, { count }, { merge: true });
+      } catch (err) {
+        console.error("Error saving download count:", err);
+      }
     }
+
+    // === START FIRESTORE: piano utente AGGIUNTO ORA ===
+    async function fetchUserPlan(userEmail) {
+      if (!userEmail) return 'Free';
+      try {
+        const ref = doc(db, "users", userEmail);
+        const snap = await getDoc(ref);
+        const plan = (snap.exists() && snap.data().plan) ? snap.data().plan : 'Free';
+        localStorage.setItem('userPlan', plan);   // usa lo storage locale come cache
+        return plan;
+      } catch (err) {
+        console.error("Error fetching user plan:", err);
+        return (localStorage.getItem('userPlan') || 'Free');
+      }
     }
+
+    async function setUserPlanCloud(userEmail, plan) {
+      if (!userEmail) return;
+      try {
+        const ref = doc(db, "users", userEmail);
+        await setDoc(ref, {
+          plan,
+          planSince: new Date().toISOString()
+        }, { merge: true });
+        localStorage.setItem('userPlan', plan);
+      } catch (err) {
+        console.error("Error setting user plan:", err);
+      }
+    }
+    // === END FIRESTORE: piano utente AGGIUNTO ORA ===
 
     // ===== Google Provider =====
     const googleProvider = new GoogleAuthProvider();
@@ -3313,8 +3348,28 @@ document.addEventListener("DOMContentLoaded", () => {
           return actions.order.capture().then(details => {
             alert(`✅ Pagamento riuscito da ${details.payer.name.given_name}`);
             closeUpgradeModal();
-            setUserPlan('PRO');
-          });
+            //START FIRESTORE: aggiorna piano utente a PRO
+            try {
+              const email = (auth?.currentUser?.email) || localStorage.getItem('userEmail') || null;
+              if (email) {
+                setUserPlanCloud(email, 'PRO');
+                consol.log("User plan updated to PRO in Firestore for ", email);
+              } else {
+                console.warn("No user email found; cannot update plan in Firestore.");
+                localStorage.setItem('userPlan', 'FREE');
+              }
+              if (typeof refreshPlanUI === 'function') {
+                refreshPlanUI('PRO');
+              }
+            } catch (err) {
+              console.error("Error updating user plan after payment:", err);
+              alert('Pagamento riuscito, ma errore nel salvataggio del piano PRO.');
+              localStorage.setItem('userPlan', 'PRO');
+              if (typeof refreshPlanUI === 'function') {
+                refreshPlanUI('PRO');
+              }
+            }
+          }); //END FIRESTORE: aggiorna piano utente a PRO
         },
         onError: (err) => {
           console.error('PayPal error:', err);
