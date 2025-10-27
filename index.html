@@ -2798,6 +2798,26 @@
     //window.openUpgradeModal = openUpgradeModal;
     //window.closeUpgradeModal = closeUpgradeModal;
 
+    const PLAN_KEY = 'userPlan';
+    function getUserPlan() {
+      return (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
+    }
+    function setUserPlan(plan) {
+      const normalized = String(plan || 'free').toLowerCase();
+      localStorage.setItem(PLAN_KEY, normalized);
+      // forza badge e classi (ultima scrittura vince)
+      try {
+        updatePlanBadge(normalized === 'pro' ? 'Pro' : 'Free');
+        const planBadge = document.getElementById('planBadge');
+        if (planBadge) planBadge.textContent = normalized === 'pro' ? 'Pro' : 'Free';
+      } catch (e) { /* ignore */ }
+      // aggiorna resto UI se disponibile
+      try { if (typeof refreshAccountUI === 'function') refreshAccountUI(); }
+      catch (e) { if (typeof refreshPlanUI === 'function') refreshPlanUI(normalized.toUpperCase()); }
+    }
+    window.setUserPlan = setUserPlan;
+    window.getUserPlan = getUserPlan;
+
     // ===== Auth State Listener =====
     onAuthStateChanged(auth, (user) => {
       const loginBtn = document.querySelector('.login-btn');
@@ -3653,10 +3673,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- keys compat con tuo codice attuale ---
   const DL_KEY_PRIMARY   = 'usedDownloads';
   const DL_KEY_LEGACY    = 'symposia_downloadCount'; // se lo usavi prima
-  const PLAN_KEY         = 'userPlan';               // 'free' | 'pro' ...
 
   // Helpers plan
-  function getUserPlan() {
+  /*function getUserPlan() {
     return (localStorage.getItem(PLAN_KEY) || 'free').toLowerCase();
   }
   function setUserPlan(plan) {
@@ -3665,7 +3684,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // aggiorna UI centralmente
     refreshAccountUI();
     if (typeof refreshPlanUI === 'function') refreshPlanUI(normalized.toUpperCase());
-  }
+  }*/
 
   // Helpers downloads (compat con chiave legacy)
   function getUsedDownloads() {
