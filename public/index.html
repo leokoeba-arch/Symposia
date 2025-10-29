@@ -3241,6 +3241,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (code === "symposia10" || code === "symposia25") {
         discountRate = code === "symposia10" ? 0.10 : 0.25;
         msg.textContent = `${discountRate * 100}% discount applied!`;
+      } else if (code === "symposia95") {
+        discountRate = 0.95;
+        msg.textContent = `${discountRate * 100}% discount applied!`;
       } else {
         msg.textContent = "Invalid code.";
       }
@@ -3383,6 +3386,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (code === "symposia25") {
       msg.textContent = "25% discount applied!";
       total.textContent = "€11.25";
+    } else if (code === "symposia95"){
+      msg.textContent = "95% discount applied!";
+      total.textContent = "€0.75";
     } else {
       msg.textContent = "Invalid code.";
     }
@@ -3428,7 +3434,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 
    <!-- PayPal JS SDK – PayPal + Card + Google Pay -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&currency=EUR&intent=capture&components=buttons"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&currency=EUR&intent=capture&components=buttons"></script>
   <script src="https://www.paypalobjects.com/api/checkout.js?components=hosted-fields"></script>
   <script>
     function initPayButtons() {
@@ -3532,7 +3538,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // 2) inietta la SDK PayPal SOLO per hosted-fields, passando il client token come data-attr
       await new Promise((resolve, reject) => {
         const s = document.createElement("script");
-        s.src = "https://www.paypal.com/sdk/js?client-id=AaHHjnLLDz236rS7ZLx1A_qKJEllD2AC1khW5uAkUessfroBrenm0SkRcy942w0CuQ3o9uB83mgd9k5y&components=hosted-fields&currency=EUR&intent=capture";
+        s.src = "https://www.paypal.com/sdk/js?client-id=AbQKnpmdcDP3BhtHKRWVHeq8CvGHOVizpSp0uyRijEAmnPZsMg_4Mwh2pf_G2kVwoaYfK0s2NBvDXuhe&components=hosted-fields&currency=EUR&intent=capture";
         s.setAttribute("data-client-token", clientToken);
         s.setAttribute("data-namespace", "paypal_hf");
         s.onload = resolve;

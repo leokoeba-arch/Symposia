@@ -1,1 +1,0 @@
-Certo! Posso aiutarti a generare un testo completo. Tuttavia, avrei bisogno di sapere di che tipo di file hai bisogno e quale contenuto desideri includere. Puoi fornirmi maggiori dettagli?
