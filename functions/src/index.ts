@@ -3,6 +3,10 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 
+if (process.env.NODE_ENV !== 'production') {
+  try { require('dotenv').config(); } catch(e) { }
+}
+
 const apiDir = path.join(__dirname, "..", "api");
 
 const generate = require(path.join(apiDir, "generate.js"));

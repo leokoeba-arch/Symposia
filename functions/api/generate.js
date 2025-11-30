@@ -5,7 +5,7 @@ module.exports = async function (req, res) {
 
   try {
     const { notes = "", format = "Case Report", image_captions = [] } = req.body;
-    const apiKey = "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";
+    const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) return res.status(500).json({ error: "Missing OPENAI_API_KEY" });
 
