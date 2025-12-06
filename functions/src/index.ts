@@ -25,6 +25,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/_health_env", (req, res) => {
+  res.json({
+    PAYPAL_CLIENT_ID_present: !!process.env.PAYPAL_CLIENT_ID,
+    PAYPAL_SECRET_present: !!process.env.PAYPAL_SECRET,
+    OPENAI_API_KEY_present: !!process.env.OPENAI_API_KEY,
+    NODE_ENV: process.env.NODE_ENV || "unknown"
+  });
+});
+
 app.post("/generate", generate);
 app.get("/generate-client-token", generateClientToken);
 app.post("/generate-client-token", generateClientToken);
